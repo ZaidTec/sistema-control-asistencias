@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict S67dUN9Pddfx8VHgIs5oQFax4nCpYXq7052Cb2csHXvTTHr8Mn0rVcK3Ojh53h2
+\restrict Kg7CPOGYRbkj3zOznoGVn0qKFPbTxo90g9XguwMiojNxEdXXtahUReGlctbv7lc
 
 -- Dumped from database version 18.6
 -- Dumped by pg_dump version 18.6
@@ -188,7 +188,8 @@ CREATE TABLE public.registro_asistencia (
     usuario_id integer NOT NULL,
     estado character varying(10) NOT NULL,
     observaciones character varying(500),
-    CONSTRAINT asistencia_estado_valido CHECK (((estado)::text = ANY ((ARRAY['PRESENTE'::character varying, 'AUSENTE'::character varying, 'RETARDO'::character varying])::text[])))
+    CONSTRAINT asistencia_estado_valido CHECK (((estado)::text = ANY ((ARRAY['PRESENTE'::character varying, 'AUSENTE'::character varying, 'RETARDO'::character varying])::text[]))),
+    CONSTRAINT chk_registro_estado CHECK (((estado)::text = ANY ((ARRAY['PRESENTE'::character varying, 'AUSENTE'::character varying, 'RETARDO'::character varying])::text[])))
 );
 
 
@@ -308,9 +309,9 @@ INSERT INTO public.asignacion_clase OVERRIDING SYSTEM VALUE VALUES (8, 3, 1, 4, 
 -- Data for Name: docente; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.docente OVERRIDING SYSTEM VALUE VALUES (1, 'Juan', 'Perez', 'Lopez', 'PELJ900101ABC', '5551234567', 'juan.perez@gmail.com', 'juan.perez@escuela.edu.mx', true);
 INSERT INTO public.docente OVERRIDING SYSTEM VALUE VALUES (2, 'Maria', 'Gonzalez', 'Hernandez', 'GOHM850505XYZ', '5552345678', 'maria.gonzalez@gmail.com', 'maria.gonzalez@escuela.edu.mx', true);
-INSERT INTO public.docente OVERRIDING SYSTEM VALUE VALUES (3, 'Carlos', 'Ramirez', 'Martinez', 'RAMC920808DEF', '5553456789', 'carlos.ramirez@gmail.com', 'carlos.ramirez@escuela.edu.mx', true);
+INSERT INTO public.docente OVERRIDING SYSTEM VALUE VALUES (1, 'Juan Carlos', 'Perez', 'Lopez', 'PELJ900101ABC', '5551234567', 'juan.perez@gmail.com', 'juan.perez@escuela.edu.mx', true);
+INSERT INTO public.docente OVERRIDING SYSTEM VALUE VALUES (3, 'Carlos', 'Ramirez', 'Martinez', 'RAMC920808DEF', '5553456789', 'carlos.ramirez@gmail.com', 'carlos.ramirez@escuela.edu.mx', false);
 
 
 --
@@ -329,7 +330,7 @@ INSERT INTO public.grupo OVERRIDING SYSTEM VALUE VALUES (4, 'S9V', 9, true);
 
 INSERT INTO public.materia OVERRIDING SYSTEM VALUE VALUES (1, 'BD01', 'Bases de Datos', true);
 INSERT INTO public.materia OVERRIDING SYSTEM VALUE VALUES (2, 'PW01', 'Programación Web', true);
-INSERT INTO public.materia OVERRIDING SYSTEM VALUE VALUES (3, 'MAT01', 'Matemáticas', true);
+INSERT INTO public.materia OVERRIDING SYSTEM VALUE VALUES (3, 'PRO101', 'Programación Web y Desarrollo', true);
 
 
 --
@@ -586,6 +587,22 @@ ALTER TABLE ONLY public.sesion_clase
 
 
 --
+-- Name: registro_asistencia uq_registro_sesion_usuario; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.registro_asistencia
+    ADD CONSTRAINT uq_registro_sesion_usuario UNIQUE (sesion_clase_id, usuario_id);
+
+
+--
+-- Name: sesion_clase uq_sesion_asignacion_fecha; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sesion_clase
+    ADD CONSTRAINT uq_sesion_asignacion_fecha UNIQUE (asignacion_id, fecha);
+
+
+--
 -- Name: usuario usuario_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -669,5 +686,5 @@ ALTER TABLE ONLY public.sesion_clase
 -- PostgreSQL database dump complete
 --
 
-\unrestrict S67dUN9Pddfx8VHgIs5oQFax4nCpYXq7052Cb2csHXvTTHr8Mn0rVcK3Ojh53h2
+\unrestrict Kg7CPOGYRbkj3zOznoGVn0qKFPbTxo90g9XguwMiojNxEdXXtahUReGlctbv7lc
 
