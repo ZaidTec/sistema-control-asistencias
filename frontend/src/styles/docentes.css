@@ -1,0 +1,1058 @@
+/* =========================================
+   LAYOUT
+========================================= */
+
+.docentes-layout {
+    min-height: 100vh;
+
+    display: flex;
+
+    background: #f6f8fc;
+
+    color: #202631;
+}
+
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.docentes-layout .sidebar {
+    width: 220px;
+
+    min-height: 100vh;
+
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    background: #edf4ff;
+
+    border-right: 1px solid #d9e1ee;
+
+    z-index: 10;
+}
+
+
+.docentes-layout .sidebar-brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 16px 14px;
+
+    border-bottom: 1px solid #dce4f0;
+}
+
+
+.docentes-layout .sidebar-brand img {
+    width: 34px;
+    height: 34px;
+
+    object-fit: contain;
+}
+
+
+.docentes-layout .sidebar-brand div {
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.docentes-layout .sidebar-brand strong {
+    color: #1454bd;
+
+    font-size: 14px;
+}
+
+
+.docentes-layout .sidebar-brand span {
+    color: #1454bd;
+
+    font-size: 13px;
+}
+
+
+/* Usuario */
+
+.docentes-layout .user-profile {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 20px 18px;
+
+    border-bottom: 1px solid #dce4f0;
+}
+
+
+.docentes-layout .user-avatar {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #d4e2fb;
+
+    color: #1454bd;
+
+    font-weight: 700;
+}
+
+
+.docentes-layout .user-profile div:last-child {
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.docentes-layout .user-profile strong {
+    font-size: 12px;
+
+    color: #164b9f;
+}
+
+
+.docentes-layout .user-profile span {
+    font-size: 10px;
+
+    color: #777f8b;
+}
+
+
+/* Menú */
+
+.docentes-layout .sidebar-menu {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    padding: 18px 8px;
+}
+
+
+.docentes-layout .menu-item {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 5px;
+
+    background: transparent;
+
+    color: #3e4754;
+
+    font-size: 12px;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+
+.docentes-layout .menu-item:hover {
+    background: #dce9ff;
+
+    color: #1454bd;
+}
+
+
+.docentes-layout .menu-item.active {
+    background: #1459cc;
+
+    color: white;
+}
+
+
+.docentes-layout .menu-item span {
+    width: 17px;
+
+    text-align: center;
+}
+
+
+.docentes-layout .sidebar-version {
+    margin-top: auto;
+
+    padding: 14px 18px;
+
+    color: #8993a2;
+
+    font-size: 10px;
+}
+
+
+/* =========================================
+   CONTENIDO
+========================================= */
+
+.docentes-main {
+    width: calc(100% - 220px);
+
+    margin-left: 220px;
+
+    min-height: 100vh;
+}
+
+
+/* Header */
+
+.docentes-main .dashboard-header {
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 18px;
+
+    background: white;
+
+    border-bottom: 1px solid #dfe4eb;
+}
+
+
+.docentes-main .dashboard-header h1 {
+    font-size: 14px;
+}
+
+
+.header-user {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 10px;
+}
+
+
+.header-avatar {
+    width: 20px;
+    height: 20px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f1f3f7;
+
+    border: 1px solid #d9dee7;
+
+    font-size: 9px;
+}
+
+
+/* =========================================
+   CONTENIDO DOCENTES
+========================================= */
+
+.docentes-content {
+    padding: 18px;
+}
+
+
+/* Título */
+
+.page-title {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+}
+
+
+.page-title h2 {
+    margin: 0;
+
+    font-size: 17px;
+
+    color: #202631;
+}
+
+
+.page-title p {
+    margin: 5px 0 0;
+
+    font-size: 10px;
+
+    color: #77818e;
+}
+
+
+/* =========================================
+   BOTÓN NUEVO
+========================================= */
+
+.new-button {
+    border: none;
+
+    border-radius: 5px;
+
+    background: #1459cc;
+
+    color: white;
+
+    padding: 9px 15px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.new-button:hover {
+    background: #0e48ac;
+}
+
+
+/* =========================================
+   TARJETA
+========================================= */
+
+.docentes-card {
+    background: white;
+
+    border: 1px solid #dce1e9;
+
+    border-radius: 6px;
+
+    overflow: hidden;
+}
+
+
+/* =========================================
+   BUSCADOR
+========================================= */
+
+.search-container {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 12px;
+
+    border-bottom: 1px solid #e5e9ef;
+}
+
+
+.search-icon {
+    font-size: 13px;
+}
+
+
+.search-container input {
+    flex: 1;
+
+    height: 32px;
+
+    border: 1px solid #d8dee8;
+
+    border-radius: 4px;
+
+    padding: 0 10px;
+
+    outline: none;
+
+    font-size: 11px;
+}
+
+
+.search-container input:focus {
+    border-color: #1459cc;
+
+    box-shadow:
+        0 0 0 2px rgba(20, 89, 204, 0.08);
+}
+
+
+/* =========================================
+   TABLA
+========================================= */
+
+.docentes-table-container {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+.docentes-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 10px;
+}
+
+
+.docentes-table thead {
+    background: #f0f5fd;
+}
+
+
+.docentes-table th {
+    padding: 10px;
+
+    text-align: left;
+
+    color: #667181;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.docentes-table td {
+    padding: 10px;
+
+    border-top: 1px solid #edf0f4;
+
+    color: #505966;
+
+    vertical-align: middle;
+}
+
+
+.docentes-table tbody tr:hover {
+    background: #fafbfd;
+}
+
+
+/* =========================================
+   NOMBRE DEL DOCENTE
+========================================= */
+
+.docente-name {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    min-width: 180px;
+}
+
+
+.docente-avatar {
+    width: 29px;
+    height: 29px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e4edff;
+
+    color: #1459cc;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.docente-name strong {
+    color: #303743;
+
+    font-size: 10px;
+}
+
+
+/* =========================================
+   ESTADO
+========================================= */
+
+.docente-status {
+    display: inline-flex;
+
+    padding: 4px 8px;
+
+    border-radius: 12px;
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+
+.docente-status.activo {
+    background: #d8f8eb;
+
+    color: #129363;
+}
+
+
+.docente-status.inactivo {
+    background: #f0f1f3;
+
+    color: #707783;
+}
+
+
+/* =========================================
+   ACCIONES
+========================================= */
+
+.action-buttons {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+}
+
+
+.edit-button,
+.delete-button {
+    width: 27px;
+    height: 27px;
+
+    border: none;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    font-size: 12px;
+}
+
+
+.edit-button {
+    background: #e8f0ff;
+
+    color: #1459cc;
+}
+
+
+.edit-button:hover {
+    background: #d7e5ff;
+}
+
+
+.delete-button {
+    background: #ffebeb;
+
+    color: #c62d2d;
+}
+
+
+.delete-button:hover {
+    background: #ffdada;
+}
+
+
+/* =========================================
+   ESTADOS
+========================================= */
+
+.docentes-loading {
+    padding: 45px;
+
+    text-align: center;
+
+    color: #707a88;
+
+    font-size: 11px;
+}
+
+
+.docentes-empty {
+    padding: 50px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #727c89;
+
+    text-align: center;
+}
+
+
+.docentes-empty span {
+    font-size: 28px;
+}
+
+
+.docentes-empty strong {
+    color: #3b434f;
+
+    font-size: 12px;
+}
+
+
+.docentes-empty p {
+    margin: 0;
+
+    font-size: 10px;
+}
+
+
+.docentes-error {
+    margin: 10px;
+
+    padding: 10px;
+
+    border-radius: 4px;
+
+    background: #fff1f1;
+
+    border: 1px solid #f0c8c8;
+
+    color: #b52a2a;
+
+    font-size: 10px;
+}
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(15, 25, 40, 0.45);
+}
+
+
+.docente-modal {
+    width: 100%;
+
+    max-width: 650px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius: 7px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+
+/* =========================================
+   HEADER MODAL
+========================================= */
+
+.modal-header {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    padding: 18px 20px;
+
+    border-bottom: 1px solid #e2e6ec;
+}
+
+
+.modal-header h2 {
+    margin: 0;
+
+    font-size: 15px;
+
+    color: #202631;
+}
+
+
+.modal-header p {
+    margin: 5px 0 0;
+
+    font-size: 10px;
+
+    color: #7a8491;
+}
+
+
+.close-modal {
+    width: 27px;
+    height: 27px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #727b87;
+
+    font-size: 21px;
+
+    cursor: pointer;
+}
+
+
+.close-modal:hover {
+    background: #f1f3f6;
+
+    border-radius: 4px;
+}
+
+
+/* =========================================
+   FORMULARIO
+========================================= */
+
+.docente-form {
+    padding: 20px;
+}
+
+
+.form-row {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 12px;
+}
+
+
+.form-row:nth-of-type(2) {
+    grid-template-columns:
+        repeat(2, 1fr);
+}
+
+
+.form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    margin-bottom: 12px;
+}
+
+
+.form-group label {
+    color: #424a56;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    height: 34px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d5dce6;
+
+    border-radius: 4px;
+
+    padding: 0 9px;
+
+    outline: none;
+
+    background: white;
+
+    color: #333b46;
+
+    font-size: 10px;
+}
+
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #1459cc;
+
+    box-shadow:
+        0 0 0 2px rgba(20, 89, 204, 0.08);
+}
+
+
+/* =========================================
+   BOTONES MODAL
+========================================= */
+
+.modal-buttons {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    margin-top: 18px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #e5e8ed;
+}
+
+
+.cancel-button,
+.save-button {
+    min-width: 100px;
+
+    height: 34px;
+
+    border-radius: 4px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.cancel-button {
+    border: 1px solid #d2d8e1;
+
+    background: white;
+
+    color: #5c6673;
+}
+
+
+.cancel-button:hover {
+    background: #f5f6f8;
+}
+
+
+.save-button {
+    border: none;
+
+    background: #1459cc;
+
+    color: white;
+}
+
+
+.save-button:hover {
+    background: #0e48ac;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1000px) {
+
+    .docentes-table {
+        min-width: 900px;
+    }
+
+}
+
+
+/* =========================================
+   MÓVIL
+========================================= */
+
+@media (max-width: 750px) {
+
+    .docentes-layout .sidebar {
+        width: 62px;
+    }
+
+
+    .docentes-layout .sidebar-brand {
+        justify-content: center;
+
+        padding: 14px 5px;
+    }
+
+
+    .docentes-layout .sidebar-brand img {
+        width: 36px;
+        height: 36px;
+    }
+
+
+    .docentes-layout .sidebar-brand div {
+        display: none;
+    }
+
+
+    .docentes-layout .user-profile {
+        justify-content: center;
+
+        padding: 15px 5px;
+    }
+
+
+    .docentes-layout .user-profile div:last-child {
+        display: none;
+    }
+
+
+    .docentes-layout .sidebar-menu {
+        padding: 12px 5px;
+    }
+
+
+    .docentes-layout .menu-item {
+        justify-content: center;
+
+        padding: 11px 5px;
+
+        font-size: 0;
+    }
+
+
+    .docentes-layout .menu-item span {
+        font-size: 15px;
+    }
+
+
+    .docentes-layout .sidebar-version {
+        text-align: center;
+
+        padding: 10px 3px;
+    }
+
+
+    .docentes-main {
+        width: calc(100% - 62px);
+
+        margin-left: 62px;
+    }
+
+
+    .docentes-content {
+        padding: 10px;
+    }
+
+
+    .page-title {
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+
+    .page-title h2 {
+        font-size: 15px;
+    }
+
+
+    .new-button {
+        white-space: nowrap;
+    }
+
+
+    .docente-modal {
+        max-height: 95vh;
+    }
+
+
+    .form-row,
+    .form-row:nth-of-type(2) {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================
+   MÓVIL PEQUEÑO
+========================================= */
+
+@media (max-width: 500px) {
+
+    .page-title {
+        flex-direction: column;
+    }
+
+
+    .new-button {
+        width: 100%;
+    }
+
+
+    .modal-overlay {
+        padding: 8px;
+    }
+
+
+    .docente-form {
+        padding: 15px;
+    }
+
+
+    .modal-buttons {
+        flex-direction: column-reverse;
+    }
+
+
+    .cancel-button,
+    .save-button {
+        width: 100%;
+    }
+
+}
