@@ -1,18 +1,45 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import logo from "../assets/logo.jpg";
+import Layout from "../components/Layout";
+import { useAuth } from "../context/AuthContext";
 import "../styles/dashboard.css";
 
 function Dashboard() {
 
+    const { usuario } = useAuth();
+
     const [sesiones, setSesiones] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [menuAbiertoId, setMenuAbiertoId] = useState(null);
+
+    const [sesionObservaciones, setSesionObservaciones] = useState(null);
+    const [textoObservaciones, setTextoObservaciones] = useState("");
+    const [nuevoEstadoModal, setNuevoEstadoModal] = useState("");
+    const [errorObs, setErrorObs] = useState("");
+    const [guardando, setGuardando] = useState(false);
+
+    const navigate = useNavigate();
 
 
     useEffect(() => {
 
         cargarDashboard();
+
+    }, []);
+
+
+    useEffect(() => {
+
+        const cerrarMenu = () => setMenuAbiertoId(null);
+
+        document.addEventListener("click", cerrarMenu);
+
+        return () => document.removeEventListener(
+            "click",
+            cerrarMenu
+        );
 
     }, []);
 
@@ -42,6 +69,165 @@ function Dashboard() {
 
         }
 
+    };
+
+
+    /*
+     * Cambiar estado de una sesión (edición en línea)
+     */
+
+    const cambiarEstado = async (sesion, nuevoEstado) => {
+
+        const estadoActual =
+            sesion.asistencia_estado || "PENDIENTE";
+
+        if (nuevoEstado === estadoActual) {
+            return;
+        }
+
+        try {
+
+            setError("");
+
+            if (nuevoEstado === "PENDIENTE") {
+
+                if (sesion.asistencia_id) {
+
+                    await api.delete(
+                        `/asistencias/${sesion.asistencia_id}`
+                    );
+                }
+
+            } else if (sesion.asistencia_id) {
+
+                await api.put(
+                    `/asistencias/${sesion.asistencia_id}`,
+                    {
+                        estado: nuevoEstado,
+                        observaciones:
+                            sesion.asistencia_observaciones
+                    }
+                );
+
+            } else {
+
+                await api.post("/asistencias", {
+                    sesion_clase_id: sesion.id,
+                    usuario_id: usuario?.id,
+                    estado: nuevoEstado
+                });
+            }
+
+            await cargarDashboard();
+
+        } catch (error) {
+
+            console.error(
+                "Error al cambiar estado:",
+                error
+            );
+
+            setError(
+                error.response?.data?.mensaje ||
+                "No se pudo actualizar el estado."
+            );
+
+            await cargarDashboard();
+        }
+    };
+
+
+    /*
+     * Modal de observaciones
+     */
+
+    const abrirObservaciones = (sesion) => {
+
+        setSesionObservaciones(sesion);
+        setTextoObservaciones(
+            sesion.asistencia_observaciones || ""
+        );
+        setNuevoEstadoModal("");
+        setErrorObs("");
+
+    };
+
+
+    const cerrarObservaciones = () => {
+
+        setSesionObservaciones(null);
+        setTextoObservaciones("");
+        setNuevoEstadoModal("");
+        setErrorObs("");
+
+    };
+
+
+    const guardarObservaciones = async () => {
+
+        if (!sesionObservaciones) {
+            return;
+        }
+
+        try {
+
+            setGuardando(true);
+            setErrorObs("");
+
+            if (sesionObservaciones.asistencia_id) {
+
+                await api.put(
+                    `/asistencias/${sesionObservaciones.asistencia_id}`,
+                    {
+                        estado:
+                            sesionObservaciones.asistencia_estado,
+                        observaciones:
+                            textoObservaciones.trim()
+                    }
+                );
+
+            } else {
+
+                if (!nuevoEstadoModal) {
+
+                    setErrorObs(
+                        "Selecciona un estado para guardar las observaciones."
+                    );
+
+                    setGuardando(false);
+
+                    return;
+                }
+
+                await api.post("/asistencias", {
+                    sesion_clase_id: sesionObservaciones.id,
+                    usuario_id: usuario?.id,
+                    estado: nuevoEstadoModal,
+                    observaciones:
+                        textoObservaciones.trim()
+                });
+            }
+
+            cerrarObservaciones();
+
+            await cargarDashboard();
+
+        } catch (error) {
+
+            console.error(
+                "Error al guardar observaciones:",
+                error
+            );
+
+            setErrorObs(
+                error.response?.data?.mensaje ||
+                "No se pudieron guardar las observaciones."
+            );
+
+        } finally {
+
+            setGuardando(false);
+        }
     };
 
 
@@ -134,142 +320,11 @@ function Dashboard() {
 
     return (
 
-        <div className="dashboard-layout">
-
-
-            {/* =========================
-                SIDEBAR
-            ========================== */}
-
-            <aside className="sidebar">
-
-                <div className="sidebar-brand">
-
-                    <img
-                        src={logo}
-                        alt="Tecnológico Nacional de México"
-                    />
-
-                    <div>
-
-                        <strong>
-                            DSC Control
-                        </strong>
-
-                        <span>
-                            de Asistencias
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div className="user-profile">
-
-                    <div className="user-avatar">
-                        A
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Administrador
-                        </strong>
-
-                        <span>
-                            Administrador
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <nav className="sidebar-menu">
-
-                    <button className="menu-item active">
-                        <span>▦</span>
-                        Dashboard
-                    </button>
-
-
-                    <button className="menu-item">
-                        <span>♙</span>
-                        Docentes
-                    </button>
-
-
-                    <button className="menu-item">
-                        <span>▤</span>
-                        Materias
-                    </button>
-
-
-                    <button className="menu-item">
-                        <span>▥</span>
-                        Reportes
-                    </button>
-
-
-                    <button className="menu-item">
-                        <span>▣</span>
-                        Horarios
-                    </button>
-
-
-                    <button className="menu-item">
-                        <span>⚙</span>
-                        Administración y Configuración
-                    </button>
-
-                </nav>
-
-
-                <div className="sidebar-version">
-                    v1.0
-                </div>
-
-            </aside>
-
+        <Layout titulo="Dashboard">
 
             {/* =========================
-                CONTENIDO
+                ESTADÍSTICAS
             ========================== */}
-
-            <main className="dashboard-main">
-
-
-                {/* HEADER */}
-
-                <header className="dashboard-header">
-
-                    <h1>
-                        Dashboard
-                    </h1>
-
-
-                    <div className="header-user">
-
-                        <div className="header-avatar">
-                            A
-                        </div>
-
-                        <span>
-                            Administrador
-                        </span>
-
-                    </div>
-
-                </header>
-
-
-                <div className="dashboard-content">
-
-
-                    {/* =========================
-                        ESTADÍSTICAS
-                    ========================== */}
 
                     <section className="stats-grid">
 
@@ -510,29 +565,102 @@ function Dashboard() {
 
                                                 <td>
 
-                                                    <span
+                                                    <select
                                                         className={
-                                                            obtenerClaseEstado(
-                                                                sesion.asistencia_estado
+                                                            `estado-select ${
+                                                                obtenerClaseEstado(
+                                                                    sesion.asistencia_estado
+                                                                ).replace(
+                                                                    "estado ",
+                                                                    ""
+                                                                )
+                                                            }`
+                                                        }
+                                                        value={
+                                                            sesion.asistencia_estado
+                                                            || "PENDIENTE"
+                                                        }
+                                                        onChange={(e) =>
+                                                            cambiarEstado(
+                                                                sesion,
+                                                                e.target.value
                                                             )
                                                         }
+                                                        title="Cambiar estado"
                                                     >
-                                                        {obtenerTextoEstado(
-                                                            sesion.asistencia_estado
-                                                        )}
-                                                    </span>
+
+                                                        <option value="PRESENTE">
+                                                            PRESENTE
+                                                        </option>
+
+                                                        <option value="AUSENTE">
+                                                            AUSENTE
+                                                        </option>
+
+                                                        <option value="RETARDO">
+                                                            RETARDO
+                                                        </option>
+
+                                                        <option value="PENDIENTE">
+                                                            PENDIENTE
+                                                        </option>
+
+                                                    </select>
 
                                                 </td>
 
 
                                                 <td>
 
-                                                    <button
-                                                        className="action-button"
-                                                        title="Ver detalles"
-                                                    >
-                                                        ⋮
-                                                    </button>
+                                                    <div className="action-cell">
+
+                                                        <button
+                                                            className="action-button"
+                                                            title="Opciones"
+                                                            onClick={(e) => {
+
+                                                                e.stopPropagation();
+
+                                                                setMenuAbiertoId(
+                                                                    menuAbiertoId ===
+                                                                        sesion.id
+                                                                        ? null
+                                                                        : sesion.id
+                                                                );
+                                                            }}
+                                                        >
+                                                            ⋮
+                                                        </button>
+
+
+                                                        {menuAbiertoId ===
+                                                        sesion.id && (
+
+                                                            <div className="action-menu">
+
+                                                                <button
+                                                                    className="action-menu-item"
+                                                                    onClick={(e) => {
+
+                                                                        e.stopPropagation();
+
+                                                                        setMenuAbiertoId(
+                                                                            null
+                                                                        );
+
+                                                                        abrirObservaciones(
+                                                                            sesion
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    📝 Agregar Observaciones
+                                                                </button>
+
+                                                            </div>
+
+                                                        )}
+
+                                                    </div>
 
                                                 </td>
 
@@ -570,11 +698,6 @@ function Dashboard() {
                                 </span>
 
                             </div>
-
-
-                            <span className="incident-count">
-                                {incidencias}
-                            </span>
 
                         </div>
 
@@ -658,18 +781,150 @@ function Dashboard() {
                         </div>
 
 
-                        <button className="view-reports-button">
+                        <button
+                            className="view-reports-button"
+                            onClick={() => navigate("/reportes")}
+                        >
                             Ver historial de incidencias
                         </button>
 
                     </section>
 
 
+            {sesionObservaciones && (
+                <div
+                    className="modal-overlay"
+                    onClick={cerrarObservaciones}
+                >
+                    <div
+                        className="modal-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="modal-header">
+                            <h3>Agregar Observaciones</h3>
+                            <button
+                                className="modal-close"
+                                onClick={cerrarObservaciones}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="detail-row">
+                                <strong>Docente:</strong>
+                                <span>
+                                    {sesionObservaciones.docente}
+                                </span>
+                            </div>
+                            <div className="detail-row">
+                                <strong>Materia:</strong>
+                                <span>
+                                    {sesionObservaciones.materia}
+                                </span>
+                            </div>
+                            <div className="detail-row">
+                                <strong>Horario:</strong>
+                                <span>
+                                    {formatearHora(
+                                        sesionObservaciones.hora_inicio
+                                    )}
+                                    {" - "}
+                                    {formatearHora(
+                                        sesionObservaciones.hora_fin
+                                    )}
+                                </span>
+                            </div>
+                            <div className="detail-row">
+                                <strong>Salón:</strong>
+                                <span>
+                                    {sesionObservaciones.salon}
+                                </span>
+                            </div>
+                            <div className="detail-row">
+                                <strong>Estado:</strong>
+                                <span>
+                                    {obtenerTextoEstado(
+                                        sesionObservaciones.asistencia_estado
+                                    )}
+                                </span>
+                            </div>
+
+                            {!sesionObservaciones.asistencia_id && (
+                                <div className="obs-field">
+                                    <label>
+                                        Estado
+                                    </label>
+                                    <select
+                                        className="obs-select"
+                                        value={nuevoEstadoModal}
+                                        onChange={(e) =>
+                                            setNuevoEstadoModal(
+                                                e.target.value
+                                            )
+                                        }
+                                    >
+                                        <option value="">
+                                            Selecciona un estado...
+                                        </option>
+                                        <option value="PRESENTE">
+                                            PRESENTE
+                                        </option>
+                                        <option value="AUSENTE">
+                                            AUSENTE
+                                        </option>
+                                        <option value="RETARDO">
+                                            RETARDO
+                                        </option>
+                                    </select>
+                                </div>
+                            )}
+
+                            <div className="obs-field">
+                                <label>
+                                    Observaciones
+                                </label>
+                                <textarea
+                                    className="obs-textarea"
+                                    value={textoObservaciones}
+                                    onChange={(e) =>
+                                        setTextoObservaciones(
+                                            e.target.value
+                                        )
+                                    }
+                                    placeholder="Escribe las observaciones..."
+                                    rows={4}
+                                />
+                            </div>
+
+                            {errorObs && (
+                                <div className="obs-error">
+                                    {errorObs}
+                                </div>
+                            )}
+
+                            <div className="obs-actions">
+                                <button
+                                    className="obs-cancel"
+                                    onClick={cerrarObservaciones}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    className="obs-save"
+                                    onClick={guardarObservaciones}
+                                    disabled={guardando}
+                                >
+                                    {guardando
+                                        ? "Guardando..."
+                                        : "Guardar"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            )}
 
-            </main>
-
-        </div>
+        </Layout>
 
     );
 

@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import logo from "../assets/logo.jpg";
+import Layout from "../components/Layout";
 import "../styles/docentes.css";
 
 function Docentes() {
+
+    const navigate = useNavigate();
 
     const [docentes, setDocentes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,6 +16,8 @@ function Docentes() {
 
     const [mostrarModal, setMostrarModal] = useState(false);
     const [modoEdicion, setModoEdicion] = useState(false);
+
+    const [menuAbierto, setMenuAbierto] = useState(null);
 
     const [docenteSeleccionado, setDocenteSeleccionado] = useState(null);
 
@@ -243,162 +248,11 @@ function Docentes() {
 
     return (
 
-        <div className="docentes-layout">
-
-
-            {/* =========================================
-                SIDEBAR
-            ========================================== */}
-
-            <aside className="sidebar">
-
-                <div className="sidebar-brand">
-
-                    <img
-                        src={logo}
-                        alt="Tecnológico Nacional de México"
-                    />
-
-                    <div>
-
-                        <strong>
-                            DSC Control
-                        </strong>
-
-                        <span>
-                            de Asistencias
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div className="user-profile">
-
-                    <div className="user-avatar">
-                        A
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Administrador
-                        </strong>
-
-                        <span>
-                            Administrador
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <nav className="sidebar-menu">
-
-                    <button
-                        className="menu-item"
-                        onClick={() => {
-                            window.location.href = "/dashboard";
-                        }}
-                    >
-                        <span>▦</span>
-                        Dashboard
-                    </button>
-
-
-                    <button className="menu-item active">
-
-                        <span>♙</span>
-
-                        Docentes
-
-                    </button>
-
-
-                    <button className="menu-item">
-
-                        <span>▤</span>
-
-                        Materias
-
-                    </button>
-
-
-                    <button className="menu-item">
-
-                        <span>▥</span>
-
-                        Reportes
-
-                    </button>
-
-
-                    <button className="menu-item">
-
-                        <span>▣</span>
-
-                        Horarios
-
-                    </button>
-
-
-                    <button className="menu-item">
-
-                        <span>⚙</span>
-
-                        Administración y Configuración
-
-                    </button>
-
-                </nav>
-
-
-                <div className="sidebar-version">
-                    v1.0
-                </div>
-
-            </aside>
-
+        <Layout titulo="Docentes">
 
             {/* =========================================
-                CONTENIDO
+                ENCABEZADO
             ========================================== */}
-
-            <main className="docentes-main">
-
-
-                {/* HEADER */}
-
-                <header className="dashboard-header">
-
-                    <h1>
-                        Docentes
-                    </h1>
-
-
-                    <div className="header-user">
-
-                        <div className="header-avatar">
-                            A
-                        </div>
-
-                        <span>
-                            Administrador
-                        </span>
-
-                    </div>
-
-                </header>
-
-
-                <div className="docentes-content">
-
-
-                    {/* =========================================
-                        ENCABEZADO
-                    ========================================== */}
 
                     <section className="page-title">
 
@@ -617,29 +471,85 @@ function Docentes() {
                                                         <div className="action-buttons">
 
                                                             <button
-                                                                className="edit-button"
-                                                                title="Editar"
+                                                                className="assign-button"
+                                                                title="Asignar horario"
                                                                 onClick={() =>
-                                                                    editarDocente(
-                                                                        docente
+                                                                    navigate(
+                                                                        `/horarios?docente_id=${docente.id}`
                                                                     )
                                                                 }
                                                             >
-                                                                ✎
+                                                                📅
                                                             </button>
 
 
-                                                            <button
-                                                                className="delete-button"
-                                                                title="Eliminar"
-                                                                onClick={() =>
-                                                                    eliminarDocente(
-                                                                        docente.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                🗑
-                                                            </button>
+                                                            <div className="row-dropdown">
+
+                                                                <button
+                                                                    className="more-button"
+                                                                    title="Más opciones"
+                                                                    onClick={() =>
+                                                                        setMenuAbierto(
+                                                                            menuAbierto ===
+                                                                                docente.id
+                                                                                ? null
+                                                                                : docente.id
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    ⋯
+                                                                </button>
+
+
+                                                                {menuAbierto ===
+                                                                    docente.id && (
+
+                                                                    <>
+                                                                        <div
+                                                                            className="dropdown-backdrop"
+                                                                            onClick={() =>
+                                                                                setMenuAbierto(
+                                                                                    null
+                                                                                )
+                                                                            }
+                                                                        />
+
+                                                                        <div className="dropdown-menu">
+
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setMenuAbierto(
+                                                                                        null
+                                                                                    );
+                                                                                    editarDocente(
+                                                                                        docente
+                                                                                    );
+                                                                                }}
+                                                                            >
+                                                                                ✎ Editar
+                                                                            </button>
+
+
+                                                                            <button
+                                                                                className="dropdown-delete"
+                                                                                onClick={() => {
+                                                                                    setMenuAbierto(
+                                                                                        null
+                                                                                    );
+                                                                                    eliminarDocente(
+                                                                                        docente.id
+                                                                                    );
+                                                                                }}
+                                                                            >
+                                                                                🗑 Eliminar
+                                                                            </button>
+
+                                                                        </div>
+                                                                    </>
+
+                                                                )}
+
+                                                            </div>
 
                                                         </div>
 
@@ -659,10 +569,6 @@ function Docentes() {
                         )}
 
                     </section>
-
-                </div>
-
-            </main>
 
 
             {/* =========================================
@@ -922,7 +828,7 @@ function Docentes() {
 
             )}
 
-        </div>
+        </Layout>
 
     );
 

@@ -8,12 +8,16 @@ const {
     desactivarPeriodo
 } = require('../controllers/periodoController');
 
+const requireRole = require('../middleware/rolMiddleware');
+
 const router = express.Router();
 
 
 router.get('/', obtenerPeriodos);
 
 router.get('/:id', obtenerPeriodoPorId);
+
+router.use(requireRole('ADMINISTRADOR'));
 
 router.post('/', crearPeriodo);
 

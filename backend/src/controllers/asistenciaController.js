@@ -314,8 +314,45 @@ const actualizarAsistencia = async (req, res) => {
 };
 
 
+const eliminarAsistencia = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const result = await pool.query(`
+            DELETE FROM registro_asistencia
+            WHERE id = $1
+            RETURNING *;
+        `, [id]);
+
+
+        if (result.rows.length === 0) {
+
+            return res.status(404).json({
+                mensaje: 'Registro de asistencia no encontrado'
+            });
+        }
+
+
+        res.json({
+            mensaje: 'Asistencia eliminada correctamente'
+        });
+
+    } catch (error) {
+
+        console.error('Error al eliminar asistencia:', error);
+
+        res.status(500).json({
+            mensaje: 'Error al eliminar la asistencia'
+        });
+    }
+};
+
+
 module.exports = {
     obtenerAsistencias,
     registrarAsistencia,
-    actualizarAsistencia
+    actualizarAsistencia,
+    eliminarAsistencia
 };

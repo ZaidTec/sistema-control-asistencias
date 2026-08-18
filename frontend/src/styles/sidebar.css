@@ -1,0 +1,376 @@
+/* =========================================
+   SIDEBAR (compartido por todas las páginas)
+========================================= */
+
+.sidebar {
+    width: 220px;
+    min-height: 100vh;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #edf4ff;
+    border-right: 1px solid #d9e1ee;
+
+    z-index: 10;
+
+    transition: width 0.2s ease;
+}
+
+
+/* Logo */
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 16px 14px;
+
+    border-bottom: 1px solid #dce4f0;
+}
+
+
+.sidebar-brand img {
+    width: 34px;
+    height: 34px;
+
+    object-fit: contain;
+}
+
+
+.sidebar-brand div {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.sidebar-brand strong {
+    color: #1454bd;
+    font-size: 14px;
+    line-height: 1.1;
+}
+
+
+.sidebar-brand span {
+    color: #1454bd;
+    font-size: 13px;
+}
+
+
+/* Botón colapsar */
+
+.sidebar-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    padding: 6px 10px;
+
+    border-bottom: 1px solid #dce4f0;
+}
+
+
+.sidebar-toggle {
+    width: 26px;
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 4px;
+
+    background: transparent;
+
+    color: #1454bd;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+.sidebar-toggle:hover {
+    background: #dce9ff;
+}
+
+
+/* =========================================
+   USUARIO DEL SIDEBAR
+========================================= */
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 20px 18px;
+
+    border-bottom: 1px solid #dce4f0;
+}
+
+
+.user-avatar {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #d4e2fb;
+
+    color: #1454bd;
+
+    font-weight: 700;
+    font-size: 13px;
+}
+
+
+.user-profile div:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.user-profile strong {
+    font-size: 12px;
+    color: #164b9f;
+}
+
+
+.user-profile span {
+    font-size: 10px;
+    color: #777f8b;
+
+    margin-top: 2px;
+}
+
+
+/* =========================================
+   MENÚ
+========================================= */
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    flex: 1;
+
+    padding: 0 8px;
+
+    overflow-y: auto;
+}
+
+
+.menu-item {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    padding: 10px;
+
+    border: none;
+    border-radius: 5px;
+
+    background: transparent;
+
+    color: #3e4754;
+    text-decoration: none;
+
+    font-size: 12px;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        color 0.2s;
+}
+
+
+.menu-item span {
+    width: 17px;
+    text-align: center;
+    font-size: 13px;
+}
+
+
+.menu-item:hover {
+    background: #dce9ff;
+    color: #1454bd;
+}
+
+
+.menu-item.active {
+    background: #1459cc;
+    color: white;
+
+    box-shadow:
+        0 2px 5px rgba(20, 89, 204, 0.2);
+}
+
+
+/* =========================================
+   VERSIÓN
+========================================= */
+
+.sidebar-version {
+    margin-top: auto;
+
+    padding: 14px 18px;
+
+    color: #8993a2;
+
+    font-size: 10px;
+}
+
+
+/* =========================================
+   COLAPSADO
+========================================= */
+
+.layout-collapsed .sidebar {
+    width: 62px;
+}
+
+
+.layout-collapsed .sidebar-brand {
+    justify-content: center;
+
+    padding: 14px 5px;
+}
+
+
+.layout-collapsed .sidebar-brand img {
+    width: 36px;
+    height: 36px;
+}
+
+
+.layout-collapsed .sidebar-brand div {
+    display: none;
+}
+
+
+.layout-collapsed .sidebar-toggle-row {
+    justify-content: center;
+
+    padding: 6px 0;
+}
+
+
+.layout-collapsed .user-profile {
+    justify-content: center;
+
+    padding: 15px 5px;
+}
+
+
+.layout-collapsed .user-profile div:last-child {
+    display: none;
+}
+
+
+.layout-collapsed .sidebar-menu {
+    padding: 12px 5px;
+}
+
+
+.layout-collapsed .menu-item {
+    justify-content: center;
+
+    padding: 11px 5px;
+
+    font-size: 0;
+}
+
+
+.layout-collapsed .menu-item span {
+    font-size: 15px;
+}
+
+
+/* =========================================
+   MÓVIL
+========================================= */
+
+@media (max-width: 750px) {
+
+    .sidebar {
+        width: 62px;
+    }
+
+
+    .sidebar-brand {
+        justify-content: center;
+
+        padding: 14px 5px;
+    }
+
+
+    .sidebar-brand img {
+        width: 36px;
+        height: 36px;
+    }
+
+
+    .sidebar-brand div {
+        display: none;
+    }
+
+
+    .sidebar-toggle-row {
+        display: none;
+    }
+
+
+    .user-profile div:last-child {
+        display: none;
+    }
+
+
+    .user-profile {
+        justify-content: center;
+
+        padding: 15px 5px;
+    }
+
+
+    .sidebar-menu {
+        padding: 12px 5px;
+    }
+
+
+    .menu-item {
+        justify-content: center;
+
+        padding: 11px 5px;
+
+        font-size: 0;
+    }
+
+
+    .menu-item span {
+        font-size: 15px;
+    }
+
+
+    .sidebar-version {
+        text-align: center;
+
+        padding: 10px 3px;
+    }
+
+}

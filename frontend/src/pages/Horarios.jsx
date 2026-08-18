@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import api from "../services/api";
-import logo from "../assets/logo.jpg";
+import Layout from "../components/Layout";
 import "../styles/horarios.css";
 
 function Horarios() {
+
+    const [searchParams] = useSearchParams();
 
     const [periodos, setPeriodos] = useState([]);
     const [docentes, setDocentes] = useState([]);
@@ -18,6 +21,8 @@ function Horarios() {
 
     const [error, setError] = useState("");
     const [mensaje, setMensaje] = useState("");
+
+    const [mostrarHorarios, setMostrarHorarios] = useState(false);
 
     const [formulario, setFormulario] = useState({
         periodo_id: "",
@@ -38,6 +43,23 @@ function Horarios() {
         { id: 4, nombre: "Jueves" },
         { id: 5, nombre: "Viernes" }
     ];
+
+
+    useEffect(() => {
+
+        const docenteId =
+            searchParams.get("docente_id");
+
+        if (docenteId) {
+
+            setFormulario((prev) => ({
+                ...prev,
+                docente_id: docenteId
+            }));
+
+        }
+
+    }, [searchParams]);
 
 
     /* =========================================
@@ -380,170 +402,35 @@ function Horarios() {
     };
 
 
+    const agruparPorDocente = () => {
+
+        return horarios.reduce(
+            (grupos, horario) => {
+
+                const nombre =
+                    horario.docente ||
+                    "Sin docente";
+
+                if (!grupos[nombre]) {
+                    grupos[nombre] = [];
+                }
+
+                grupos[nombre].push(horario);
+
+                return grupos;
+
+            },
+            {}
+        );
+
+    };
+
+
     return (
 
-        <div className="horarios-layout">
+        <Layout titulo="Horarios">
 
-
-            {/* =========================================
-                SIDEBAR
-            ========================================== */}
-
-            <aside className="sidebar">
-
-                <div className="sidebar-brand">
-
-                    <img
-                        src={logo}
-                        alt="Tecnológico Nacional de México"
-                    />
-
-                    <div>
-
-                        <strong>
-                            DSC Control
-                        </strong>
-
-                        <span>
-                            de Asistencias
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div className="user-profile">
-
-                    <div className="user-avatar">
-                        A
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Administrador
-                        </strong>
-
-                        <span>
-                            Administrador
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <nav className="sidebar-menu">
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href =
-                                "/dashboard"
-                        }
-                    >
-                        <span>▦</span>
-                        Dashboard
-                    </button>
-
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href =
-                                "/docentes"
-                        }
-                    >
-                        <span>♙</span>
-                        Docentes
-                    </button>
-
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href =
-                                "/materias"
-                        }
-                    >
-                        <span>▤</span>
-                        Materias
-                    </button>
-
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href =
-                                "/reportes"
-                        }
-                    >
-                        <span>▥</span>
-                        Reportes
-                    </button>
-
-
-                    <button className="menu-item active">
-
-                        <span>▣</span>
-
-                        Horarios
-
-                    </button>
-
-
-                    <button className="menu-item">
-
-                        <span>⚙</span>
-
-                        Administración y Configuración
-
-                    </button>
-
-                </nav>
-
-
-                <div className="sidebar-version">
-                    v1.0
-                </div>
-
-            </aside>
-
-
-            {/* =========================================
-                CONTENIDO
-            ========================================== */}
-
-            <main className="horarios-main">
-
-
-                <header className="dashboard-header">
-
-                    <h1>
-                        Horarios
-                    </h1>
-
-
-                    <div className="header-user">
-
-                        <div className="header-avatar">
-                            A
-                        </div>
-
-                        <span>
-                            Administrador
-                        </span>
-
-                    </div>
-
-                </header>
-
-
-                <div className="horarios-content">
-
-
-                    {/* TITULO */}
+            {/* TITULO */}
 
                     <section className="page-title">
 
@@ -1001,6 +888,16 @@ function Horarios() {
 
                                 </div>
 
+
+                                <button
+                                    className="view-horarios-button"
+                                    onClick={() =>
+                                        setMostrarHorarios(true)
+                                    }
+                                >
+                                    📋 Ver horarios
+                                </button>
+
                             </div>
 
 
@@ -1135,177 +1032,197 @@ function Horarios() {
 
 
                     {/* =========================================
-                        LISTADO
+                        MODAL HORARIOS POR DOCENTE
                     ========================================== */}
 
-                    <section className="horarios-list-card">
+                    {mostrarHorarios && (
 
-                        <div className="card-header">
+                        <div
+                            className="modal-overlay"
+                            onClick={() =>
+                                setMostrarHorarios(false)
+                            }
+                        >
 
-                            <div>
+                            <div
+                                className="horarios-modal"
+                                onClick={(e) =>
+                                    e.stopPropagation()
+                                }
+                            >
 
-                                <h3>
-                                    Horarios registrados
-                                </h3>
+                                <div className="modal-header">
 
-                                <p>
-                                    Consulta todas las asignaciones
-                                    del periodo seleccionado.
-                                </p>
+                                    <div>
 
-                            </div>
+                                        <h2>
+                                            Horarios registrados
+                                        </h2>
 
-                        </div>
+                                        <p>
+                                            Clases asignadas
+                                            agrupadas por docente.
+                                        </p>
 
-
-                        <div className="table-container">
-
-                            <table className="horarios-table">
-
-                                <thead>
-
-                                    <tr>
-
-                                        <th>
-                                            Docente
-                                        </th>
-
-                                        <th>
-                                            Materia
-                                        </th>
-
-                                        <th>
-                                            Grupo
-                                        </th>
-
-                                        <th>
-                                            Salón
-                                        </th>
-
-                                        <th>
-                                            Día
-                                        </th>
-
-                                        <th>
-                                            Horario
-                                        </th>
-
-                                        <th>
-                                            Acción
-                                        </th>
-
-                                    </tr>
-
-                                </thead>
+                                    </div>
 
 
-                                <tbody>
+                                    <button
+                                        className="close-modal"
+                                        onClick={() =>
+                                            setMostrarHorarios(false)
+                                        }
+                                    >
+                                        ×
+                                    </button>
 
-                                    {horarios.length === 0 ? (
+                                </div>
 
-                                        <tr>
 
-                                            <td
-                                                colSpan="7"
-                                                className="empty-table"
-                                            >
-                                                No hay horarios registrados.
-                                            </td>
+                                <div className="horarios-modal-body">
 
-                                        </tr>
+                                    {Object.keys(
+                                        agruparPorDocente()
+                                    ).length === 0 ? (
+
+                                        <div className="horarios-empty">
+                                            No hay horarios registrados.
+                                        </div>
 
                                     ) : (
 
-                                        horarios.map(
-                                            horario => (
+                                        Object.entries(
+                                            agruparPorDocente()
+                                        ).map(
+                                            ([docente, lista]) => (
 
-                                                <tr
-                                                    key={
-                                                        horario.id
-                                                    }
+                                                <div
+                                                    className="docente-group"
+                                                    key={docente}
                                                 >
 
-                                                    <td>
-                                                        {
-                                                            horario.docente ||
-                                                            "—"
-                                                        }
-                                                    </td>
+                                                    <div className="docente-group-header">
 
-                                                    <td>
-                                                        {
-                                                            horario.materia ||
-                                                            "—"
-                                                        }
-                                                    </td>
+                                                        <strong>
+                                                            👤 {docente}
+                                                        </strong>
 
-                                                    <td>
-                                                        {
-                                                            horario.grupo ||
-                                                            "—"
-                                                        }
-                                                    </td>
+                                                        <span>
+                                                            {lista.length}{" "}
+                                                            {lista.length === 1
+                                                                ? "clase"
+                                                                : "clases"}
+                                                        </span>
 
-                                                    <td>
-                                                        {
-                                                            horario.salon ||
-                                                            "—"
-                                                        }
-                                                    </td>
+                                                    </div>
 
-                                                    <td>
-                                                        {
-                                                            obtenerDia(
-                                                                horario.dia_semana
-                                                            )
-                                                        }
-                                                    </td>
 
-                                                    <td>
-                                                        {
-                                                            horario.hora_inicio
-                                                        }
-                                                        {" - "}
-                                                        {
-                                                            horario.hora_fin
-                                                        }
-                                                    </td>
+                                                    <table className="docente-group-table">
 
-                                                    <td>
+                                                        <thead>
 
-                                                        <button
-                                                            className="table-delete"
-                                                            onClick={() =>
-                                                                eliminarHorario(
-                                                                    horario.id
+                                                            <tr>
+
+                                                                <th>
+                                                                    Materia
+                                                                </th>
+
+                                                                <th>
+                                                                    Grupo
+                                                                </th>
+
+                                                                <th>
+                                                                    Salón
+                                                                </th>
+
+                                                                <th>
+                                                                    Día
+                                                                </th>
+
+                                                                <th>
+                                                                    Horario
+                                                                </th>
+
+                                                            </tr>
+
+                                                        </thead>
+
+
+                                                        <tbody>
+
+                                                            {lista.map(
+                                                                horario => (
+
+                                                                    <tr
+                                                                        key={
+                                                                            horario.id
+                                                                        }
+                                                                    >
+
+                                                                        <td>
+                                                                            {
+                                                                                horario.materia ||
+                                                                                "—"
+                                                                            }
+                                                                        </td>
+
+                                                                        <td>
+                                                                            {
+                                                                                horario.grupo ||
+                                                                                "—"
+                                                                            }
+                                                                        </td>
+
+                                                                        <td>
+                                                                            {
+                                                                                horario.salon ||
+                                                                                "—"
+                                                                            }
+                                                                        </td>
+
+                                                                        <td>
+                                                                            {
+                                                                                obtenerDia(
+                                                                                    horario.dia_semana
+                                                                                )
+                                                                            }
+                                                                        </td>
+
+                                                                        <td>
+                                                                            {
+                                                                                horario.hora_inicio
+                                                                            }
+                                                                            {" - "}
+                                                                            {
+                                                                                horario.hora_fin
+                                                                            }
+                                                                        </td>
+
+                                                                    </tr>
+
                                                                 )
-                                                            }
-                                                        >
-                                                            Eliminar
-                                                        </button>
+                                                            )}
 
-                                                    </td>
+                                                        </tbody>
 
-                                                </tr>
+                                                    </table>
+
+                                                </div>
 
                                             )
                                         )
 
                                     )}
 
-                                </tbody>
+                                </div>
 
-                            </table>
+                            </div>
 
                         </div>
 
-                    </section>
+                    )}
 
-                </div>
-
-            </main>
-
-        </div>
+        </Layout>
 
     );
 

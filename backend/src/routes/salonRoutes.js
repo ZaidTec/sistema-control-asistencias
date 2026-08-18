@@ -2,8 +2,12 @@ const express = require('express');
 
 const {
     obtenerSalones,
-    obtenerSalonPorId
+    obtenerSalonPorId,
+    crearSalon,
+    actualizarSalon
 } = require('../controllers/salonController');
+
+const requireRole = require('../middleware/rolMiddleware');
 
 const router = express.Router();
 
@@ -11,6 +15,12 @@ const router = express.Router();
 router.get('/', obtenerSalones);
 
 router.get('/:id', obtenerSalonPorId);
+
+router.use(requireRole('ADMINISTRADOR'));
+
+router.post('/', crearSalon);
+
+router.put('/:id', actualizarSalon);
 
 
 module.exports = router;

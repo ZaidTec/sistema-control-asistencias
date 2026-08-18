@@ -67,6 +67,133 @@ const obtenerSesiones = async (req, res) => {
     }
 };
 
+const generarSesionesDeAsignacion = async (asignacion_id, client) => {
+
+    /*
+     * Si se recibe un client (transacción), se usa; si no, pool.
+     */
+
+    const db = client || pool;
+
+
+    /*
+     * Obtener información de la asignación
+     */
+
+    const asignacionResult = await db.query(`
+        SELECT
+            ac.id,
+            ac.dia_semana,
+            ac.hora_inicio,
+            ac.hora_fin,
+
+            p.fecha_inicio,
+            p.fecha_fin
+
+        FROM asignacion_clase ac
+
+        INNER JOIN periodo_escolar p
+            ON ac.periodo_id = p.id
+
+        WHERE ac.id = $1
+          AND ac.activo = true;
+    `, [asignacion_id]);
+
+
+    if (asignacionResult.rows.length === 0) {
+        return null;
+    }
+
+
+    const asignacion = asignacionResult.rows[0];
+
+
+    /*
+     * Convertimos fechas.
+     *
+     * pg devuelve las columnas `date` como objetos Date
+     * (medianoche local), no como strings.
+     */
+
+    const fechaInicio = new Date(
+        asignacion.fecha_inicio
+    );
+
+    const fechaFin = new Date(
+        asignacion.fecha_fin
+    );
+
+
+    const sesiones = [];
+
+
+    /*
+     * PostgreSQL:
+     *
+     * 0 = Domingo
+     * 1 = Lunes
+     * 2 = Martes
+     * ...
+     * 6 = Sábado
+     *
+     * Nosotros usamos:
+     *
+     * 1 = Lunes
+     * 2 = Martes
+     * ...
+     * 7 = Domingo
+     */
+
+
+    const diaObjetivo =
+        asignacion.dia_semana === 7
+            ? 0
+            : asignacion.dia_semana;
+
+
+    for (
+        let fecha = new Date(fechaInicio);
+        fecha <= fechaFin;
+        fecha.setDate(fecha.getDate() + 1)
+    ) {
+
+        if (fecha.getDay() === diaObjetivo) {
+
+            const fechaSQL =
+                fecha.toISOString().split('T')[0];
+
+
+            const result = await db.query(`
+                INSERT INTO sesion_clase (
+                    asignacion_id,
+                    fecha,
+                    hora_inicio,
+                    hora_fin
+                )
+                VALUES ($1, $2, $3, $4)
+                ON CONFLICT (asignacion_id, fecha)
+                DO NOTHING
+                RETURNING *;
+            `, [
+                asignacion_id,
+                fechaSQL,
+                asignacion.hora_inicio,
+                asignacion.hora_fin
+            ]);
+
+
+            if (result.rows.length > 0) {
+
+                sesiones.push(result.rows[0]);
+            }
+        }
+    }
+
+
+    return sesiones;
+};
+
+
 const generarSesiones = async (req, res) => {
 
     try {
@@ -82,117 +209,15 @@ const generarSesiones = async (req, res) => {
         }
 
 
-        /*
-         * Obtener información de la asignación
-         */
-
-        const asignacionResult = await pool.query(`
-            SELECT
-                ac.id,
-                ac.dia_semana,
-                ac.hora_inicio,
-                ac.hora_fin,
-
-                p.fecha_inicio,
-                p.fecha_fin
-
-            FROM asignacion_clase ac
-
-            INNER JOIN periodo_escolar p
-                ON ac.periodo_id = p.id
-
-            WHERE ac.id = $1
-              AND ac.activo = true;
-        `, [asignacion_id]);
+        const sesiones =
+            await generarSesionesDeAsignacion(asignacion_id);
 
 
-        if (asignacionResult.rows.length === 0) {
+        if (sesiones === null) {
 
             return res.status(404).json({
                 mensaje: 'Asignación no encontrada'
             });
-        }
-
-
-        const asignacion = asignacionResult.rows[0];
-
-
-        /*
-         * Convertimos fechas
-         */
-
-        const fechaInicio = new Date(
-            `${asignacion.fecha_inicio}T00:00:00`
-        );
-
-        const fechaFin = new Date(
-            `${asignacion.fecha_fin}T00:00:00`
-        );
-
-
-        const sesiones = [];
-
-
-        /*
-         * PostgreSQL:
-         *
-         * 0 = Domingo
-         * 1 = Lunes
-         * 2 = Martes
-         * ...
-         * 6 = Sábado
-         *
-         * Nosotros usamos:
-         *
-         * 1 = Lunes
-         * 2 = Martes
-         * ...
-         * 7 = Domingo
-         */
-
-
-        const diaObjetivo =
-            asignacion.dia_semana === 7
-                ? 0
-                : asignacion.dia_semana;
-
-
-        for (
-            let fecha = new Date(fechaInicio);
-            fecha <= fechaFin;
-            fecha.setDate(fecha.getDate() + 1)
-        ) {
-
-            if (fecha.getDay() === diaObjetivo) {
-
-                const fechaSQL =
-                    fecha.toISOString().split('T')[0];
-
-
-                const result = await pool.query(`
-                    INSERT INTO sesion_clase (
-                        asignacion_id,
-                        fecha,
-                        hora_inicio,
-                        hora_fin
-                    )
-                    VALUES ($1, $2, $3, $4)
-                    ON CONFLICT (asignacion_id, fecha)
-                    DO NOTHING
-                    RETURNING *;
-                `, [
-                    asignacion_id,
-                    fechaSQL,
-                    asignacion.hora_inicio,
-                    asignacion.hora_fin
-                ]);
-
-
-                if (result.rows.length > 0) {
-
-                    sesiones.push(result.rows[0]);
-                }
-            }
         }
 
 
@@ -241,6 +266,7 @@ const obtenerSesionesHoy = async (req, res) => {
 
                 p.nombre AS periodo,
 
+                ra.id AS asistencia_id,
                 ra.estado AS asistencia_estado,
                 ra.observaciones AS asistencia_observaciones
 
@@ -316,6 +342,7 @@ const obtenerSesionesPorFecha = async (req, res) => {
 
                 p.nombre AS periodo,
 
+                ra.id AS asistencia_id,
                 ra.estado AS asistencia_estado,
                 ra.observaciones AS asistencia_observaciones
 
@@ -364,6 +391,7 @@ const obtenerSesionesPorFecha = async (req, res) => {
 module.exports = {
     obtenerSesiones,
     generarSesiones,
+    generarSesionesDeAsignacion,
     obtenerSesionesHoy,
     obtenerSesionesPorFecha
 };

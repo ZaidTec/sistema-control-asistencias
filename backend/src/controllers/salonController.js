@@ -8,7 +8,8 @@ const obtenerSalones = async (req, res) => {
         const result = await pool.query(`
             SELECT
                 id,
-                numero
+                numero,
+                activo
             FROM salon
             ORDER BY CAST(numero AS INTEGER);
         `);
@@ -62,7 +63,136 @@ const obtenerSalonPorId = async (req, res) => {
 };
 
 
+const crearSalon = async (req, res) => {
+
+    try {
+
+        const { numero } = req.body;
+
+        if (!numero) {
+
+            return res.status(400).json({
+                mensaje: 'El número del salón es obligatorio'
+            });
+        }
+
+        const result = await pool.query(`
+            INSERT INTO salon (numero)
+            VALUES ($1)
+            RETURNING id, numero, activo;
+        `, [numero]);
+
+        res.status(201).json(result.rows[0]);
+
+    } catch (error) {
+
+        if (error.code === '23505') {
+
+            return res.status(409).json({
+                mensaje: 'Ya existe un salón con ese número'
+            });
+        }
+
+        console.error('Error al crear salón:', error);
+
+        res.status(500).json({
+            mensaje: 'Error al crear el salón'
+        });
+    }
+};
+
+
+const actualizarSalon = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+        const { numero, activo } = req.body;
+
+        if (numero !== undefined && activo !== undefined) {
+
+            const result = await pool.query(`
+                UPDATE salon
+                SET
+                    numero = $1,
+                    activo = $2
+                WHERE id = $3
+                RETURNING id, numero, activo;
+            `, [numero, activo, id]);
+
+            if (result.rows.length === 0) {
+
+                return res.status(404).json({
+                    mensaje: 'Salón no encontrado'
+                });
+            }
+
+            return res.json(result.rows[0]);
+        }
+
+        if (numero !== undefined) {
+
+            const result = await pool.query(`
+                UPDATE salon
+                SET numero = $1
+                WHERE id = $2
+                RETURNING id, numero, activo;
+            `, [numero, id]);
+
+            if (result.rows.length === 0) {
+
+                return res.status(404).json({
+                    mensaje: 'Salón no encontrado'
+                });
+            }
+
+            return res.json(result.rows[0]);
+        }
+
+        if (activo !== undefined) {
+
+            const result = await pool.query(`
+                UPDATE salon
+                SET activo = $1
+                WHERE id = $2
+                RETURNING id, numero, activo;
+            `, [activo, id]);
+
+            if (result.rows.length === 0) {
+
+                return res.status(404).json({
+                    mensaje: 'Salón no encontrado'
+                });
+            }
+
+            return res.json(result.rows[0]);
+        }
+
+        return res.status(400).json({
+            mensaje: 'Se requiere al menos un campo para actualizar'
+        });
+
+    } catch (error) {
+
+        if (error.code === '23505') {
+
+            return res.status(409).json({
+                mensaje: 'Ya existe un salón con ese número'
+            });
+        }
+
+        console.error('Error al actualizar salón:', error);
+
+        res.status(500).json({
+            mensaje: 'Error al actualizar el salón'
+        });
+    }
+};
+
+
 module.exports = {
     obtenerSalones,
-    obtenerSalonPorId
+    obtenerSalonPorId,
+    crearSalon,
+    actualizarSalon
 };

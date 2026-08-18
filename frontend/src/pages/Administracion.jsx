@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
-import logo from "../assets/logo.jpg";
+import Layout from "../components/Layout";
+import MateriasTab from "../components/admin/MateriasTab";
 import "../styles/administracion.css";
 
 function Administracion() {
@@ -409,175 +410,20 @@ function Administracion() {
 
     return (
 
-        <div className="administracion-layout">
+        <Layout titulo="Administración y Configuración">
 
+            <section className="page-title">
 
-            {/* =========================================
-                SIDEBAR
-            ========================================== */}
+                <h2>
+                    Administración del sistema
+                </h2>
 
-            <aside className="sidebar">
+                <p>
+                    Gestiona usuarios, periodos,
+                    grupos y salones.
+                </p>
 
-                <div className="sidebar-brand">
-
-                    <img
-                        src={logo}
-                        alt="Logo"
-                    />
-
-                    <div>
-                        <strong>
-                            DSC Control
-                        </strong>
-
-                        <span>
-                            de Asistencias
-                        </span>
-                    </div>
-
-                </div>
-
-
-                <div className="user-profile">
-
-                    <div className="user-avatar">
-                        A
-                    </div>
-
-                    <div>
-                        <strong>
-                            Administrador
-                        </strong>
-
-                        <span>
-                            Administrador
-                        </span>
-                    </div>
-
-                </div>
-
-
-                <nav className="sidebar-menu">
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href =
-                                "/dashboard"
-                        }
-                    >
-                        <span>▦</span>
-                        Dashboard
-                    </button>
-
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href =
-                                "/docentes"
-                        }
-                    >
-                        <span>♙</span>
-                        Docentes
-                    </button>
-
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href =
-                                "/materias"
-                        }
-                    >
-                        <span>▤</span>
-                        Materias
-                    </button>
-
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href =
-                                "/reportes"
-                        }
-                    >
-                        <span>▥</span>
-                        Reportes
-                    </button>
-
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href =
-                                "/horarios"
-                        }
-                    >
-                        <span>▣</span>
-                        Horarios
-                    </button>
-
-
-                    <button
-                        className="menu-item active"
-                    >
-                        <span>⚙</span>
-                        Administración y Configuración
-                    </button>
-
-                </nav>
-
-
-                <div className="sidebar-version">
-                    v1.0
-                </div>
-
-            </aside>
-
-
-            {/* =========================================
-                CONTENIDO
-            ========================================== */}
-
-            <main className="administracion-main">
-
-                <header className="dashboard-header">
-
-                    <h1>
-                        Administración y Configuración
-                    </h1>
-
-                    <div className="header-user">
-
-                        <div className="header-avatar">
-                            A
-                        </div>
-
-                        <span>
-                            Administrador
-                        </span>
-
-                    </div>
-
-                </header>
-
-
-                <div className="administracion-content">
-
-
-                    <section className="page-title">
-
-                        <h2>
-                            Administración del sistema
-                        </h2>
-
-                        <p>
-                            Gestiona usuarios, periodos,
-                            grupos y salones.
-                        </p>
-
-                    </section>
+            </section>
 
 
                     {error && (
@@ -602,16 +448,16 @@ function Administracion() {
 
 
                         {/* =====================================
-                            MENU CONFIGURACIÓN
+                            TABS CONFIGURACIÓN
                         ====================================== */}
 
-                        <aside className="settings-menu">
+                        <nav className="admin-tabs">
 
                             <button
                                 className={
                                     seccion === "usuarios"
-                                        ? "setting-item active"
-                                        : "setting-item"
+                                        ? "admin-tab active"
+                                        : "admin-tab"
                                 }
                                 onClick={() =>
                                     setSeccion("usuarios")
@@ -625,8 +471,8 @@ function Administracion() {
                             <button
                                 className={
                                     seccion === "periodos"
-                                        ? "setting-item active"
-                                        : "setting-item"
+                                        ? "admin-tab active"
+                                        : "admin-tab"
                                 }
                                 onClick={() =>
                                     setSeccion("periodos")
@@ -639,9 +485,24 @@ function Administracion() {
 
                             <button
                                 className={
+                                    seccion === "materias"
+                                        ? "admin-tab active"
+                                        : "admin-tab"
+                                }
+                                onClick={() =>
+                                    setSeccion("materias")
+                                }
+                            >
+                                <span>📚</span>
+                                Materias
+                            </button>
+
+
+                            <button
+                                className={
                                     seccion === "grupos"
-                                        ? "setting-item active"
-                                        : "setting-item"
+                                        ? "admin-tab active"
+                                        : "admin-tab"
                                 }
                                 onClick={() =>
                                     setSeccion("grupos")
@@ -655,8 +516,8 @@ function Administracion() {
                             <button
                                 className={
                                     seccion === "salones"
-                                        ? "setting-item active"
-                                        : "setting-item"
+                                        ? "admin-tab active"
+                                        : "admin-tab"
                                 }
                                 onClick={() =>
                                     setSeccion("salones")
@@ -670,18 +531,18 @@ function Administracion() {
                             <button
                                 className={
                                     seccion === "general"
-                                        ? "setting-item active"
-                                        : "setting-item"
+                                        ? "admin-tab active"
+                                        : "admin-tab"
                                 }
                                 onClick={() =>
                                     setSeccion("general")
                                 }
                             >
                                 <span>⚙</span>
-                                Configuración general
+                                Configuración
                             </button>
 
-                        </aside>
+                        </nav>
 
 
                         {/* =====================================
@@ -1144,6 +1005,17 @@ function Administracion() {
                                     </div>
 
                                 </>
+
+                            )}
+
+
+                            {/* =================================
+                                MATERIAS
+                            ================================== */}
+
+                            {seccion === "materias" && (
+
+                                <MateriasTab />
 
                             )}
 
@@ -1635,11 +1507,7 @@ function Administracion() {
 
                     </div>
 
-                </div>
-
-            </main>
-
-        </div>
+        </Layout>
 
     );
 

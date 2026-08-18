@@ -8,12 +8,16 @@ const {
     desactivarMateria
 } = require('../controllers/materiaController');
 
+const requireRole = require('../middleware/rolMiddleware');
+
 const router = express.Router();
 
 
 router.get('/', obtenerMaterias);
 
 router.get('/:id', obtenerMateriaPorId);
+
+router.use(requireRole('ADMINISTRADOR'));
 
 router.post('/', crearMateria);
 

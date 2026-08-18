@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
-import logo from "../assets/logo.jpg";
+import Layout from "../components/Layout";
 import "../styles/reportes.css";
 
 function Reportes() {
@@ -202,6 +202,11 @@ function Reportes() {
             registro.estado?.toLowerCase() === "retardo"
     ).length;
 
+    const pendientes = resultados.filter(
+        (registro) =>
+            registro.estado?.toLowerCase() === "pendiente"
+    ).length;
+
 
     /* =========================================
        NOMBRE DOCENTE
@@ -226,157 +231,11 @@ function Reportes() {
 
     return (
 
-        <div className="reportes-layout">
-
-
-            {/* =========================================
-                SIDEBAR
-            ========================================== */}
-
-            <aside className="sidebar">
-
-                <div className="sidebar-brand">
-
-                    <img
-                        src={logo}
-                        alt="Tecnológico Nacional de México"
-                    />
-
-                    <div>
-
-                        <strong>
-                            DSC Control
-                        </strong>
-
-                        <span>
-                            de Asistencias
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div className="user-profile">
-
-                    <div className="user-avatar">
-                        A
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Administrador
-                        </strong>
-
-                        <span>
-                            Administrador
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <nav className="sidebar-menu">
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href = "/dashboard"
-                        }
-                    >
-                        <span>▦</span>
-                        Dashboard
-                    </button>
-
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href = "/docentes"
-                        }
-                    >
-                        <span>♙</span>
-                        Docentes
-                    </button>
-
-
-                    <button
-                        className="menu-item"
-                        onClick={() =>
-                            window.location.href = "/materias"
-                        }
-                    >
-                        <span>▤</span>
-                        Materias
-                    </button>
-
-
-                    <button className="menu-item active">
-                        <span>▥</span>
-                        Reportes
-                    </button>
-
-
-                    <button className="menu-item">
-                        <span>▣</span>
-                        Horarios
-                    </button>
-
-
-                    <button className="menu-item">
-                        <span>⚙</span>
-                        Administración y Configuración
-                    </button>
-
-                </nav>
-
-
-                <div className="sidebar-version">
-                    v1.0
-                </div>
-
-            </aside>
-
+        <Layout titulo="Reportes">
 
             {/* =========================================
-                CONTENIDO PRINCIPAL
+                TITULO
             ========================================== */}
-
-            <main className="reportes-main">
-
-
-                {/* HEADER */}
-
-                <header className="dashboard-header">
-
-                    <h1>
-                        Reportes
-                    </h1>
-
-
-                    <div className="header-user">
-
-                        <div className="header-avatar">
-                            A
-                        </div>
-
-                        <span>
-                            Administrador
-                        </span>
-
-                    </div>
-
-                </header>
-
-
-                <div className="reportes-content">
-
-
-                    {/* =========================================
-                        TITULO
-                    ========================================== */}
 
                     <section className="page-title">
 
@@ -565,6 +424,10 @@ function Reportes() {
                                         Retardo
                                     </option>
 
+                                    <option value="Pendiente">
+                                        Pendiente
+                                    </option>
+
                                 </select>
 
                             </div>
@@ -696,6 +559,26 @@ function Reportes() {
 
                                     <strong>
                                         {retardos}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                            <div className="summary-card">
+
+                                <span className="summary-icon pendiente">
+                                    ...
+                                </span>
+
+                                <div>
+
+                                    <span>
+                                        Pendientes
+                                    </span>
+
+                                    <strong>
+                                        {pendientes}
                                     </strong>
 
                                 </div>
@@ -884,11 +767,7 @@ function Reportes() {
 
                     </section>
 
-                </div>
-
-            </main>
-
-        </div>
+        </Layout>
 
     );
 

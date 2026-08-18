@@ -8,11 +8,15 @@ const {
     desactivarAsignacion
 } = require('../controllers/asignacionController');
 
+const requireRole = require('../middleware/rolMiddleware');
+
 const router = express.Router();
 
 router.get('/', obtenerAsignaciones);
 
 router.get('/:id', obtenerAsignacionPorId);
+
+router.use(requireRole('ADMINISTRADOR'));
 
 router.post('/', crearAsignacion);
 

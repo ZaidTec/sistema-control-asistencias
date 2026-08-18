@@ -1,291 +1,3 @@
-/* =========================================
-   LAYOUT
-========================================= */
-
-.reportes-layout {
-    min-height: 100vh;
-
-    display: flex;
-
-    background: #f6f8fc;
-
-    color: #202631;
-}
-
-
-/* =========================================
-   SIDEBAR
-========================================= */
-
-.reportes-layout .sidebar {
-    width: 220px;
-
-    min-height: 100vh;
-
-    position: fixed;
-
-    left: 0;
-    top: 0;
-
-    display: flex;
-
-    flex-direction: column;
-
-    background: #edf4ff;
-
-    border-right: 1px solid #d9e1ee;
-
-    z-index: 10;
-}
-
-
-.reportes-layout .sidebar-brand {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 16px 14px;
-
-    border-bottom: 1px solid #dce4f0;
-}
-
-
-.reportes-layout .sidebar-brand img {
-    width: 34px;
-    height: 34px;
-
-    object-fit: contain;
-}
-
-
-.reportes-layout .sidebar-brand div {
-    display: flex;
-
-    flex-direction: column;
-}
-
-
-.reportes-layout .sidebar-brand strong {
-    color: #1454bd;
-
-    font-size: 14px;
-}
-
-
-.reportes-layout .sidebar-brand span {
-    color: #1454bd;
-
-    font-size: 13px;
-}
-
-
-/* =========================================
-   USUARIO
-========================================= */
-
-.reportes-layout .user-profile {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 20px 18px;
-
-    border-bottom: 1px solid #dce4f0;
-}
-
-
-.reportes-layout .user-avatar {
-    width: 34px;
-    height: 34px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #d4e2fb;
-
-    color: #1454bd;
-
-    font-weight: 700;
-}
-
-
-.reportes-layout .user-profile div:last-child {
-    display: flex;
-
-    flex-direction: column;
-}
-
-
-.reportes-layout .user-profile strong {
-    font-size: 12px;
-
-    color: #164b9f;
-}
-
-
-.reportes-layout .user-profile span {
-    font-size: 10px;
-
-    color: #777f8b;
-}
-
-
-/* =========================================
-   MENU
-========================================= */
-
-.reportes-layout .sidebar-menu {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 4px;
-
-    padding: 18px 8px;
-}
-
-
-.reportes-layout .menu-item {
-    width: 100%;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 11px;
-
-    padding: 10px;
-
-    border: none;
-
-    border-radius: 5px;
-
-    background: transparent;
-
-    color: #3e4754;
-
-    font-size: 12px;
-
-    text-align: left;
-
-    cursor: pointer;
-}
-
-
-.reportes-layout .menu-item:hover {
-    background: #dce9ff;
-
-    color: #1454bd;
-}
-
-
-.reportes-layout .menu-item.active {
-    background: #1459cc;
-
-    color: white;
-}
-
-
-.reportes-layout .menu-item span {
-    width: 17px;
-
-    text-align: center;
-}
-
-
-.reportes-layout .sidebar-version {
-    margin-top: auto;
-
-    padding: 14px 18px;
-
-    color: #8993a2;
-
-    font-size: 10px;
-}
-
-
-/* =========================================
-   MAIN
-========================================= */
-
-.reportes-main {
-    width: calc(100% - 220px);
-
-    margin-left: 220px;
-
-    min-height: 100vh;
-}
-
-
-.reportes-main .dashboard-header {
-    height: 44px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding: 0 18px;
-
-    background: white;
-
-    border-bottom: 1px solid #dfe4eb;
-}
-
-
-.reportes-main .dashboard-header h1 {
-    font-size: 14px;
-}
-
-
-.header-user {
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-
-    font-size: 10px;
-}
-
-
-.header-avatar {
-    width: 20px;
-    height: 20px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #f1f3f7;
-
-    border: 1px solid #d9dee7;
-
-    font-size: 9px;
-}
-
-
-/* =========================================
-   CONTENIDO
-========================================= */
-
-.reportes-content {
-    padding: 18px;
-}
-
-
 .page-title {
     display: flex;
 
@@ -550,7 +262,7 @@
     display: grid;
 
     grid-template-columns:
-        repeat(4, 1fr);
+        repeat(auto-fit, minmax(160px, 1fr));
 
     gap: 10px;
 
@@ -617,6 +329,13 @@
     background: #fff3d9;
 
     color: #bd7b00;
+}
+
+
+.summary-icon.pendiente {
+    background: #eceef1;
+
+    color: #5b6472;
 }
 
 
@@ -803,6 +522,13 @@
 }
 
 
+.estado-badge.pendiente {
+    background: #eceef1;
+
+    color: #5b6472;
+}
+
+
 /* =========================================
    ESTADOS VACÍOS
 ========================================= */
@@ -880,72 +606,6 @@
 
 @media (max-width: 750px) {
 
-    .reportes-layout .sidebar {
-        width: 62px;
-    }
-
-
-    .reportes-layout .sidebar-brand {
-        justify-content: center;
-
-        padding: 14px 5px;
-    }
-
-
-    .reportes-layout .sidebar-brand img {
-        width: 36px;
-        height: 36px;
-    }
-
-
-    .reportes-layout .sidebar-brand div {
-        display: none;
-    }
-
-
-    .reportes-layout .user-profile {
-        justify-content: center;
-
-        padding: 15px 5px;
-    }
-
-
-    .reportes-layout .user-profile div:last-child {
-        display: none;
-    }
-
-
-    .reportes-layout .sidebar-menu {
-        padding: 12px 5px;
-    }
-
-
-    .reportes-layout .menu-item {
-        justify-content: center;
-
-        padding: 11px 5px;
-
-        font-size: 0;
-    }
-
-
-    .reportes-layout .menu-item span {
-        font-size: 15px;
-    }
-
-
-    .reportes-main {
-        width: calc(100% - 62px);
-
-        margin-left: 62px;
-    }
-
-
-    .reportes-content {
-        padding: 10px;
-    }
-
-
     .filters-grid {
         grid-template-columns:
             repeat(2, 1fr);
@@ -999,19 +659,10 @@
 
 @media print {
 
-    .reportes-layout .sidebar,
-    .dashboard-header,
     .filters-card,
     .print-button,
     .filter-actions {
         display: none !important;
-    }
-
-
-    .reportes-main {
-        width: 100%;
-
-        margin: 0;
     }
 
 

@@ -4,6 +4,9 @@ require('dotenv').config();
 
 const app = express();
 
+const authMiddleware = require('./middleware/authMiddleware');
+
+const authRoutes = require('./routes/authRoutes');
 const docenteRoutes = require('./routes/docenteRoutes');
 const materiaRoutes = require('./routes/materiaRoutes');
 const grupoRoutes = require('./routes/grupoRoutes');
@@ -12,18 +15,24 @@ const periodoRoutes = require('./routes/periodoRoutes');
 const asignacionRoutes = require('./routes/asignacionRoutes');
 const sesionRoutes = require('./routes/sesionRoutes');
 const asistenciaRoutes = require('./routes/asistenciaRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const reporteRoutes = require('./routes/reporteRoutes');
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/docentes', docenteRoutes);
-app.use('/api/materias', materiaRoutes);
-app.use('/api/grupos', grupoRoutes);
-app.use('/api/salones', salonRoutes);
-app.use('/api/periodos', periodoRoutes);
-app.use('/api/asignaciones', asignacionRoutes);
-app.use('/api/sesiones', sesionRoutes);
-app.use('/api/asistencias', asistenciaRoutes);
+app.use('/api/auth', authRoutes);
+
+app.use('/api/docentes', authMiddleware, docenteRoutes);
+app.use('/api/materias', authMiddleware, materiaRoutes);
+app.use('/api/grupos', authMiddleware, grupoRoutes);
+app.use('/api/salones', authMiddleware, salonRoutes);
+app.use('/api/periodos', authMiddleware, periodoRoutes);
+app.use('/api/asignaciones', authMiddleware, asignacionRoutes);
+app.use('/api/sesiones', authMiddleware, sesionRoutes);
+app.use('/api/asistencias', authMiddleware, asistenciaRoutes);
+app.use('/api/usuarios', authMiddleware, usuarioRoutes);
+app.use('/api/reportes', authMiddleware, reporteRoutes);
 
 app.get('/', (req, res) => {
     res.json({

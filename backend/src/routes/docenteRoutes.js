@@ -8,12 +8,16 @@ const {
     desactivarDocente
 } = require('../controllers/docenteController');
 
+const requireRole = require('../middleware/rolMiddleware');
+
 const router = express.Router();
 
 
 router.get('/', obtenerDocentes);
 
 router.get('/:id', obtenerDocentePorId);
+
+router.use(requireRole('ADMINISTRADOR'));
 
 router.post('/', crearDocente);
 

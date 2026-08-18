@@ -1,5 +1,8 @@
 const pool = require('../config/database');
 
+const { generarSesionesDeAsignacion } =
+    require('./sesionController');
+
 
 // Obtener todas las asignaciones activas
 const obtenerAsignaciones = async (req, res) => {
@@ -329,7 +332,40 @@ const crearAsignacion = async (req, res) => {
         ]);
 
 
-        res.status(201).json(result.rows[0]);
+        /*
+         * GENERAR SESIONES DEL PERIODO
+         *
+         * Al crear el horario se generan automáticamente
+         * todas sus sesiones dentro del periodo escolar.
+         * Es idempotente: no crea duplicados.
+         */
+
+        let sesionesGeneradas = 0;
+
+        try {
+
+            const sesiones =
+                await generarSesionesDeAsignacion(
+                    result.rows[0].id
+                );
+
+            if (sesiones !== null) {
+                sesionesGeneradas = sesiones.length;
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Error al generar sesiones automáticamente:',
+                error
+            );
+        }
+
+
+        res.status(201).json({
+            ...result.rows[0],
+            sesiones_generadas: sesionesGeneradas
+        });
 
     } catch (error) {
 
@@ -535,7 +571,58 @@ const actualizarAsignacion = async (req, res) => {
         ]);
 
 
-        res.json(result.rows[0]);
+        /*
+         * RECALCULAR SESIONES DEL PERIODO
+         *
+         * Se eliminan las sesiones sin asistencia registrada
+         * y se vuelven a generar con el nuevo día/horario.
+         * Las sesiones que ya tienen asistencia se conservan
+         * como histórico.
+         */
+
+        let sesionesGeneradas = 0;
+
+        const client = await pool.connect();
+
+        try {
+
+            await client.query('BEGIN');
+
+            await client.query(`
+                DELETE FROM sesion_clase sc
+                WHERE sc.asignacion_id = $1
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM registro_asistencia ra
+                      WHERE ra.sesion_clase_id = sc.id
+                  );
+            `, [id]);
+
+            const sesiones =
+                await generarSesionesDeAsignacion(id, client);
+
+            if (sesiones !== null) {
+                sesionesGeneradas = sesiones.length;
+            }
+
+            await client.query('COMMIT');
+
+        } catch (error) {
+
+            await client.query('ROLLBACK');
+
+            throw error;
+
+        } finally {
+
+            client.release();
+        }
+
+
+        res.json({
+            ...result.rows[0],
+            sesiones_generadas: sesionesGeneradas
+        });
 
     } catch (error) {
 

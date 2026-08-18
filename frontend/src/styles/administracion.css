@@ -1,255 +1,3 @@
-/* =========================================
-   LAYOUT
-========================================= */
-
-.administracion-layout {
-    min-height: 100vh;
-    display: flex;
-    background: #f6f8fc;
-    color: #202631;
-}
-
-
-/* =========================================
-   SIDEBAR
-========================================= */
-
-.administracion-layout .sidebar {
-    width: 220px;
-    min-height: 100vh;
-
-    position: fixed;
-    left: 0;
-    top: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    background: #edf4ff;
-    border-right: 1px solid #d9e1ee;
-
-    z-index: 10;
-}
-
-
-.administracion-layout .sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    padding: 16px 14px;
-
-    border-bottom: 1px solid #dce4f0;
-}
-
-
-.administracion-layout .sidebar-brand img {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-}
-
-
-.administracion-layout .sidebar-brand div {
-    display: flex;
-    flex-direction: column;
-}
-
-
-.administracion-layout .sidebar-brand strong {
-    color: #1454bd;
-    font-size: 14px;
-}
-
-
-.administracion-layout .sidebar-brand span {
-    color: #1454bd;
-    font-size: 13px;
-}
-
-
-/* =========================================
-   PERFIL
-========================================= */
-
-.administracion-layout .user-profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    padding: 20px 18px;
-
-    border-bottom: 1px solid #dce4f0;
-}
-
-
-.administracion-layout .user-avatar {
-    width: 34px;
-    height: 34px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #d4e2fb;
-    color: #1454bd;
-
-    font-weight: 700;
-}
-
-
-.administracion-layout .user-profile div:last-child {
-    display: flex;
-    flex-direction: column;
-}
-
-
-.administracion-layout .user-profile strong {
-    font-size: 12px;
-    color: #164b9f;
-}
-
-
-.administracion-layout .user-profile span {
-    font-size: 10px;
-    color: #777f8b;
-}
-
-
-/* =========================================
-   MENU
-========================================= */
-
-.administracion-layout .sidebar-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    padding: 18px 8px;
-}
-
-
-.administracion-layout .menu-item {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    gap: 11px;
-
-    padding: 10px;
-
-    border: none;
-    border-radius: 5px;
-
-    background: transparent;
-
-    color: #3e4754;
-
-    font-size: 12px;
-    text-align: left;
-
-    cursor: pointer;
-}
-
-
-.administracion-layout .menu-item:hover {
-    background: #dce9ff;
-    color: #1454bd;
-}
-
-
-.administracion-layout .menu-item.active {
-    background: #1459cc;
-    color: white;
-}
-
-
-.administracion-layout .menu-item span {
-    width: 17px;
-    text-align: center;
-}
-
-
-.administracion-layout .sidebar-version {
-    margin-top: auto;
-
-    padding: 14px 18px;
-
-    color: #8993a2;
-    font-size: 10px;
-}
-
-
-/* =========================================
-   MAIN
-========================================= */
-
-.administracion-main {
-    width: calc(100% - 220px);
-    margin-left: 220px;
-
-    min-height: 100vh;
-}
-
-
-.administracion-main .dashboard-header {
-    height: 44px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 18px;
-
-    background: white;
-
-    border-bottom: 1px solid #dfe4eb;
-}
-
-
-.administracion-main .dashboard-header h1 {
-    font-size: 14px;
-}
-
-
-.header-user {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-
-    font-size: 10px;
-}
-
-
-.header-avatar {
-    width: 20px;
-    height: 20px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #f1f3f7;
-
-    border: 1px solid #d9dee7;
-
-    font-size: 9px;
-}
-
-
-/* =========================================
-   CONTENIDO
-========================================= */
-
-.administracion-content {
-    padding: 18px;
-}
-
-
 .page-title {
     margin-bottom: 15px;
 }
@@ -312,7 +60,7 @@
 .admin-layout {
     display: grid;
 
-    grid-template-columns: 210px 1fr;
+    grid-template-columns: 1fr;
 
     gap: 15px;
 
@@ -320,26 +68,30 @@
 }
 
 
-.settings-menu {
+.admin-tabs {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    padding: 7px;
+
     background: white;
 
     border: 1px solid #dce1e9;
 
     border-radius: 6px;
-
-    padding: 7px;
 }
 
 
-.setting-item {
-    width: 100%;
-
+.admin-tab {
     display: flex;
     align-items: center;
 
-    gap: 9px;
+    gap: 8px;
 
-    padding: 10px;
+    padding: 9px 14px;
 
     border: none;
 
@@ -357,24 +109,22 @@
 }
 
 
-.setting-item:hover {
+.admin-tab:hover {
     background: #edf4ff;
 
     color: #1454bd;
 }
 
 
-.setting-item.active {
+.admin-tab.active {
     background: #1459cc;
 
     color: white;
 }
 
 
-.setting-item span {
-    width: 18px;
-
-    text-align: center;
+.admin-tab span {
+    font-size: 13px;
 }
 
 
@@ -874,14 +624,6 @@
     }
 
 
-    .settings-menu {
-        display: grid;
-
-        grid-template-columns:
-            repeat(3, 1fr);
-    }
-
-
     .rooms-grid {
         grid-template-columns:
             repeat(3, 1fr);
@@ -892,79 +634,9 @@
 
 @media (max-width: 650px) {
 
-    .administracion-layout .sidebar {
-        width: 62px;
-    }
-
-
-    .administracion-layout .sidebar-brand {
-        justify-content: center;
-
-        padding: 14px 5px;
-    }
-
-
-    .administracion-layout .sidebar-brand img {
-        width: 36px;
-        height: 36px;
-    }
-
-
-    .administracion-layout .sidebar-brand div {
-        display: none;
-    }
-
-
-    .administracion-layout .user-profile {
-        justify-content: center;
-
-        padding: 15px 5px;
-    }
-
-
-    .administracion-layout .user-profile div:last-child {
-        display: none;
-    }
-
-
-    .administracion-layout .sidebar-menu {
-        padding: 12px 5px;
-    }
-
-
-    .administracion-layout .menu-item {
-        justify-content: center;
-
-        padding: 11px 5px;
-
-        font-size: 0;
-    }
-
-
-    .administracion-layout .menu-item span {
-        font-size: 15px;
-    }
-
-
-    .administracion-main {
-        width: calc(100% - 62px);
-
-        margin-left: 62px;
-    }
-
-
-    .administracion-content {
-        padding: 10px;
-    }
-
 
     .admin-form {
         grid-template-columns: 1fr;
-    }
-
-
-    .settings-menu {
-        grid-template-columns: 1fr 1fr;
     }
 
 
@@ -977,11 +649,6 @@
 
 
 @media (max-width: 420px) {
-
-    .settings-menu {
-        grid-template-columns: 1fr;
-    }
-
 
     .rooms-grid {
         grid-template-columns: 1fr;

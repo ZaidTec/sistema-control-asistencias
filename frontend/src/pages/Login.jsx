@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.jpg";
 
 function Login() {
@@ -11,6 +13,9 @@ function Login() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
 
     const handleSubmit = async (e) => {
@@ -30,33 +35,17 @@ function Login() {
 
             setLoading(true);
 
-            /*
-             * Cuando tengamos listo el login del backend,
-             * aquí se hará la petición.
-             *
-             * Ejemplo:
-             *
-             * const response = await api.post("/auth/login", {
-             *     username,
-             *     password
-             * });
-             *
-             * localStorage.setItem(
-             *     "token",
-             *     response.data.token
-             * );
-             */
+            const response = await api.post("/auth/login", {
+                username,
+                password
+            });
 
-            console.log("Usuario:", username);
-            console.log("Contraseña:", password);
-            console.log("Recordarme:", remember);
+            login(
+                response.data.token,
+                response.data.usuario
+            );
 
-            /*
-             * Temporalmente simulamos un inicio de sesión
-             * para poder trabajar en el diseño.
-             */
-
-            alert("Formulario enviado correctamente.");
+            navigate("/dashboard");
 
         } catch (error) {
 

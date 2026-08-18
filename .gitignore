@@ -1,3 +1,8 @@
 node_modules/
 .env
 .env.local
+.agents
+AGENTS.md 
+README.md
+report.md
+skills-lock.json

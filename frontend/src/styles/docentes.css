@@ -1,289 +1,3 @@
-/* =========================================
-   LAYOUT
-========================================= */
-
-.docentes-layout {
-    min-height: 100vh;
-
-    display: flex;
-
-    background: #f6f8fc;
-
-    color: #202631;
-}
-
-
-/* =========================================
-   SIDEBAR
-========================================= */
-
-.docentes-layout .sidebar {
-    width: 220px;
-
-    min-height: 100vh;
-
-    position: fixed;
-
-    left: 0;
-    top: 0;
-
-    display: flex;
-
-    flex-direction: column;
-
-    background: #edf4ff;
-
-    border-right: 1px solid #d9e1ee;
-
-    z-index: 10;
-}
-
-
-.docentes-layout .sidebar-brand {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 16px 14px;
-
-    border-bottom: 1px solid #dce4f0;
-}
-
-
-.docentes-layout .sidebar-brand img {
-    width: 34px;
-    height: 34px;
-
-    object-fit: contain;
-}
-
-
-.docentes-layout .sidebar-brand div {
-    display: flex;
-
-    flex-direction: column;
-}
-
-
-.docentes-layout .sidebar-brand strong {
-    color: #1454bd;
-
-    font-size: 14px;
-}
-
-
-.docentes-layout .sidebar-brand span {
-    color: #1454bd;
-
-    font-size: 13px;
-}
-
-
-/* Usuario */
-
-.docentes-layout .user-profile {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 20px 18px;
-
-    border-bottom: 1px solid #dce4f0;
-}
-
-
-.docentes-layout .user-avatar {
-    width: 34px;
-    height: 34px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #d4e2fb;
-
-    color: #1454bd;
-
-    font-weight: 700;
-}
-
-
-.docentes-layout .user-profile div:last-child {
-    display: flex;
-
-    flex-direction: column;
-}
-
-
-.docentes-layout .user-profile strong {
-    font-size: 12px;
-
-    color: #164b9f;
-}
-
-
-.docentes-layout .user-profile span {
-    font-size: 10px;
-
-    color: #777f8b;
-}
-
-
-/* Menú */
-
-.docentes-layout .sidebar-menu {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 4px;
-
-    padding: 18px 8px;
-}
-
-
-.docentes-layout .menu-item {
-    width: 100%;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 11px;
-
-    padding: 10px;
-
-    border: none;
-
-    border-radius: 5px;
-
-    background: transparent;
-
-    color: #3e4754;
-
-    font-size: 12px;
-
-    text-align: left;
-
-    cursor: pointer;
-}
-
-
-.docentes-layout .menu-item:hover {
-    background: #dce9ff;
-
-    color: #1454bd;
-}
-
-
-.docentes-layout .menu-item.active {
-    background: #1459cc;
-
-    color: white;
-}
-
-
-.docentes-layout .menu-item span {
-    width: 17px;
-
-    text-align: center;
-}
-
-
-.docentes-layout .sidebar-version {
-    margin-top: auto;
-
-    padding: 14px 18px;
-
-    color: #8993a2;
-
-    font-size: 10px;
-}
-
-
-/* =========================================
-   CONTENIDO
-========================================= */
-
-.docentes-main {
-    width: calc(100% - 220px);
-
-    margin-left: 220px;
-
-    min-height: 100vh;
-}
-
-
-/* Header */
-
-.docentes-main .dashboard-header {
-    height: 44px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding: 0 18px;
-
-    background: white;
-
-    border-bottom: 1px solid #dfe4eb;
-}
-
-
-.docentes-main .dashboard-header h1 {
-    font-size: 14px;
-}
-
-
-.header-user {
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-
-    font-size: 10px;
-}
-
-
-.header-avatar {
-    width: 20px;
-    height: 20px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #f1f3f7;
-
-    border: 1px solid #d9dee7;
-
-    font-size: 9px;
-}
-
-
-/* =========================================
-   CONTENIDO DOCENTES
-========================================= */
-
-.docentes-content {
-    padding: 18px;
-}
-
-
 /* Título */
 
 .page-title {
@@ -584,6 +298,124 @@
 
 .delete-button:hover {
     background: #ffdada;
+}
+
+
+.assign-button,
+.more-button {
+    width: 27px;
+    height: 27px;
+
+    border: none;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    font-size: 12px;
+}
+
+
+.assign-button {
+    background: #e8f0ff;
+
+    color: #1459cc;
+}
+
+
+.assign-button:hover {
+    background: #d7e5ff;
+}
+
+
+.more-button {
+    background: #f1f3f6;
+
+    color: #4d5663;
+}
+
+
+.more-button:hover {
+    background: #e4e8ee;
+}
+
+
+.row-dropdown {
+    position: relative;
+}
+
+
+.dropdown-backdrop {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 90;
+}
+
+
+.dropdown-menu {
+    position: absolute;
+
+    right: 0;
+
+    top: calc(100% + 4px);
+
+    z-index: 95;
+
+    min-width: 130px;
+
+    padding: 5px;
+
+    background: white;
+
+    border: 1px solid #dce1e9;
+
+    border-radius: 5px;
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+
+.dropdown-menu button {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 10px;
+
+    border: none;
+
+    border-radius: 4px;
+
+    background: transparent;
+
+    color: #4d5663;
+
+    font-size: 9px;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+
+.dropdown-menu button:hover {
+    background: #f1f5fb;
+
+    color: #1459cc;
+}
+
+
+.dropdown-menu .dropdown-delete:hover {
+    background: #fff0f0;
+
+    color: #c62d2d;
 }
 
 
@@ -915,78 +747,6 @@
 ========================================= */
 
 @media (max-width: 750px) {
-
-    .docentes-layout .sidebar {
-        width: 62px;
-    }
-
-
-    .docentes-layout .sidebar-brand {
-        justify-content: center;
-
-        padding: 14px 5px;
-    }
-
-
-    .docentes-layout .sidebar-brand img {
-        width: 36px;
-        height: 36px;
-    }
-
-
-    .docentes-layout .sidebar-brand div {
-        display: none;
-    }
-
-
-    .docentes-layout .user-profile {
-        justify-content: center;
-
-        padding: 15px 5px;
-    }
-
-
-    .docentes-layout .user-profile div:last-child {
-        display: none;
-    }
-
-
-    .docentes-layout .sidebar-menu {
-        padding: 12px 5px;
-    }
-
-
-    .docentes-layout .menu-item {
-        justify-content: center;
-
-        padding: 11px 5px;
-
-        font-size: 0;
-    }
-
-
-    .docentes-layout .menu-item span {
-        font-size: 15px;
-    }
-
-
-    .docentes-layout .sidebar-version {
-        text-align: center;
-
-        padding: 10px 3px;
-    }
-
-
-    .docentes-main {
-        width: calc(100% - 62px);
-
-        margin-left: 62px;
-    }
-
-
-    .docentes-content {
-        padding: 10px;
-    }
 
 
     .page-title {
