@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { ToastProvider } from "./components/ui/Toast.jsx";
 import "./styles/tokens.css";
 import "./styles/ui.css";
+import "./styles/monitor.css";
 import "./index.css";
 
 

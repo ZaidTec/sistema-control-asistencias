@@ -25,10 +25,12 @@ function Sidebar({ colapsado, onToggle }) {
         ...(esAdmin
             ? [
                 { path: "/docentes", icon: Users, label: "Docentes" },
-                { path: "/horarios", icon: CalendarDays, label: "Horarios" },
+                { path: "/horarios", icon: CalendarDays, label: "Calendario" },
                 { path: "/administracion", icon: Settings, label: "Administración" }
             ]
-            : [])
+            : [
+                { path: "/monitor", icon: CalendarDays, label: "Calendario" }
+            ])
     ];
 
     return (
@@ -94,16 +96,15 @@ function Sidebar({ colapsado, onToggle }) {
                     );
                 })}
 
-            </nav>
+                <button
+                    className="menu-item sidebar-logout"
+                    onClick={logout}
+                >
+                    <LogOut size={18} strokeWidth={2} />
+                    Cerrar Sesión
+                </button>
 
-            <button
-                className="menu-item"
-                onClick={logout}
-                style={{ marginTop: "auto" }}
-            >
-                <LogOut size={18} strokeWidth={2} />
-                Cerrar Sesión
-            </button>
+            </nav>
 
             <div className="sidebar-version">v1.0</div>
 

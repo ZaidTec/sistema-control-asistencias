@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Docentes from "./pages/Docentes";
 import Reportes from "./pages/Reportes";
 import Horarios from "./pages/Horarios";
+import Monitor from "./pages/Monitor";
 import Administracion from "./pages/Administracion";
 
 function App() {
@@ -44,6 +45,15 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <Reportes />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/monitor"
+                        element={
+                            <ProtectedRoute>
+                                <Monitor />
                             </ProtectedRoute>
                         }
                     />

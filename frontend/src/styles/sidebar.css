@@ -4,7 +4,8 @@
 
 .sidebar {
     width: 220px;
-    min-height: 100vh;
+    height: 100vh;
+    min-height: 0;
 
     position: fixed;
     left: 0;
@@ -15,6 +16,8 @@
 
     background: var(--primary-50);
     border-right: 1px solid var(--primary-200);
+
+    overflow: hidden;
 
     z-index: 30;
 
@@ -175,6 +178,8 @@
 
     flex: 1;
 
+    min-height: 0;
+
     padding: 12px 10px;
 
     overflow-y: auto;
@@ -247,7 +252,10 @@
 ========================================= */
 
 .sidebar-version {
-    margin-top: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
     padding: 14px 18px;
 
@@ -395,4 +403,9 @@
         padding: 10px 3px;
     }
 
+}
+
+
+.sidebar-logout {
+    margin-top: 14px;
 }

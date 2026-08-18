@@ -431,774 +431,371 @@ function Horarios() {
 
     return (
 
-        <Layout titulo="Horarios">
+        <Layout titulo="Calendario">
 
-            {/* TITULO */}
+            <section className="page-title">
 
-                    <section className="page-title">
+                <div>
+
+                    <h2>
+                        Calendario de horarios
+                    </h2>
+
+                    <p>
+                        Consulta la programación semanal de clases.
+                    </p>
+
+                </div>
+
+            </section>
+
+            <div className="horarios-grid">
+
+                <section className="horario-form-card">
+
+                    <div className="card-header">
 
                         <div>
 
-                            <h2>
-                                Calendario de horarios
-                            </h2>
+                            <h3>
+                                Registrar horario
+                            </h3>
 
                             <p>
-                                Registra y administra las clases
-                                asignadas a los docentes.
+                                Agrega la programación semanal de clases.
                             </p>
 
                         </div>
 
-                    </section>
+                    </div>
 
 
-                    {/* MENSAJES */}
+                    <form
+                        className="horario-form"
+                        onSubmit={registrarHorario}
+                    >
 
-                    {error && (
+                        <div className="form-group">
 
-                        <div className="horarios-error">
-                            {error}
-                        </div>
+                            <label htmlFor="periodo_id">Periodo</label>
 
-                    )}
-
-
-                    {mensaje && (
-
-                        <div className="horarios-success">
-                            {mensaje}
-                        </div>
-
-                    )}
-
-
-                    <div className="horarios-grid">
-
-
-                        {/* =====================================
-                            FORMULARIO
-                        ====================================== */}
-
-                        <section className="horario-form-card">
-
-                            <div className="card-header">
-
-                                <h3>
-                                    Registrar horario
-                                </h3>
-
-                                <p>
-                                    Asigna una clase a un docente.
-                                </p>
-
-                            </div>
-
-
-                            <form
-                                onSubmit={registrarHorario}
-                                className="horario-form"
+                            <select
+                                id="periodo_id"
+                                name="periodo_id"
+                                value={formulario.periodo_id}
+                                onChange={manejarCambio}
                             >
 
+                                <option value="">Selecciona un periodo</option>
 
-                                {/* PERIODO */}
+                                {periodos.map((periodo) => (
 
-                                <div className="form-group">
-
-                                    <label>
-                                        Periodo escolar
-                                    </label>
-
-                                    <select
-                                        name="periodo_id"
-                                        value={
-                                            formulario.periodo_id
-                                        }
-                                        onChange={
-                                            manejarCambio
-                                        }
+                                    <option
+                                        key={periodo.id}
+                                        value={periodo.id}
                                     >
 
-                                        <option value="">
-                                            Seleccionar periodo
-                                        </option>
+                                        {periodo.nombre}
 
-                                        {periodos.map(
-                                            periodo => (
+                                    </option>
 
-                                                <option
-                                                    key={
-                                                        periodo.id
-                                                    }
-                                                    value={
-                                                        periodo.id
-                                                    }
-                                                >
-                                                    {
-                                                        periodo.nombre
-                                                    }
-                                                </option>
+                                ))}
 
-                                            )
-                                        )}
+                            </select>
 
-                                    </select>
-
-                                </div>
+                        </div>
 
 
-                                {/* DOCENTE */}
+                        <div className="form-group">
 
-                                <div className="form-group">
+                            <label htmlFor="docente_id">Docente</label>
 
-                                    <label>
-                                        Docente
-                                    </label>
+                            <select
+                                id="docente_id"
+                                name="docente_id"
+                                value={formulario.docente_id}
+                                onChange={manejarCambio}
+                            >
 
-                                    <select
-                                        name="docente_id"
-                                        value={
-                                            formulario.docente_id
-                                        }
-                                        onChange={
-                                            manejarCambio
-                                        }
+                                <option value="">Selecciona un docente</option>
+
+                                {docentes.map((docente) => (
+
+                                    <option
+                                        key={docente.id}
+                                        value={docente.id}
                                     >
 
-                                        <option value="">
-                                            Seleccionar docente
-                                        </option>
+                                        {obtenerNombreDocente(docente)}
 
-                                        {docentes.map(
-                                            docente => (
+                                    </option>
 
-                                                <option
-                                                    key={
-                                                        docente.id
-                                                    }
-                                                    value={
-                                                        docente.id
-                                                    }
-                                                >
-                                                    {
-                                                        obtenerNombreDocente(
-                                                            docente
-                                                        )
-                                                    }
-                                                </option>
+                                ))}
 
-                                            )
-                                        )}
+                            </select>
 
-                                    </select>
-
-                                </div>
+                        </div>
 
 
-                                {/* MATERIA */}
+                        <div className="form-group">
 
-                                <div className="form-group">
+                            <label htmlFor="materia_id">Materia</label>
 
-                                    <label>
-                                        Materia
-                                    </label>
+                            <select
+                                id="materia_id"
+                                name="materia_id"
+                                value={formulario.materia_id}
+                                onChange={manejarCambio}
+                            >
 
-                                    <select
-                                        name="materia_id"
-                                        value={
-                                            formulario.materia_id
-                                        }
-                                        onChange={
-                                            manejarCambio
-                                        }
+                                <option value="">Selecciona una materia</option>
+
+                                {materias.map((materia) => (
+
+                                    <option
+                                        key={materia.id}
+                                        value={materia.id}
                                     >
 
-                                        <option value="">
-                                            Seleccionar materia
-                                        </option>
+                                        {materia.nombre}
 
-                                        {materias.map(
-                                            materia => (
+                                    </option>
 
-                                                <option
-                                                    key={
-                                                        materia.id
-                                                    }
-                                                    value={
-                                                        materia.id
-                                                    }
-                                                >
-                                                    {
-                                                        materia.clave
-                                                    }
-                                                    {" - "}
-                                                    {
-                                                        materia.nombre
-                                                    }
-                                                </option>
+                                ))}
 
-                                            )
-                                        )}
+                            </select>
 
-                                    </select>
-
-                                </div>
+                        </div>
 
 
-                                {/* GRUPO */}
+                        <div className="form-group">
 
-                                <div className="form-group">
+                            <label htmlFor="grupo_id">Grupo</label>
 
-                                    <label>
-                                        Grupo
-                                    </label>
+                            <select
+                                id="grupo_id"
+                                name="grupo_id"
+                                value={formulario.grupo_id}
+                                onChange={manejarCambio}
+                            >
 
-                                    <select
-                                        name="grupo_id"
-                                        value={
-                                            formulario.grupo_id
-                                        }
-                                        onChange={
-                                            manejarCambio
-                                        }
+                                <option value="">Selecciona un grupo</option>
+
+                                {grupos.map((grupo) => (
+
+                                    <option
+                                        key={grupo.id}
+                                        value={grupo.id}
                                     >
 
-                                        <option value="">
-                                            Seleccionar grupo
-                                        </option>
+                                        {grupo.clave}
 
-                                        {grupos.map(
-                                            grupo => (
+                                    </option>
 
-                                                <option
-                                                    key={
-                                                        grupo.id
-                                                    }
-                                                    value={
-                                                        grupo.id
-                                                    }
-                                                >
-                                                    {
-                                                        grupo.clave
-                                                    }
-                                                </option>
+                                ))}
 
-                                            )
-                                        )}
+                            </select>
 
-                                    </select>
-
-                                </div>
+                        </div>
 
 
-                                {/* SALON */}
+                        <div className="form-group">
 
-                                <div className="form-group">
+                            <label htmlFor="salon_id">Salón</label>
 
-                                    <label>
-                                        Salón
-                                    </label>
+                            <select
+                                id="salon_id"
+                                name="salon_id"
+                                value={formulario.salon_id}
+                                onChange={manejarCambio}
+                            >
 
-                                    <select
-                                        name="salon_id"
-                                        value={
-                                            formulario.salon_id
-                                        }
-                                        onChange={
-                                            manejarCambio
-                                        }
-                                        disabled={salones.length === 0}
+                                <option value="">Selecciona un salón</option>
+
+                                {salones.map((salon) => (
+
+                                    <option
+                                        key={salon.id}
+                                        value={salon.id}
                                     >
 
-                                        <option value="">
-                                            {salones.length > 0
-                                                ? "Seleccionar salón"
-                                                : "No hay salones registrados"}
-                                        </option>
+                                        Salón {salon.numero}
 
-                                        {salones.map(
-                                            salon => (
+                                    </option>
 
-                                                <option
-                                                    key={
-                                                        salon.id
-                                                    }
-                                                    value={
-                                                        salon.id
-                                                    }
-                                                >
-                                                    Salón{" "}
-                                                    {
-                                                        salon.numero
-                                                    }
-                                                </option>
+                                ))}
 
-                                            )
-                                        )}
+                            </select>
 
-                                    </select>
-
-                                </div>
+                        </div>
 
 
-                                {/* DIA */}
+                        <div className="form-group">
 
-                                <div className="form-group">
+                            <label htmlFor="dia_semana">Día</label>
 
-                                    <label>
-                                        Día
-                                    </label>
+                            <select
+                                id="dia_semana"
+                                name="dia_semana"
+                                value={formulario.dia_semana}
+                                onChange={manejarCambio}
+                            >
 
-                                    <select
-                                        name="dia_semana"
-                                        value={
-                                            formulario.dia_semana
-                                        }
-                                        onChange={
-                                            manejarCambio
-                                        }
+                                <option value="">Selecciona un día</option>
+
+                                {dias.map((dia) => (
+
+                                    <option
+                                        key={dia.id}
+                                        value={dia.id}
                                     >
 
-                                        <option value="">
-                                            Seleccionar día
-                                        </option>
+                                        {dia.nombre}
 
-                                        {dias.map(
-                                            dia => (
+                                    </option>
 
-                                                <option
-                                                    key={
-                                                        dia.id
-                                                    }
-                                                    value={
-                                                        dia.id
-                                                    }
-                                                >
-                                                    {
-                                                        dia.nombre
-                                                    }
-                                                </option>
+                                ))}
 
-                                            )
-                                        )}
+                            </select>
 
-                                    </select>
-
-                                </div>
+                        </div>
 
 
-                                <div className="time-grid">
+                        <div className="time-grid">
 
+                            <div className="form-group">
 
-                                    {/* HORA INICIO */}
+                                <label htmlFor="hora_inicio">Hora inicio</label>
 
-                                    <div className="form-group">
-
-                                        <label>
-                                            Hora inicio
-                                        </label>
-
-                                        <input
-                                            type="time"
-                                            name="hora_inicio"
-                                            value={
-                                                formulario.hora_inicio
-                                            }
-                                            onChange={
-                                                manejarCambio
-                                            }
-                                        />
-
-                                    </div>
-
-
-                                    {/* HORA FIN */}
-
-                                    <div className="form-group">
-
-                                        <label>
-                                            Hora fin
-                                        </label>
-
-                                        <input
-                                            type="time"
-                                            name="hora_fin"
-                                            value={
-                                                formulario.hora_fin
-                                            }
-                                            onChange={
-                                                manejarCambio
-                                            }
-                                        />
-
-                                    </div>
-
-                                </div>
-
-
-                                <button
-                                    type="submit"
-                                    className="save-button"
-                                    disabled={loading}
-                                >
-
-                                    {loading
-                                        ? "Guardando..."
-                                        : "+ Registrar horario"}
-
-                                </button>
-
-                            </form>
-
-                        </section>
-
-
-                        {/* =====================================
-                            CALENDARIO
-                        ====================================== */}
-
-                        <section className="calendar-card">
-
-                            <div className="card-header">
-
-                                <div>
-
-                                    <h3>
-                                        Calendario semanal
-                                    </h3>
-
-                                    <p>
-                                        Visualización de las clases
-                                        registradas.
-                                    </p>
-
-                                </div>
-
-
-                                <button
-                                    className="view-horarios-button"
-                                    onClick={() =>
-                                        setMostrarHorarios(true)
-                                    }
-                                >
-                                    <ClipboardList size={15} />
-                                    Ver horarios
-                                </button>
+                                <input
+                                    id="hora_inicio"
+                                    type="time"
+                                    name="hora_inicio"
+                                    value={formulario.hora_inicio}
+                                    onChange={manejarCambio}
+                                />
 
                             </div>
 
 
-                            <div className="calendar-container">
+                            <div className="form-group">
 
-                                {dias.map(
-                                    dia => (
+                                <label htmlFor="hora_fin">Hora fin</label>
 
-                                        <div
-                                            className="calendar-day"
-                                            key={dia.id}
-                                        >
-
-                                            <div className="calendar-day-title">
-
-                                                {dia.nombre}
-
-                                            </div>
-
-
-                                            <div className="calendar-day-content">
-
-                                                {obtenerHorariosDia(
-                                                    dia.id
-                                                ).length === 0 ? (
-
-                                                    <span className="no-class">
-                                                        Sin clases
-                                                    </span>
-
-                                                ) : (
-
-                                                    obtenerHorariosDia(
-                                                        dia.id
-                                                    ).map(
-                                                        horario => (
-
-                                                            <div
-                                                                className="class-block"
-                                                                key={
-                                                                    horario.id
-                                                                }
-                                                            >
-
-                                                                <div className="class-time">
-
-                                                                    {
-                                                                        horario.hora_inicio
-                                                                    }
-
-                                                                    {" - "}
-
-                                                                    {
-                                                                        horario.hora_fin
-                                                                    }
-
-                                                                </div>
-
-
-                                                                <strong>
-
-                                                                    {
-                                                                        horario.materia ||
-                                                                        "Materia"
-                                                                    }
-
-                                                                </strong>
-
-
-                                                                <span>
-
-                                                                    {
-                                                                        horario.docente ||
-                                                                        "Docente"
-                                                                    }
-
-                                                                </span>
-
-
-                                                                <span>
-
-                                                                    Grupo:{" "}
-                                                                    {
-                                                                        horario.grupo ||
-                                                                        "—"
-                                                                    }
-
-                                                                </span>
-
-
-                                                                <span>
-
-                                                                    Salón:{" "}
-                                                                    {
-                                                                        horario.salon ||
-                                                                        "—"
-                                                                    }
-
-                                                                </span>
-
-
-                                                                <button
-                                                                    className="delete-class"
-                                                                    onClick={() =>
-                                                                        setEliminarId(
-                                                                            horario.id
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Eliminar
-                                                                </button>
-
-                                                            </div>
-
-                                                        )
-                                                    )
-
-                                                )}
-
-                                            </div>
-
-                                        </div>
-
-                                    )
-                                )}
+                                <input
+                                    id="hora_fin"
+                                    type="time"
+                                    name="hora_fin"
+                                    value={formulario.hora_fin}
+                                    onChange={manejarCambio}
+                                />
 
                             </div>
 
-                        </section>
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            className="save-button"
+                            disabled={loading}
+                        >
+
+                            {loading ? "Guardando..." : "Guardar horario"}
+
+                        </button>
+
+                    </form>
+
+                </section>
+
+
+                <section className="calendar-card">
+
+                    <div className="card-header">
+
+                        <div>
+
+                            <h3>
+                                Calendario semanal
+                            </h3>
+
+                            <p>
+                                Visualización de las clases programadas.
+                            </p>
+
+                        </div>
 
                     </div>
 
 
-                    {/* =========================================
-                        MODAL HORARIOS POR DOCENTE
-                    ========================================== */}
+                    <div className="calendar-container">
 
-                    {mostrarHorarios && (
-
-                        <div
-                            className="modal-overlay"
-                            onClick={() =>
-                                setMostrarHorarios(false)
-                            }
-                        >
+                        {dias.map((dia) => (
 
                             <div
-                                className="horarios-modal"
-                                onClick={(e) =>
-                                    e.stopPropagation()
-                                }
+                                className="calendar-day"
+                                key={dia.id}
                             >
 
-                                <div className="modal-header">
-
-                                    <div>
-
-                                        <h2>
-                                            Horarios registrados
-                                        </h2>
-
-                                        <p>
-                                            Clases asignadas
-                                            agrupadas por docente.
-                                        </p>
-
-                                    </div>
-
-
-                                    <button
-                                        className="close-modal"
-                                        onClick={() =>
-                                            setMostrarHorarios(false)
-                                        }
-                                    >
-                                        ×
-                                    </button>
-
+                                <div className="calendar-day-title">
+                                    {dia.nombre}
                                 </div>
 
 
-                                <div className="horarios-modal-body">
+                                <div className="calendar-day-content">
 
-                                    {Object.keys(
-                                        agruparPorDocente()
-                                    ).length === 0 ? (
+                                    {obtenerHorariosDia(dia.id).length === 0 ? (
 
-                                        <div className="horarios-empty">
-                                            No hay horarios registrados.
-                                        </div>
+                                        <span className="no-class">
+                                            Sin clases
+                                        </span>
 
                                     ) : (
 
-                                        Object.entries(
-                                            agruparPorDocente()
-                                        ).map(
-                                            ([docente, lista]) => (
+                                        obtenerHorariosDia(dia.id).map((horario) => (
 
-                                                <div
-                                                    className="docente-group"
-                                                    key={docente}
-                                                >
+                                            <div
+                                                className="class-block"
+                                                key={horario.id}
+                                            >
 
-                                                    <div className="docente-group-header">
-
-                                                        <strong>
-                                                            <UserRound size={14} />
-                                                            {docente}
-                                                        </strong>
-
-                                                        <span>
-                                                            {lista.length}{" "}
-                                                            {lista.length === 1
-                                                                ? "clase"
-                                                                : "clases"}
-                                                        </span>
-
-                                                    </div>
-
-
-                                                    <table className="docente-group-table">
-
-                                                        <thead>
-
-                                                            <tr>
-
-                                                                <th scope="col">
-                                                                    Materia
-                                                                </th>
-
-                                                                <th scope="col">
-                                                                    Grupo
-                                                                </th>
-
-                                                                <th scope="col">
-                                                                    Salón
-                                                                </th>
-
-                                                                <th scope="col">
-                                                                    Día
-                                                                </th>
-
-                                                                <th scope="col">
-                                                                    Horario
-                                                                </th>
-
-                                                            </tr>
-
-                                                        </thead>
-
-
-                                                        <tbody>
-
-                                                            {lista.map(
-                                                                horario => (
-
-                                                                    <tr
-                                                                        key={
-                                                                            horario.id
-                                                                        }
-                                                                    >
-
-                                                                        <td>
-                                                                            {
-                                                                                horario.materia ||
-                                                                                "—"
-                                                                            }
-                                                                        </td>
-
-                                                                        <td>
-                                                                            {
-                                                                                horario.grupo ||
-                                                                                "—"
-                                                                            }
-                                                                        </td>
-
-                                                                        <td>
-                                                                            {
-                                                                                horario.salon ||
-                                                                                "—"
-                                                                            }
-                                                                        </td>
-
-                                                                        <td>
-                                                                            {
-                                                                                obtenerDia(
-                                                                                    horario.dia_semana
-                                                                                )
-                                                                            }
-                                                                        </td>
-
-                                                                        <td>
-                                                                            {
-                                                                                horario.hora_inicio
-                                                                            }
-                                                                            {" - "}
-                                                                            {
-                                                                                horario.hora_fin
-                                                                            }
-                                                                        </td>
-
-                                                                    </tr>
-
-                                                                )
-                                                            )}
-
-                                                        </tbody>
-
-                                                    </table>
-
+                                                <div className="class-time">
+                                                    {horario.hora_inicio} - {horario.hora_fin}
                                                 </div>
 
-                                            )
-                                        )
+
+                                                <strong>
+                                                    {horario.materia || "Materia"}
+                                                </strong>
+
+
+                                                <span>
+                                                    {horario.docente || "Docente"}
+                                                </span>
+
+
+                                                <span>
+                                                    Grupo: {horario.grupo || "—"}
+                                                </span>
+
+
+                                                <span>
+                                                    Salón: {horario.salon || "—"}
+                                                </span>
+
+
+                                                <button
+                                                    type="button"
+                                                    className="delete-class"
+                                                    onClick={() => setEliminarId(horario.id)}
+                                                >
+                                                    Eliminar
+                                                </button>
+
+                                            </div>
+
+                                        ))
 
                                     )}
 
@@ -1206,16 +803,22 @@ function Horarios() {
 
                             </div>
 
-                        </div>
+                        ))}
 
-                    )}
+                    </div>
+
+                </section>
+
+            </div>
 
             <ConfirmDialog
-                open={eliminarId !== null}
+                open={Boolean(eliminarId)}
                 title="Eliminar horario"
-                message="¿Seguro que deseas eliminar este horario?"
-                onCancel={() => setEliminarId(null)}
+                message="¿Deseas eliminar este horario del calendario?"
+                confirmLabel="Eliminar"
+                cancelLabel="Cancelar"
                 onConfirm={confirmarEliminar}
+                onCancel={() => setEliminarId(null)}
                 loading={eliminando}
             />
 
