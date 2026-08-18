@@ -1,12 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+    Search,
+    GraduationCap,
+    CalendarPlus,
+    MoreHorizontal,
+    Pencil,
+    Trash2
+} from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
+import EmptyState from "../components/ui/EmptyState";
+import { useToast } from "../components/ui/Toast";
 import "../styles/docentes.css";
 
 function Docentes() {
 
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [docentes, setDocentes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -20,6 +32,10 @@ function Docentes() {
     const [menuAbierto, setMenuAbierto] = useState(null);
 
     const [docenteSeleccionado, setDocenteSeleccionado] = useState(null);
+
+    const [eliminarId, setEliminarId] = useState(null);
+    const [eliminando, setEliminando] = useState(false);
+    const [guardando, setGuardando] = useState(false);
 
     const [formulario, setFormulario] = useState({
         nombre: "",
@@ -146,6 +162,8 @@ function Docentes() {
 
         e.preventDefault();
 
+        setGuardando(true);
+
         try {
 
             setError("");
@@ -168,6 +186,13 @@ function Docentes() {
 
             setMostrarModal(false);
 
+            toast(
+                "success",
+                modoEdicion
+                    ? "Docente actualizado correctamente."
+                    : "Docente registrado correctamente."
+            );
+
             await cargarDocentes();
 
         } catch (error) {
@@ -181,6 +206,10 @@ function Docentes() {
                 "No se pudo guardar el docente."
             );
 
+        } finally {
+
+            setGuardando(false);
+
         }
 
     };
@@ -190,21 +219,23 @@ function Docentes() {
        ELIMINAR DOCENTE
     ========================================= */
 
-    const eliminarDocente = async (id) => {
+    const confirmarEliminar = async () => {
 
-        const confirmar = window.confirm(
-            "¿Seguro que deseas eliminar este docente?"
-        );
-
-        if (!confirmar) {
+        if (!eliminarId) {
             return;
         }
+
+        setEliminando(true);
 
         try {
 
             await api.delete(
-                `/docentes/${id}`
+                `/docentes/${eliminarId}`
             );
+
+            setEliminarId(null);
+
+            toast("success", "Docente eliminado correctamente.");
 
             await cargarDocentes();
 
@@ -218,6 +249,10 @@ function Docentes() {
             setError(
                 "No se pudo eliminar el docente."
             );
+
+        } finally {
+
+            setEliminando(false);
 
         }
 
@@ -289,7 +324,7 @@ function Docentes() {
                         <div className="search-container">
 
                             <span className="search-icon">
-                                🔍
+                                <Search size={15} />
                             </span>
 
                             <input
@@ -327,21 +362,11 @@ function Docentes() {
 
                         ) : docentesFiltrados.length === 0 ? (
 
-                            <div className="docentes-empty">
-
-                                <span>
-                                    👨‍🏫
-                                </span>
-
-                                <strong>
-                                    No hay docentes registrados
-                                </strong>
-
-                                <p>
-                                    Agrega un docente para comenzar.
-                                </p>
-
-                            </div>
+                            <EmptyState
+                                icon={GraduationCap}
+                                title="No hay docentes registrados"
+                                text="Agrega un docente para comenzar."
+                            />
 
                         ) : (
 
@@ -353,35 +378,35 @@ function Docentes() {
 
                                         <tr>
 
-                                            <th>
+                                            <th scope="col">
                                                 #
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Nombre
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 RFC
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Teléfono
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Correo personal
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Correo institucional
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Estado
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Acciones
                                             </th>
 
@@ -479,7 +504,7 @@ function Docentes() {
                                                                     )
                                                                 }
                                                             >
-                                                                📅
+                                                                <CalendarPlus size={15} />
                                                             </button>
 
 
@@ -497,7 +522,7 @@ function Docentes() {
                                                                         )
                                                                     }
                                                                 >
-                                                                    ⋯
+                                                                    <MoreHorizontal size={15} />
                                                                 </button>
 
 
@@ -526,23 +551,25 @@ function Docentes() {
                                                                                     );
                                                                                 }}
                                                                             >
-                                                                                ✎ Editar
+                                                                                <Pencil size={14} />
+                                                                                Editar
                                                                             </button>
 
 
-                                                                            <button
-                                                                                className="dropdown-delete"
-                                                                                onClick={() => {
-                                                                                    setMenuAbierto(
-                                                                                        null
-                                                                                    );
-                                                                                    eliminarDocente(
-                                                                                        docente.id
-                                                                                    );
-                                                                                }}
-                                                                            >
-                                                                                🗑 Eliminar
-                                                                            </button>
+<button
+                                                                className="dropdown-delete"
+                                                                onClick={() => {
+                                                                    setMenuAbierto(
+                                                                        null
+                                                                    );
+                                                                    setEliminarId(
+                                                                        docente.id
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <Trash2 size={14} />
+                                                                Eliminar
+                                                            </button>
 
                                                                         </div>
                                                                     </>
@@ -812,10 +839,13 @@ function Docentes() {
                                 <button
                                     type="submit"
                                     className="save-button"
+                                    disabled={guardando}
                                 >
-                                    {modoEdicion
-                                        ? "Guardar cambios"
-                                        : "Registrar docente"}
+                                    {guardando
+                                        ? "Guardando..."
+                                        : (modoEdicion
+                                            ? "Guardar cambios"
+                                            : "Registrar docente")}
                                 </button>
 
                             </div>
@@ -827,6 +857,15 @@ function Docentes() {
                 </div>
 
             )}
+
+            <ConfirmDialog
+                open={eliminarId !== null}
+                title="Eliminar docente"
+                message="¿Seguro que deseas eliminar este docente?"
+                onCancel={() => setEliminarId(null)}
+                onConfirm={confirmarEliminar}
+                loading={eliminando}
+            />
 
         </Layout>
 

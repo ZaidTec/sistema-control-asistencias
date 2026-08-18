@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
+import {
+    Printer,
+    Search,
+    ClipboardList,
+    CheckCircle2,
+    XCircle,
+    Clock,
+    Minus,
+    BarChart3
+} from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
+import EmptyState from "../components/ui/EmptyState";
 import "../styles/reportes.css";
 
 function Reportes() {
@@ -11,7 +22,6 @@ function Reportes() {
     const [resultados, setResultados] = useState([]);
 
     const [loading, setLoading] = useState(false);
-    const [cargandoCatalogos, setCargandoCatalogos] = useState(true);
 
     const [error, setError] = useState("");
 
@@ -37,7 +47,6 @@ function Reportes() {
 
         try {
 
-            setCargandoCatalogos(true);
             setError("");
 
             const [periodosResponse, docentesResponse] =
@@ -59,10 +68,6 @@ function Reportes() {
             setError(
                 "No se pudieron cargar los periodos o docentes."
             );
-
-        } finally {
-
-            setCargandoCatalogos(false);
 
         }
 
@@ -258,7 +263,8 @@ function Reportes() {
                             onClick={imprimirReporte}
                             disabled={resultados.length === 0}
                         >
-                            🖨 Imprimir reporte
+                            <Printer size={15} />
+                            Imprimir reporte
                         </button>
 
                     </section>
@@ -454,7 +460,7 @@ function Reportes() {
 
                                 {loading
                                     ? "Buscando..."
-                                    : "🔍 Buscar"}
+                                    : <><Search size={15} /> Buscar</>}
 
                             </button>
 
@@ -485,7 +491,7 @@ function Reportes() {
                             <div className="summary-card">
 
                                 <span className="summary-icon total">
-                                    📋
+                                    <ClipboardList size={16} />
                                 </span>
 
                                 <div>
@@ -506,7 +512,7 @@ function Reportes() {
                             <div className="summary-card">
 
                                 <span className="summary-icon presente">
-                                    ✓
+                                    <CheckCircle2 size={16} />
                                 </span>
 
                                 <div>
@@ -527,7 +533,7 @@ function Reportes() {
                             <div className="summary-card">
 
                                 <span className="summary-icon ausente">
-                                    !
+                                    <XCircle size={16} />
                                 </span>
 
                                 <div>
@@ -548,7 +554,7 @@ function Reportes() {
                             <div className="summary-card">
 
                                 <span className="summary-icon retardo">
-                                    ◷
+                                    <Clock size={16} />
                                 </span>
 
                                 <div>
@@ -568,7 +574,7 @@ function Reportes() {
                             <div className="summary-card">
 
                                 <span className="summary-icon pendiente">
-                                    ...
+                                    <Minus size={16} />
                                 </span>
 
                                 <div>
@@ -631,22 +637,11 @@ function Reportes() {
 
                         ) : resultados.length === 0 ? (
 
-                            <div className="reportes-empty">
-
-                                <span>
-                                    📊
-                                </span>
-
-                                <strong>
-                                    No hay resultados
-                                </strong>
-
-                                <p>
-                                    Selecciona los filtros y presiona
-                                    "Buscar" para consultar las asistencias.
-                                </p>
-
-                            </div>
+                            <EmptyState
+                                icon={BarChart3}
+                                title="No hay resultados"
+                                text={'Selecciona los filtros y presiona "Buscar" para consultar las asistencias.'}
+                            />
 
                         ) : (
 
@@ -658,35 +653,35 @@ function Reportes() {
 
                                         <tr>
 
-                                            <th>
+                                            <th scope="col">
                                                 Fecha
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Docente
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Materia
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Grupo
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Salón
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Horario
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Estado
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Observaciones
                                             </th>
 
@@ -745,7 +740,7 @@ function Reportes() {
 
                                                     </td>
 
-                                                    <td className="observaciones">
+                                                    <td className="observaciones" title={registro.observaciones || ""}>
 
                                                         {registro.observaciones
                                                             || "—"}

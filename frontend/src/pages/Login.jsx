@@ -1,15 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { User, Lock, Eye, EyeOff, HelpCircle } from "lucide-react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../components/ui/Toast";
 import logo from "../assets/logo.jpg";
 
 function Login() {
 
-    const [username, setUsername] = useState("");
+    const toast = useToast();
+
+    const [username, setUsername] = useState(
+        () => localStorage.getItem("dsc_remember_user") || ""
+    );
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [remember, setRemember] = useState(false);
+    const [remember, setRemember] = useState(
+        () => localStorage.getItem("dsc_remember_user") !== null
+    );
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -44,6 +52,21 @@ function Login() {
                 response.data.token,
                 response.data.usuario
             );
+
+            if (remember) {
+
+                localStorage.setItem(
+                    "dsc_remember_user",
+                    username
+                );
+
+            } else {
+
+                localStorage.removeItem(
+                    "dsc_remember_user"
+                );
+
+            }
 
             navigate("/dashboard");
 
@@ -136,7 +159,7 @@ function Login() {
                                 <div className="input-container">
 
                                     <span className="input-icon">
-                                        ✉
+                                        <User size={15} />
                                     </span>
 
                                     <input
@@ -166,7 +189,7 @@ function Login() {
                                 <div className="input-container">
 
                                     <span className="input-icon">
-                                        🔒
+                                        <Lock size={15} />
                                     </span>
 
                                     <input
@@ -196,7 +219,7 @@ function Login() {
                                                 : "Mostrar contraseña"
                                         }
                                     >
-                                        {showPassword ? "◉" : "◌"}
+                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
 
                                 </div>
@@ -229,7 +252,8 @@ function Login() {
                                     type="button"
                                     className="forgot-button"
                                     onClick={() =>
-                                        alert(
+                                        toast(
+                                            "info",
                                             "La recuperación de contraseña se agregará posteriormente."
                                         )
                                     }
@@ -273,9 +297,7 @@ function Login() {
 
                         <div className="login-help">
 
-                            <span>
-                                ?
-                            </span>
+                            <HelpCircle size={14} />
 
                             <p>
                                 ¿Necesita ayuda para acceder?

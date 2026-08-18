@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
+import { Search, BookOpen, Pencil, Trash2 } from "lucide-react";
 import api from "../../services/api";
+import ConfirmDialog from "../ui/ConfirmDialog";
+import EmptyState from "../ui/EmptyState";
+import { useToast } from "../ui/Toast";
 import "../../styles/materias.css";
 
 function MateriasTab() {
+
+    const toast = useToast();
 
     const [materias, setMaterias] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,6 +20,10 @@ function MateriasTab() {
     const [modoEdicion, setModoEdicion] = useState(false);
 
     const [materiaSeleccionada, setMateriaSeleccionada] = useState(null);
+
+    const [eliminarId, setEliminarId] = useState(null);
+    const [eliminando, setEliminando] = useState(false);
+    const [guardando, setGuardando] = useState(false);
 
     const [formulario, setFormulario] = useState({
         clave: "",
@@ -125,6 +135,8 @@ function MateriasTab() {
 
         e.preventDefault();
 
+        setGuardando(true);
+
         try {
 
             setError("");
@@ -147,6 +159,13 @@ function MateriasTab() {
 
             setMostrarModal(false);
 
+            toast(
+                "success",
+                modoEdicion
+                    ? "Materia actualizada correctamente."
+                    : "Materia registrada correctamente."
+            );
+
             await cargarMaterias();
 
         } catch (error) {
@@ -160,6 +179,10 @@ function MateriasTab() {
                 "No se pudo guardar la materia."
             );
 
+        } finally {
+
+            setGuardando(false);
+
         }
 
     };
@@ -169,21 +192,23 @@ function MateriasTab() {
        ELIMINAR MATERIA
     ========================================= */
 
-    const eliminarMateria = async (id) => {
+    const confirmarEliminar = async () => {
 
-        const confirmar = window.confirm(
-            "¿Seguro que deseas eliminar esta materia?"
-        );
-
-        if (!confirmar) {
+        if (!eliminarId) {
             return;
         }
+
+        setEliminando(true);
 
         try {
 
             await api.delete(
-                `/materias/${id}`
+                `/materias/${eliminarId}`
             );
+
+            setEliminarId(null);
+
+            toast("success", "Materia eliminada correctamente.");
 
             await cargarMaterias();
 
@@ -197,6 +222,10 @@ function MateriasTab() {
             setError(
                 "No se pudo eliminar la materia."
             );
+
+        } finally {
+
+            setEliminando(false);
 
         }
 
@@ -258,7 +287,7 @@ function MateriasTab() {
                 <div className="search-container">
 
                     <span className="search-icon">
-                        🔍
+                        <Search size={15} />
                     </span>
 
                     <input
@@ -290,21 +319,11 @@ function MateriasTab() {
 
                 ) : materiasFiltradas.length === 0 ? (
 
-                    <div className="materias-empty">
-
-                        <span>
-                            📚
-                        </span>
-
-                        <strong>
-                            No hay materias registradas
-                        </strong>
-
-                        <p>
-                            Agrega una materia para comenzar.
-                        </p>
-
-                    </div>
+                    <EmptyState
+                        icon={BookOpen}
+                        title="No hay materias registradas"
+                        text="Agrega una materia para comenzar."
+                    />
 
                 ) : (
 
@@ -316,23 +335,23 @@ function MateriasTab() {
 
                                 <tr>
 
-                                    <th>
+                                    <th scope="col">
                                         #
                                     </th>
 
-                                    <th>
+                                    <th scope="col">
                                         Clave
                                     </th>
 
-                                    <th>
+                                    <th scope="col">
                                         Nombre de la materia
                                     </th>
 
-                                    <th>
+                                    <th scope="col">
                                         Estado
                                     </th>
 
-                                    <th>
+                                    <th scope="col">
                                         Acciones
                                     </th>
 
@@ -369,7 +388,7 @@ function MateriasTab() {
                                                 <div className="materia-name">
 
                                                     <div className="materia-icon">
-                                                        📚
+                                                        <BookOpen size={16} />
                                                     </div>
 
                                                     <strong>
@@ -413,7 +432,7 @@ function MateriasTab() {
                                                             )
                                                         }
                                                     >
-                                                        ✎
+                                                        <Pencil size={14} />
                                                     </button>
 
 
@@ -421,12 +440,12 @@ function MateriasTab() {
                                                         className="delete-button"
                                                         title="Eliminar"
                                                         onClick={() =>
-                                                            eliminarMateria(
+                                                            setEliminarId(
                                                                 materia.id
                                                             )
                                                         }
                                                     >
-                                                        🗑
+                                                        <Trash2 size={14} />
                                                     </button>
 
                                                 </div>
@@ -602,12 +621,13 @@ function MateriasTab() {
                                 <button
                                     type="submit"
                                     className="save-button"
+                                    disabled={guardando}
                                 >
-
-                                    {modoEdicion
-                                        ? "Guardar cambios"
-                                        : "Registrar materia"}
-
+                                    {guardando
+                                        ? "Guardando..."
+                                        : (modoEdicion
+                                            ? "Guardar cambios"
+                                            : "Registrar materia")}
                                 </button>
 
                             </div>
@@ -619,6 +639,15 @@ function MateriasTab() {
                 </div>
 
             )}
+
+            <ConfirmDialog
+                open={eliminarId !== null}
+                title="Eliminar materia"
+                message="¿Seguro que deseas eliminar esta materia?"
+                onCancel={() => setEliminarId(null)}
+                onConfirm={confirmarEliminar}
+                loading={eliminando}
+            />
 
         </div>
     );

@@ -1,5 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import {
+    LayoutDashboard,
+    ClipboardList,
+    Users,
+    CalendarDays,
+    Settings,
+    LogOut,
+    ChevronLeft,
+    ChevronRight
+} from "lucide-react";
 import logo from "../assets/logo.jpg";
 
 function Sidebar({ colapsado, onToggle }) {
@@ -10,13 +20,13 @@ function Sidebar({ colapsado, onToggle }) {
     const esAdmin = usuario?.rol === "ADMINISTRADOR";
 
     const menuItems = [
-        { path: "/dashboard", icon: "▦", label: "Dashboard" },
-        { path: "/reportes", icon: "▥", label: "Reportes" },
+        { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { path: "/reportes", icon: ClipboardList, label: "Reportes" },
         ...(esAdmin
             ? [
-                { path: "/docentes", icon: "♙", label: "Docentes" },
-                { path: "/horarios", icon: "▣", label: "Horarios" },
-                { path: "/administracion", icon: "⚙", label: "Administración" }
+                { path: "/docentes", icon: Users, label: "Docentes" },
+                { path: "/horarios", icon: CalendarDays, label: "Horarios" },
+                { path: "/administracion", icon: Settings, label: "Administración" }
             ]
             : [])
     ];
@@ -43,7 +53,7 @@ function Sidebar({ colapsado, onToggle }) {
                     title={colapsado ? "Expandir menú" : "Colapsar menú"}
                     onClick={onToggle}
                 >
-                    {colapsado ? "▶" : "◀"}
+                    {colapsado ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
                 </button>
 
             </div>
@@ -63,24 +73,26 @@ function Sidebar({ colapsado, onToggle }) {
 
             <nav className="sidebar-menu">
 
-                {menuItems.map((item) => (
+                {menuItems.map((item) => {
+                    const Icon = item.icon;
 
-                    <Link
-                        key={item.path}
-                        to={item.path}
-                        className={
-                            `menu-item${
-                                location.pathname === item.path
-                                    ? " active"
-                                    : ""
-                            }`
-                        }
-                    >
-                        <span>{item.icon}</span>
-                        {item.label}
-                    </Link>
-
-                ))}
+                    return (
+                        <Link
+                            key={item.path}
+                            to={item.path}
+                            className={
+                                `menu-item${
+                                    location.pathname === item.path
+                                        ? " active"
+                                        : ""
+                                }`
+                            }
+                        >
+                            <Icon size={18} strokeWidth={2} />
+                            {item.label}
+                        </Link>
+                    );
+                })}
 
             </nav>
 
@@ -89,7 +101,7 @@ function Sidebar({ colapsado, onToggle }) {
                 onClick={logout}
                 style={{ marginTop: "auto" }}
             >
-                <span>⏻</span>
+                <LogOut size={18} strokeWidth={2} />
                 Cerrar Sesión
             </button>
 

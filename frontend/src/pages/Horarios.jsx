@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { ClipboardList, UserRound } from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
+import { useToast } from "../components/ui/Toast";
 import "../styles/horarios.css";
 
 function Horarios() {
 
     const [searchParams] = useSearchParams();
+
+    const toast = useToast();
 
     const [periodos, setPeriodos] = useState([]);
     const [docentes, setDocentes] = useState([]);
@@ -17,12 +22,14 @@ function Horarios() {
     const [horarios, setHorarios] = useState([]);
 
     const [loading, setLoading] = useState(false);
-    const [cargandoDatos, setCargandoDatos] = useState(true);
 
     const [error, setError] = useState("");
     const [mensaje, setMensaje] = useState("");
 
     const [mostrarHorarios, setMostrarHorarios] = useState(false);
+
+    const [eliminarId, setEliminarId] = useState(null);
+    const [eliminando, setEliminando] = useState(false);
 
     const [formulario, setFormulario] = useState({
         periodo_id: "",
@@ -75,7 +82,6 @@ function Horarios() {
 
         try {
 
-            setCargandoDatos(true);
             setError("");
 
             const [
@@ -109,10 +115,6 @@ function Horarios() {
                 "No se pudieron cargar los catálogos."
             );
 
-        } finally {
-
-            setCargandoDatos(false);
-
         }
 
     };
@@ -122,14 +124,7 @@ function Horarios() {
        CARGAR HORARIOS
     ========================================== */
 
-    useEffect(() => {
-
-        cargarHorarios();
-
-    }, [formulario.periodo_id]);
-
-
-    const cargarHorarios = async () => {
+    const cargarHorarios = useCallback(async () => {
 
         try {
 
@@ -156,7 +151,14 @@ function Horarios() {
 
         }
 
-    };
+    }, [formulario.periodo_id]);
+
+
+    useEffect(() => {
+
+        cargarHorarios();
+
+    }, [cargarHorarios]);
 
 
     /* =========================================
@@ -319,26 +321,23 @@ function Horarios() {
        ELIMINAR HORARIO
     ========================================== */
 
-    const eliminarHorario = async (id) => {
+    const confirmarEliminar = async () => {
 
-        const confirmar = window.confirm(
-            "¿Seguro que deseas eliminar este horario?"
-        );
-
-        if (!confirmar) {
+        if (!eliminarId) {
             return;
         }
 
+        setEliminando(true);
 
         try {
 
             await api.delete(
-                `/asignaciones/${id}`
+                `/asignaciones/${eliminarId}`
             );
 
-            setMensaje(
-                "Horario eliminado correctamente."
-            );
+            setEliminarId(null);
+
+            toast("success", "Horario eliminado correctamente.");
 
             cargarHorarios();
 
@@ -352,6 +351,10 @@ function Horarios() {
             setError(
                 "No se pudo eliminar el horario."
             );
+
+        } finally {
+
+            setEliminando(false);
 
         }
 
@@ -704,51 +707,34 @@ function Horarios() {
                                         onChange={
                                             manejarCambio
                                         }
+                                        disabled={salones.length === 0}
                                     >
 
                                         <option value="">
-                                            Seleccionar salón
+                                            {salones.length > 0
+                                                ? "Seleccionar salón"
+                                                : "No hay salones registrados"}
                                         </option>
 
-                                        {salones.length > 0
-                                            ? salones.map(
-                                                salon => (
+                                        {salones.map(
+                                            salon => (
 
-                                                    <option
-                                                        key={
-                                                            salon.id
-                                                        }
-                                                        value={
-                                                            salon.id
-                                                        }
-                                                    >
-                                                        Salón{" "}
-                                                        {
-                                                            salon.numero
-                                                        }
-                                                    </option>
+                                                <option
+                                                    key={
+                                                        salon.id
+                                                    }
+                                                    value={
+                                                        salon.id
+                                                    }
+                                                >
+                                                    Salón{" "}
+                                                    {
+                                                        salon.numero
+                                                    }
+                                                </option>
 
-                                                )
                                             )
-                                            : Array.from(
-                                                { length: 45 },
-                                                (_, i) => (
-
-                                                    <option
-                                                        key={
-                                                            i + 1
-                                                        }
-                                                        value={
-                                                            i + 1
-                                                        }
-                                                    >
-                                                        Salón{" "}
-                                                        {i + 1}
-                                                    </option>
-
-                                                )
-                                            )
-                                        }
+                                        )}
 
                                     </select>
 
@@ -895,7 +881,8 @@ function Horarios() {
                                         setMostrarHorarios(true)
                                     }
                                 >
-                                    📋 Ver horarios
+                                    <ClipboardList size={15} />
+                                    Ver horarios
                                 </button>
 
                             </div>
@@ -1002,7 +989,7 @@ function Horarios() {
                                                                 <button
                                                                     className="delete-class"
                                                                     onClick={() =>
-                                                                        eliminarHorario(
+                                                                        setEliminarId(
                                                                             horario.id
                                                                         )
                                                                     }
@@ -1104,7 +1091,8 @@ function Horarios() {
                                                     <div className="docente-group-header">
 
                                                         <strong>
-                                                            👤 {docente}
+                                                            <UserRound size={14} />
+                                                            {docente}
                                                         </strong>
 
                                                         <span>
@@ -1123,23 +1111,23 @@ function Horarios() {
 
                                                             <tr>
 
-                                                                <th>
+                                                                <th scope="col">
                                                                     Materia
                                                                 </th>
 
-                                                                <th>
+                                                                <th scope="col">
                                                                     Grupo
                                                                 </th>
 
-                                                                <th>
+                                                                <th scope="col">
                                                                     Salón
                                                                 </th>
 
-                                                                <th>
+                                                                <th scope="col">
                                                                     Día
                                                                 </th>
 
-                                                                <th>
+                                                                <th scope="col">
                                                                     Horario
                                                                 </th>
 
@@ -1221,6 +1209,15 @@ function Horarios() {
                         </div>
 
                     )}
+
+            <ConfirmDialog
+                open={eliminarId !== null}
+                title="Eliminar horario"
+                message="¿Seguro que deseas eliminar este horario?"
+                onCancel={() => setEliminarId(null)}
+                onConfirm={confirmarEliminar}
+                loading={eliminando}
+            />
 
         </Layout>
 

@@ -1,7 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+    CalendarCheck,
+    CheckCircle2,
+    Clock,
+    AlertTriangle,
+    CalendarOff,
+    MoreVertical,
+    NotebookPen,
+    AlertCircle,
+    X
+} from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
+import EmptyState from "../components/ui/EmptyState";
 import { useAuth } from "../context/AuthContext";
 import "../styles/dashboard.css";
 
@@ -13,6 +25,8 @@ function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [menuAbiertoId, setMenuAbiertoId] = useState(null);
+
+    const [horaActual, setHoraActual] = useState(new Date());
 
     const [sesionObservaciones, setSesionObservaciones] = useState(null);
     const [textoObservaciones, setTextoObservaciones] = useState("");
@@ -32,6 +46,30 @@ function Dashboard() {
 
     useEffect(() => {
 
+        const intervalo = setInterval(
+            () => setHoraActual(new Date()),
+            1000
+        );
+
+        return () => clearInterval(intervalo);
+
+    }, []);
+
+
+    useEffect(() => {
+
+        const intervalo = setInterval(
+            () => cargarDashboard(true),
+            60000
+        );
+
+        return () => clearInterval(intervalo);
+
+    }, []);
+
+
+    useEffect(() => {
+
         const cerrarMenu = () => setMenuAbiertoId(null);
 
         document.addEventListener("click", cerrarMenu);
@@ -44,11 +82,14 @@ function Dashboard() {
     }, []);
 
 
-    const cargarDashboard = async () => {
+    const cargarDashboard = async (silencioso = false) => {
 
         try {
 
-            setLoading(true);
+            if (!silencioso) {
+                setLoading(true);
+            }
+
             setError("");
 
             const response = await api.get("/sesiones/hoy");
@@ -65,7 +106,9 @@ function Dashboard() {
 
         } finally {
 
-            setLoading(false);
+            if (!silencioso) {
+                setLoading(false);
+            }
 
         }
 
@@ -271,7 +314,7 @@ function Dashboard() {
 
     const formatearFecha = () => {
 
-        return new Date().toLocaleDateString(
+        return horaActual.toLocaleDateString(
             "es-MX",
             {
                 weekday: "long",
@@ -344,7 +387,7 @@ function Dashboard() {
                             </div>
 
                             <span className="stat-icon blue">
-                                ▣
+                                <CalendarCheck size={18} />
                             </span>
 
                         </div>
@@ -365,7 +408,7 @@ function Dashboard() {
                             </div>
 
                             <span className="stat-icon green">
-                                ✓
+                                <CheckCircle2 size={18} />
                             </span>
 
                         </div>
@@ -386,7 +429,7 @@ function Dashboard() {
                             </div>
 
                             <span className="stat-icon orange">
-                                ◷
+                                <Clock size={18} />
                             </span>
 
                         </div>
@@ -407,7 +450,7 @@ function Dashboard() {
                             </div>
 
                             <span className="stat-icon red">
-                                ⚠
+                                <AlertTriangle size={18} />
                             </span>
 
                         </div>
@@ -436,7 +479,7 @@ function Dashboard() {
                             </div>
 
                             <strong className="current-time">
-                                {new Date().toLocaleTimeString(
+                                {horaActual.toLocaleTimeString(
                                     "es-MX",
                                     {
                                         hour: "2-digit",
@@ -465,17 +508,10 @@ function Dashboard() {
 
                         ) : sesiones.length === 0 ? (
 
-                            <div className="empty-state">
-
-                                <span>
-                                    📅
-                                </span>
-
-                                <p>
-                                    No hay clases programadas para hoy.
-                                </p>
-
-                            </div>
+                            <EmptyState
+                                icon={CalendarOff}
+                                title="No hay clases programadas para hoy"
+                            />
 
                         ) : (
 
@@ -487,31 +523,31 @@ function Dashboard() {
 
                                         <tr>
 
-                                            <th>
+                                            <th scope="col">
                                                 Salón
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Profesor
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Materia
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Horario
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Grupo
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Estado
                                             </th>
 
-                                            <th>
+                                            <th scope="col">
                                                 Acción
                                             </th>
 
@@ -629,7 +665,7 @@ function Dashboard() {
                                                                 );
                                                             }}
                                                         >
-                                                            ⋮
+                                                            <MoreVertical size={16} />
                                                         </button>
 
 
@@ -653,7 +689,8 @@ function Dashboard() {
                                                                         );
                                                                     }}
                                                                 >
-                                                                    📝 Agregar Observaciones
+                                                                    <NotebookPen size={15} />
+                                                                    Agregar Observaciones
                                                                 </button>
 
                                                             </div>
@@ -713,9 +750,7 @@ function Dashboard() {
 
                                 <div className="no-incidents">
 
-                                    <span>
-                                        ✓
-                                    </span>
+                                    <CheckCircle2 size={22} />
 
                                     <p>
                                         No hay incidencias registradas.
@@ -748,8 +783,8 @@ function Dashboard() {
                                             >
                                                 {sesion.asistencia_estado ===
                                                 "RETARDO"
-                                                    ? "◷"
-                                                    : "!"
+                                                    ? <Clock size={14} />
+                                                    : <AlertCircle size={14} />
                                                 }
                                             </div>
 
@@ -806,7 +841,7 @@ function Dashboard() {
                                 className="modal-close"
                                 onClick={cerrarObservaciones}
                             >
-                                ✕
+                                <X size={18} />
                             </button>
                         </div>
                         <div className="modal-body">

@@ -1,0 +1,342 @@
+/* =========================================
+   COMPONENTES UI COMPARTIDOS
+========================================= */
+
+/* ---------- Botones ---------- */
+
+.ui-button {
+    min-width: 100px;
+    height: 36px;
+    padding: 0 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition), opacity var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.ui-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.ui-button-primary {
+    background: var(--primary-600);
+    color: white;
+}
+
+.ui-button-primary:hover:not(:disabled) {
+    background: var(--primary-700);
+}
+
+.ui-button-ghost {
+    background: white;
+    border: 1px solid var(--neutral-200);
+    color: var(--neutral-600);
+}
+
+.ui-button-ghost:hover:not(:disabled) {
+    background: var(--neutral-50);
+}
+
+.ui-button-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.ui-button-danger:hover:not(:disabled) {
+    background: #a82727;
+}
+
+.ui-button-full {
+    width: 100%;
+}
+
+/* ---------- Modal ---------- */
+
+.ui-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 25, 40, 0.55);
+    animation: ui-fade-in 150ms ease;
+}
+
+.ui-modal {
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-modal);
+    animation: ui-modal-in 180ms ease;
+}
+
+.ui-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--neutral-100);
+}
+
+.ui-modal-header h2 {
+    margin: 0;
+    font-size: var(--fs-lg);
+    color: var(--neutral-800);
+}
+
+.ui-modal-header p {
+    margin: 5px 0 0;
+    font-size: var(--fs-sm);
+    color: var(--neutral-500);
+}
+
+.ui-modal-close {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--neutral-500);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ui-modal-close:hover {
+    background: var(--neutral-100);
+}
+
+.ui-modal-body {
+    padding: 20px;
+}
+
+.ui-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--neutral-100);
+}
+
+/* ---------- ConfirmDialog ---------- */
+
+.ui-confirm-message {
+    margin: 0 0 8px;
+    font-size: var(--fs-md);
+    color: var(--neutral-700);
+    line-height: 1.5;
+}
+
+.ui-confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+/* ---------- EmptyState ---------- */
+
+.ui-empty {
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+    color: var(--neutral-500);
+}
+
+.ui-empty strong {
+    color: var(--neutral-700);
+    font-size: var(--fs-md);
+}
+
+.ui-empty p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    max-width: 350px;
+}
+
+/* ---------- Toast ---------- */
+
+.ui-toast-container {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.ui-toast {
+    pointer-events: auto;
+    min-width: 260px;
+    max-width: 380px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: white;
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-dropdown);
+    font-size: var(--fs-sm);
+    color: var(--neutral-800);
+    animation: ui-toast-in 200ms ease;
+}
+
+.ui-toast span {
+    flex: 1;
+}
+
+.ui-toast.success {
+    border-left: 3px solid var(--success);
+}
+
+.ui-toast.success > svg {
+    color: var(--success);
+}
+
+.ui-toast.error {
+    border-left: 3px solid var(--danger);
+}
+
+.ui-toast.error > svg {
+    color: var(--danger);
+}
+
+.ui-toast.warning {
+    border-left: 3px solid var(--warning);
+}
+
+.ui-toast.warning > svg {
+    color: var(--warning);
+}
+
+.ui-toast.info {
+    border-left: 3px solid var(--primary-600);
+}
+
+.ui-toast.info > svg {
+    color: var(--primary-600);
+}
+
+.ui-toast-close {
+    border: none;
+    background: transparent;
+    color: var(--neutral-400);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+}
+
+.ui-toast-close:hover {
+    color: var(--neutral-600);
+}
+
+/* ---------- Badge ---------- */
+
+.ui-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    border-radius: var(--radius-full);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+}
+
+.ui-badge.success {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.ui-badge.danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+.ui-badge.warning {
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+.ui-badge.neutral {
+    background: var(--neutral-100);
+    color: var(--neutral-600);
+}
+
+/* ---------- Skeleton ---------- */
+
+.ui-skeleton {
+    display: inline-block;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+        90deg,
+        var(--neutral-100) 25%,
+        var(--neutral-50) 50%,
+        var(--neutral-100) 75%
+    );
+    background-size: 200% 100%;
+    animation: ui-skeleton 1.4s ease infinite;
+}
+
+/* ---------- Animaciones ---------- */
+
+@keyframes ui-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes ui-modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes ui-toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes ui-skeleton {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}

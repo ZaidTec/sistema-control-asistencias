@@ -5,25 +5,25 @@
 
     justify-content: space-between;
 
-    margin-bottom: 15px;
+    margin-bottom: var(--space-4);
 }
 
 
 .page-title h2 {
     margin: 0;
 
-    font-size: 17px;
+    font-size: var(--fs-xl);
 
-    color: #202631;
+    color: var(--neutral-800);
 }
 
 
 .page-title p {
     margin: 5px 0 0;
 
-    font-size: 10px;
+    font-size: var(--fs-sm);
 
-    color: #77818e;
+    color: var(--neutral-500);
 }
 
 
@@ -34,24 +34,26 @@
 .print-button {
     border: none;
 
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
 
-    background: #1459cc;
+    background: var(--primary-600);
 
     color: white;
 
     padding: 9px 15px;
 
-    font-size: 11px;
+    font-size: var(--fs-sm);
 
     font-weight: 600;
 
     cursor: pointer;
+
+    transition: background var(--transition);
 }
 
 
 .print-button:hover:not(:disabled) {
-    background: #0e48ac;
+    background: var(--primary-700);
 }
 
 
@@ -69,36 +71,38 @@
 .filters-card {
     background: white;
 
-    border: 1px solid #dce1e9;
+    border: 1px solid var(--neutral-200);
 
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
 
     padding: 16px;
 
-    margin-bottom: 15px;
+    margin-bottom: var(--space-4);
+
+    box-shadow: var(--shadow-sm);
 }
 
 
 .filters-title {
-    margin-bottom: 15px;
+    margin-bottom: var(--space-4);
 }
 
 
 .filters-title h3 {
     margin: 0;
 
-    font-size: 12px;
+    font-size: var(--fs-md);
 
-    color: #303743;
+    color: var(--neutral-700);
 }
 
 
 .filters-title p {
     margin: 4px 0 0;
 
-    font-size: 9px;
+    font-size: var(--fs-xs);
 
-    color: #7c8592;
+    color: var(--neutral-500);
 }
 
 
@@ -117,16 +121,16 @@
 
     flex-direction: column;
 
-    gap: 5px;
+    gap: 6px;
 }
 
 
 .filter-group label {
-    font-size: 9px;
+    font-size: var(--fs-xs);
 
     font-weight: 600;
 
-    color: #4b5562;
+    color: var(--neutral-600);
 }
 
 
@@ -134,32 +138,31 @@
 .filter-group select {
     width: 100%;
 
-    height: 34px;
+    height: 36px;
 
     box-sizing: border-box;
 
-    border: 1px solid #d5dce6;
+    border: 1px solid var(--neutral-200);
 
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 
     padding: 0 8px;
 
     background: white;
 
-    color: #3f4854;
+    color: var(--neutral-800);
 
     outline: none;
 
-    font-size: 9px;
+    font-size: var(--fs-sm);
 }
 
 
 .filter-group input:focus,
 .filter-group select:focus {
-    border-color: #1459cc;
+    border-color: var(--primary-600);
 
-    box-shadow:
-        0 0 0 2px rgba(20, 89, 204, 0.08);
+    box-shadow: var(--ring);
 }
 
 
@@ -178,19 +181,19 @@
 
     padding-top: 13px;
 
-    border-top: 1px solid #edf0f4;
+    border-top: 1px solid var(--neutral-100);
 }
 
 
 .clear-button,
 .search-button {
-    height: 32px;
+    height: 34px;
 
     padding: 0 14px;
 
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 
-    font-size: 10px;
+    font-size: var(--fs-sm);
 
     font-weight: 600;
 
@@ -201,28 +204,30 @@
 .clear-button {
     background: white;
 
-    border: 1px solid #d3d9e2;
+    border: 1px solid var(--neutral-200);
 
-    color: #626c78;
+    color: var(--neutral-600);
 }
 
 
 .clear-button:hover {
-    background: #f4f6f8;
+    background: var(--neutral-50);
 }
 
 
 .search-button {
-    background: #1459cc;
+    background: var(--primary-600);
 
     border: none;
 
     color: white;
+
+    transition: background var(--transition);
 }
 
 
 .search-button:hover:not(:disabled) {
-    background: #0e48ac;
+    background: var(--primary-700);
 }
 
 
@@ -238,19 +243,19 @@
 ========================================= */
 
 .reportes-error {
-    margin-bottom: 15px;
+    margin-bottom: var(--space-4);
 
     padding: 10px;
 
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 
-    background: #fff1f1;
+    background: var(--danger-bg);
 
-    border: 1px solid #f0c8c8;
+    border: 1px solid var(--danger-border);
 
-    color: #b52a2a;
+    color: var(--danger);
 
-    font-size: 10px;
+    font-size: var(--fs-sm);
 }
 
 
@@ -266,7 +271,7 @@
 
     gap: 10px;
 
-    margin-bottom: 15px;
+    margin-bottom: var(--space-4);
 }
 
 
@@ -279,63 +284,63 @@
 
     background: white;
 
-    border: 1px solid #dce1e9;
+    border: 1px solid var(--neutral-200);
 
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
 
-    padding: 12px;
+    padding: var(--space-3);
 }
 
 
 .summary-icon {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
 
     display: flex;
 
     align-items: center;
     justify-content: center;
 
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
 
-    font-size: 14px;
+    font-size: var(--fs-md);
 
     font-weight: 700;
 }
 
 
 .summary-icon.total {
-    background: #eaf1ff;
+    background: var(--primary-50);
 
-    color: #1459cc;
+    color: var(--primary-600);
 }
 
 
 .summary-icon.presente {
-    background: #def7ed;
+    background: var(--success-bg);
 
-    color: #119467;
+    color: var(--success);
 }
 
 
 .summary-icon.ausente {
-    background: #ffe9e9;
+    background: var(--danger-bg);
 
-    color: #c32d2d;
+    color: var(--danger);
 }
 
 
 .summary-icon.retardo {
-    background: #fff3d9;
+    background: var(--warning-bg);
 
-    color: #bd7b00;
+    color: var(--warning);
 }
 
 
 .summary-icon.pendiente {
-    background: #eceef1;
+    background: var(--neutral-100);
 
-    color: #5b6472;
+    color: var(--neutral-600);
 }
 
 
@@ -349,16 +354,16 @@
 
 
 .summary-card span:not(.summary-icon) {
-    color: #7c8591;
+    color: var(--neutral-500);
 
-    font-size: 8px;
+    font-size: var(--fs-xs);
 }
 
 
 .summary-card strong {
-    color: #303743;
+    color: var(--neutral-800);
 
-    font-size: 17px;
+    font-size: var(--fs-xl);
 }
 
 
@@ -369,11 +374,20 @@
 .reportes-card {
     background: white;
 
-    border: 1px solid #dce1e9;
+    border: 1px solid var(--neutral-200);
 
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
 
     overflow: hidden;
+
+    box-shadow: var(--shadow-sm);
+
+    transition: box-shadow var(--transition);
+}
+
+
+.reportes-card:hover {
+    box-shadow: var(--shadow-card);
 }
 
 
@@ -386,38 +400,38 @@
 
     padding: 14px;
 
-    border-bottom: 1px solid #e5e9ef;
+    border-bottom: 1px solid var(--neutral-100);
 }
 
 
 .reportes-card-header h3 {
     margin: 0;
 
-    font-size: 12px;
+    font-size: var(--fs-md);
 
-    color: #303743;
+    color: var(--neutral-700);
 }
 
 
 .reportes-card-header p {
     margin: 4px 0 0;
 
-    font-size: 9px;
+    font-size: var(--fs-xs);
 
-    color: #7c8592;
+    color: var(--neutral-500);
 }
 
 
 .results-count {
     padding: 5px 8px;
 
-    border-radius: 12px;
+    border-radius: var(--radius-full);
 
-    background: #edf3ff;
+    background: var(--primary-50);
 
-    color: #1459cc;
+    color: var(--primary-600);
 
-    font-size: 8px;
+    font-size: var(--fs-xs);
 
     font-weight: 700;
 }
@@ -435,12 +449,12 @@
 
     border-collapse: collapse;
 
-    font-size: 9px;
+    font-size: var(--fs-sm);
 }
 
 
 .reportes-table thead {
-    background: #f0f5fd;
+    background: var(--primary-50);
 }
 
 
@@ -449,9 +463,9 @@
 
     text-align: left;
 
-    color: #667181;
+    color: var(--neutral-500);
 
-    font-size: 8px;
+    font-size: var(--fs-xs);
 
     font-weight: 700;
 
@@ -462,16 +476,16 @@
 .reportes-table td {
     padding: 10px;
 
-    border-top: 1px solid #edf0f4;
+    border-top: 1px solid var(--neutral-100);
 
-    color: #505966;
+    color: var(--neutral-600);
 
     white-space: nowrap;
 }
 
 
 .reportes-table tbody tr:hover {
-    background: #fafbfd;
+    background: var(--neutral-50);
 }
 
 
@@ -491,41 +505,41 @@
 .estado-badge {
     display: inline-flex;
 
-    padding: 4px 8px;
+    padding: 5px 9px;
 
-    border-radius: 12px;
+    border-radius: var(--radius-full);
 
-    font-size: 8px;
+    font-size: var(--fs-xs);
 
     font-weight: 700;
 }
 
 
 .estado-badge.presente {
-    background: #d8f8eb;
+    background: var(--success-bg);
 
-    color: #129363;
+    color: var(--success);
 }
 
 
 .estado-badge.ausente {
-    background: #ffe3e3;
+    background: var(--danger-bg);
 
-    color: #c52f2f;
+    color: var(--danger);
 }
 
 
 .estado-badge.retardo {
-    background: #fff0ce;
+    background: var(--warning-bg);
 
-    color: #a96e00;
+    color: var(--warning);
 }
 
 
 .estado-badge.pendiente {
-    background: #eceef1;
+    background: var(--neutral-100);
 
-    color: #5b6472;
+    color: var(--neutral-600);
 }
 
 
@@ -538,9 +552,9 @@
 
     text-align: center;
 
-    color: #707a88;
+    color: var(--neutral-500);
 
-    font-size: 10px;
+    font-size: var(--fs-sm);
 }
 
 
@@ -557,19 +571,14 @@
 
     text-align: center;
 
-    color: #727c89;
-}
-
-
-.reportes-empty span {
-    font-size: 28px;
+    color: var(--neutral-500);
 }
 
 
 .reportes-empty strong {
-    color: #3b434f;
+    color: var(--neutral-700);
 
-    font-size: 12px;
+    font-size: var(--fs-md);
 }
 
 
@@ -578,7 +587,7 @@
 
     margin: 0;
 
-    font-size: 9px;
+    font-size: var(--fs-sm);
 
     line-height: 1.5;
 }
@@ -691,7 +700,7 @@
 
 
     .reportes-table {
-        font-size: 8px;
+        font-size: var(--fs-2xs);
     }
 
 

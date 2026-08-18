@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import App from "./App.jsx";
+import { ToastProvider } from "./components/ui/Toast.jsx";
+import "./styles/tokens.css";
+import "./styles/ui.css";
 import "./index.css";
 
 
@@ -11,7 +14,11 @@ ReactDOM.createRoot(
 
     <React.StrictMode>
 
-        <App />
+        <ToastProvider>
+
+            <App />
+
+        </ToastProvider>
 
     </React.StrictMode>
 

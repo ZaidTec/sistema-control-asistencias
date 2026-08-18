@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
+import {
+    Users,
+    CalendarDays,
+    BookOpen,
+    UsersRound,
+    Building2,
+    Settings
+} from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
 import MateriasTab from "../components/admin/MateriasTab";
+import EmptyState from "../components/ui/EmptyState";
 import "../styles/administracion.css";
 
 function Administracion() {
@@ -13,7 +22,6 @@ function Administracion() {
     const [grupos, setGrupos] = useState([]);
     const [salones, setSalones] = useState([]);
 
-    const [cargando, setCargando] = useState(false);
     const [mensaje, setMensaje] = useState("");
     const [error, setError] = useState("");
 
@@ -48,7 +56,6 @@ function Administracion() {
 
         try {
 
-            setCargando(true);
             setError("");
 
             const resultados = await Promise.allSettled([
@@ -81,10 +88,6 @@ function Administracion() {
             setError(
                 "No se pudo cargar la información."
             );
-
-        } finally {
-
-            setCargando(false);
 
         }
 
@@ -463,7 +466,7 @@ function Administracion() {
                                     setSeccion("usuarios")
                                 }
                             >
-                                <span>👤</span>
+                                <Users size={16} />
                                 Usuarios
                             </button>
 
@@ -478,7 +481,7 @@ function Administracion() {
                                     setSeccion("periodos")
                                 }
                             >
-                                <span>📅</span>
+                                <CalendarDays size={16} />
                                 Periodos escolares
                             </button>
 
@@ -493,7 +496,7 @@ function Administracion() {
                                     setSeccion("materias")
                                 }
                             >
-                                <span>📚</span>
+                                <BookOpen size={16} />
                                 Materias
                             </button>
 
@@ -508,7 +511,7 @@ function Administracion() {
                                     setSeccion("grupos")
                                 }
                             >
-                                <span>👥</span>
+                                <UsersRound size={16} />
                                 Grupos
                             </button>
 
@@ -523,7 +526,7 @@ function Administracion() {
                                     setSeccion("salones")
                                 }
                             >
-                                <span>🏫</span>
+                                <Building2 size={16} />
                                 Salones
                             </button>
 
@@ -538,7 +541,7 @@ function Administracion() {
                                     setSeccion("general")
                                 }
                             >
-                                <span>⚙</span>
+                                <Settings size={16} />
                                 Configuración
                             </button>
 
@@ -673,19 +676,19 @@ function Administracion() {
 
                                                 <tr>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Usuario
                                                     </th>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Rol
                                                     </th>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Estado
                                                     </th>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Acción
                                                     </th>
 
@@ -908,19 +911,19 @@ function Administracion() {
 
                                                 <tr>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Periodo
                                                     </th>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Inicio
                                                     </th>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Fin
                                                     </th>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Estado
                                                     </th>
 
@@ -1116,15 +1119,15 @@ function Administracion() {
 
                                                 <tr>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Grupo
                                                     </th>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Semestre
                                                     </th>
 
-                                                    <th>
+                                                    <th scope="col">
                                                         Estado
                                                     </th>
 
@@ -1240,36 +1243,12 @@ function Administracion() {
                                     <div className="rooms-grid">
 
                                         {salones.length === 0
-                                            ? Array.from(
-                                                { length: 45 },
-                                                (_, index) => (
-
-                                                    <div
-                                                        className="room-card"
-                                                        key={
-                                                            index + 1
-                                                        }
-                                                    >
-
-                                                        <div className="room-number">
-                                                            {index + 1}
-                                                        </div>
-
-                                                        <div>
-
-                                                            <strong>
-                                                                Salón {index + 1}
-                                                            </strong>
-
-                                                            <span className="status active">
-                                                                Disponible
-                                                            </span>
-
-                                                        </div>
-
-                                                    </div>
-
-                                                )
+                                            ? (
+                                                <EmptyState
+                                                    icon={Building2}
+                                                    title="No hay salones registrados"
+                                                    text="Los salones se configuran desde la sección de Salones."
+                                                />
                                             )
                                             : salones.map(
                                                 salon => (
