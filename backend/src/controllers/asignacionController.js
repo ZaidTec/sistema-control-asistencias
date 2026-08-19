@@ -393,6 +393,12 @@ const crearAsignacionesMasivas = async (req, res) => {
         await client.query('BEGIN');
         const creadas = [];
 
+        const seSuperponen = (primera, segunda) => (
+            primera.dia_semana === segunda.dia_semana &&
+            primera.hora_inicio < segunda.hora_fin &&
+            primera.hora_fin > segunda.hora_inicio
+        );
+
         for (let indice = 0; indice < clases.length; indice += 1) {
             const clase = clases[indice];
             const { materia_id, grupo_id, salon_id, dia_semana, hora_inicio, hora_fin } = clase;
@@ -409,12 +415,29 @@ const crearAsignacionesMasivas = async (req, res) => {
                 throw Object.assign(new Error('La hora de inicio debe ser menor que la hora de fin'), { status: 400, indice });
             }
 
+            for (let anterior = 0; anterior < indice; anterior += 1) {
+                const claseAnterior = clases[anterior];
+
+                if (!seSuperponen(clase, claseAnterior)) {
+                    continue;
+                }
+
+                if (Number(clase.salon_id) === Number(claseAnterior.salon_id)) {
+                    throw Object.assign(new Error(`El salón está repetido con la fila ${anterior + 1} en ese horario`), { status: 409, indice });
+                }
+
+                if (Number(clase.grupo_id) === Number(claseAnterior.grupo_id)) {
+                    throw Object.assign(new Error(`El grupo está repetido con la fila ${anterior + 1} en ese horario`), { status: 409, indice });
+                }
+
+                throw Object.assign(new Error(`El docente está repetido con la fila ${anterior + 1} en ese horario`), { status: 409, indice });
+            }
+
             const conflicto = await client.query(`
-                SELECT CASE
-                    WHEN salon_id = $3 THEN 'El salón ya está ocupado en ese horario'
-                    WHEN docente_id = $2 THEN 'El docente ya tiene una clase en ese horario'
-                    WHEN grupo_id = $4 THEN 'El grupo ya tiene una clase en ese horario'
-                END AS mensaje
+                SELECT
+                    CASE WHEN salon_id = $3 THEN 'El salón ya está ocupado en ese horario' END AS conflicto_salon,
+                    CASE WHEN docente_id = $2 THEN 'El docente ya tiene una clase en ese horario' END AS conflicto_docente,
+                    CASE WHEN grupo_id = $4 THEN 'El grupo ya tiene una clase en ese horario' END AS conflicto_grupo
                 FROM asignacion_clase
                 WHERE periodo_id = $1
                   AND dia_semana = $5
@@ -426,7 +449,12 @@ const crearAsignacionesMasivas = async (req, res) => {
             `, [periodo_id, docente_id, salon_id, grupo_id, dia_semana, hora_inicio, hora_fin]);
 
             if (conflicto.rows.length > 0) {
-                throw Object.assign(new Error(conflicto.rows[0].mensaje), { status: 409, indice });
+                const conflictoEncontrado = conflicto.rows[0];
+                const mensajeConflicto = conflictoEncontrado.conflicto_salon
+                    || conflictoEncontrado.conflicto_docente
+                    || conflictoEncontrado.conflicto_grupo;
+
+                throw Object.assign(new Error(mensajeConflicto), { status: 409, indice });
             }
 
             const result = await client.query(`
