@@ -35,6 +35,11 @@
 }
 
 
+.dashboard-card:has(.estado-control) {
+    overflow: visible;
+}
+
+
 .stat-card:hover {
     box-shadow: var(--shadow-card);
 
@@ -171,7 +176,7 @@
 .table-container {
     width: 100%;
 
-    overflow-x: auto;
+    overflow: visible;
 }
 
 
@@ -248,6 +253,58 @@ tbody tr:hover {
     cursor: pointer;
 
     appearance: none;
+}
+
+
+.estado-control {
+    position: relative;
+
+    display: inline-flex;
+}
+
+
+.estado-options {
+    position: absolute;
+
+    bottom: calc(100% + 4px);
+    left: 0;
+    z-index: 20;
+
+    display: none;
+    min-width: 112px;
+
+    padding: 4px;
+
+    background: #ffffff;
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-card);
+}
+
+
+.estado-control:hover .estado-options,
+.estado-control:focus-within .estado-options {
+    display: grid;
+}
+
+
+.estado-option {
+    padding: 6px 8px;
+
+    border: 0;
+    background: #ffffff;
+    color: var(--neutral-800);
+
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+}
+
+
+.estado-option:hover,
+.estado-option:focus-visible {
+    background: var(--neutral-100);
 }
 
 

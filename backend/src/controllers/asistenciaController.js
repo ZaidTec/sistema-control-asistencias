@@ -88,10 +88,13 @@ const registrarAsistencia = async (req, res) => {
 
         const {
             sesion_clase_id,
-            usuario_id,
             estado,
             observaciones
         } = req.body;
+
+        const usuario_id = req.usuario.rol === 'ADMINISTRADOR'
+            ? req.body.usuario_id
+            : req.usuario.id;
 
 
         /*
@@ -179,6 +182,39 @@ const registrarAsistencia = async (req, res) => {
 
             return res.status(404).json({
                 mensaje: 'El usuario no existe o está inactivo'
+            });
+        }
+
+
+        const asistenciaExistente = await pool.query(`
+            SELECT id
+            FROM registro_asistencia
+            WHERE sesion_clase_id = $1
+            ORDER BY id DESC
+            LIMIT 1;
+        `, [sesion_clase_id]);
+
+
+        if (asistenciaExistente.rows.length > 0) {
+
+            const result = await pool.query(`
+                UPDATE registro_asistencia
+                SET
+                    estado = $1,
+                    observaciones = $2
+                WHERE id = $3
+                RETURNING *;
+            `, [
+                estado,
+                estado === 'PRESENTE'
+                    ? null
+                    : observaciones || null,
+                asistenciaExistente.rows[0].id
+            ]);
+
+            return res.json({
+                mensaje: 'Asistencia actualizada correctamente',
+                asistencia: result.rows[0]
             });
         }
 

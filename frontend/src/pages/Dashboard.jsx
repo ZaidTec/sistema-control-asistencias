@@ -96,7 +96,13 @@ function Dashboard() {
 
             const response = await api.get("/sesiones/hoy");
 
-            setSesiones(response.data);
+            const sesionesUnicas = Array.from(
+                new Map(
+                    response.data.map((sesion) => [sesion.id, sesion])
+                ).values()
+            );
+
+            setSesiones(sesionesUnicas);
 
         } catch (error) {
 
@@ -605,47 +611,51 @@ function Dashboard() {
 
                                                 <td>
 
-                                                    <select
-                                                        className={
-                                                            `estado-select ${
-                                                                obtenerClaseEstado(
-                                                                    sesion.asistencia_estado
-                                                                ).replace(
-                                                                    "estado ",
-                                                                    ""
-                                                                )
-                                                            }`
-                                                        }
-                                                        value={
-                                                            sesion.asistencia_estado
-                                                            || "PENDIENTE"
-                                                        }
-                                                        onChange={(e) =>
-                                                            cambiarEstado(
-                                                                sesion,
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                        title="Cambiar estado"
-                                                    >
+                                                    <div className="estado-control">
 
-                                                        <option value="PRESENTE">
-                                                            PRESENTE
-                                                        </option>
+                                                        <button
+                                                            type="button"
+                                                            className={
+                                                                `estado-select ${
+                                                                    obtenerClaseEstado(
+                                                                        sesion.asistencia_estado
+                                                                    ).replace(
+                                                                        "estado ",
+                                                                        ""
+                                                                    )
+                                                                }`
+                                                            }
+                                                            title="Seleccionar estado"
+                                                        >
+                                                            {obtenerTextoEstado(
+                                                                sesion.asistencia_estado
+                                                            )}
+                                                        </button>
 
-                                                        <option value="AUSENTE">
-                                                            AUSENTE
-                                                        </option>
+                                                        <div className="estado-options">
+                                                            {[
+                                                                "PRESENTE",
+                                                                "AUSENTE",
+                                                                "RETARDO",
+                                                                "PENDIENTE"
+                                                            ].map((estado) => (
+                                                                <button
+                                                                    type="button"
+                                                                    className="estado-option"
+                                                                    key={estado}
+                                                                    onClick={() =>
+                                                                        cambiarEstado(
+                                                                            sesion,
+                                                                            estado
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    {estado}
+                                                                </button>
+                                                            ))}
+                                                        </div>
 
-                                                        <option value="RETARDO">
-                                                            RETARDO
-                                                        </option>
-
-                                                        <option value="PENDIENTE">
-                                                            PENDIENTE
-                                                        </option>
-
-                                                    </select>
+                                                    </div>
 
                                                 </td>
 

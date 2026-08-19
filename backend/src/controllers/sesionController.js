@@ -294,8 +294,16 @@ const obtenerSesionesHoy = async (req, res) => {
             INNER JOIN periodo_escolar p
                 ON ac.periodo_id = p.id
 
-            LEFT JOIN registro_asistencia ra
-                ON ra.sesion_clase_id = sc.id
+            LEFT JOIN LATERAL (
+                SELECT
+                    ra.id,
+                    ra.estado,
+                    ra.observaciones
+                FROM registro_asistencia ra
+                WHERE ra.sesion_clase_id = sc.id
+                ORDER BY ra.id DESC
+                LIMIT 1
+            ) ra ON true
 
             WHERE sc.fecha = (CURRENT_TIMESTAMP AT TIME ZONE $1)::date
 

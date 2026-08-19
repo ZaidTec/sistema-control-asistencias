@@ -15,9 +15,9 @@ router.get('/', obtenerAsistencias);
 
 router.post('/', registrarAsistencia);
 
-router.use(requireRole('ADMINISTRADOR'));
-
 router.put('/:id', actualizarAsistencia);
+
+router.use(requireRole('ADMINISTRADOR'));
 
 router.delete('/:id', eliminarAsistencia);
 
