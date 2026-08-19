@@ -377,6 +377,95 @@ const crearAsignacion = async (req, res) => {
     }
 };
 
+const crearAsignacionesMasivas = async (req, res) => {
+
+    const { periodo_id, docente_id, clases } = req.body;
+
+    if (!periodo_id || !docente_id || !Array.isArray(clases) || clases.length === 0) {
+        return res.status(400).json({
+            mensaje: 'El periodo, el docente y al menos una clase son obligatorios'
+        });
+    }
+
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+        const creadas = [];
+
+        for (let indice = 0; indice < clases.length; indice += 1) {
+            const clase = clases[indice];
+            const { materia_id, grupo_id, salon_id, dia_semana, hora_inicio, hora_fin } = clase;
+
+            if (!materia_id || !grupo_id || !salon_id || !dia_semana || !hora_inicio || !hora_fin) {
+                throw Object.assign(new Error('Completa todos los campos de la fila'), { status: 400, indice });
+            }
+
+            if (Number(dia_semana) < 1 || Number(dia_semana) > 7) {
+                throw Object.assign(new Error('El día de la semana no es válido'), { status: 400, indice });
+            }
+
+            if (hora_inicio >= hora_fin) {
+                throw Object.assign(new Error('La hora de inicio debe ser menor que la hora de fin'), { status: 400, indice });
+            }
+
+            const conflicto = await client.query(`
+                SELECT CASE
+                    WHEN salon_id = $3 THEN 'El salón ya está ocupado en ese horario'
+                    WHEN docente_id = $2 THEN 'El docente ya tiene una clase en ese horario'
+                    WHEN grupo_id = $4 THEN 'El grupo ya tiene una clase en ese horario'
+                END AS mensaje
+                FROM asignacion_clase
+                WHERE periodo_id = $1
+                  AND dia_semana = $5
+                  AND activo = true
+                  AND hora_inicio < $7
+                  AND hora_fin > $6
+                  AND (salon_id = $3 OR docente_id = $2 OR grupo_id = $4)
+                LIMIT 1;
+            `, [periodo_id, docente_id, salon_id, grupo_id, dia_semana, hora_inicio, hora_fin]);
+
+            if (conflicto.rows.length > 0) {
+                throw Object.assign(new Error(conflicto.rows[0].mensaje), { status: 409, indice });
+            }
+
+            const result = await client.query(`
+                INSERT INTO asignacion_clase (
+                    docente_id, materia_id, grupo_id, salon_id, periodo_id,
+                    dia_semana, hora_inicio, hora_fin, activo
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true)
+                RETURNING *;
+            `, [docente_id, materia_id, grupo_id, salon_id, periodo_id, dia_semana, hora_inicio, hora_fin]);
+
+            creadas.push(result.rows[0]);
+        }
+
+        await client.query('COMMIT');
+
+        for (const asignacion of creadas) {
+            try {
+                await generarSesionesDeAsignacion(asignacion.id);
+            } catch (error) {
+                console.error('Error al generar sesiones automáticamente:', error);
+            }
+        }
+
+        return res.status(201).json({
+            mensaje: `${creadas.length} horarios registrados correctamente`,
+            creadas
+        });
+    } catch (error) {
+        await client.query('ROLLBACK');
+        return res.status(error.status || 500).json({
+            mensaje: error.message || 'Error al crear los horarios',
+            fila: Number.isInteger(error.indice) ? error.indice + 1 : undefined
+        });
+    } finally {
+        client.release();
+    }
+};
+
 const actualizarAsignacion = async (req, res) => {
 
     try {
@@ -676,6 +765,7 @@ module.exports = {
     obtenerAsignaciones,
     obtenerAsignacionPorId,
     crearAsignacion,
+    crearAsignacionesMasivas,
     actualizarAsignacion,
     desactivarAsignacion
 };

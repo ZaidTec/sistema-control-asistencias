@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ClipboardList, UserRound } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
@@ -26,14 +26,15 @@ function Horarios() {
     const [error, setError] = useState("");
     const [mensaje, setMensaje] = useState("");
 
-    const [mostrarHorarios, setMostrarHorarios] = useState(false);
-
     const [eliminarId, setEliminarId] = useState(null);
     const [eliminando, setEliminando] = useState(false);
 
     const [formulario, setFormulario] = useState({
         periodo_id: "",
-        docente_id: "",
+        docente_id: ""
+    });
+
+    const crearFila = () => ({
         materia_id: "",
         grupo_id: "",
         salon_id: "",
@@ -41,6 +42,8 @@ function Horarios() {
         hora_inicio: "",
         hora_fin: ""
     });
+
+    const [clases, setClases] = useState([crearFila()]);
 
 
     const dias = [
@@ -179,6 +182,25 @@ function Horarios() {
 
     };
 
+    const manejarCambioFila = (indice, e) => {
+        const { name, value } = e.target;
+
+        setClases((filas) => filas.map((fila, filaIndice) => (
+            filaIndice === indice ? { ...fila, [name]: value } : fila
+        )));
+
+        setMensaje("");
+        setError("");
+    };
+
+    const agregarFila = () => setClases((filas) => [...filas, crearFila()]);
+
+    const eliminarFila = (indice) => {
+        setClases((filas) => filas.length === 1
+            ? filas
+            : filas.filter((_, filaIndice) => filaIndice !== indice));
+    };
+
 
     /* =========================================
        REGISTRAR HORARIO
@@ -192,33 +214,10 @@ function Horarios() {
         setMensaje("");
 
 
-        if (
-            !formulario.periodo_id ||
-            !formulario.docente_id ||
-            !formulario.materia_id ||
-            !formulario.grupo_id ||
-            !formulario.salon_id ||
-            !formulario.dia_semana ||
-            !formulario.hora_inicio ||
-            !formulario.hora_fin
-        ) {
+        if (!formulario.periodo_id || !formulario.docente_id) {
 
             setError(
                 "Completa todos los campos."
-            );
-
-            return;
-
-        }
-
-
-        if (
-            formulario.hora_inicio >=
-            formulario.hora_fin
-        ) {
-
-            setError(
-                "La hora de inicio debe ser menor que la hora de fin."
             );
 
             return;
@@ -230,36 +229,17 @@ function Horarios() {
 
             setLoading(true);
 
-            await api.post(
-                "/asignaciones",
-                {
-                    periodo_id:
-                        Number(formulario.periodo_id),
-
-                    docente_id:
-                        Number(formulario.docente_id),
-
-                    materia_id:
-                        Number(formulario.materia_id),
-
-                    grupo_id:
-                        Number(formulario.grupo_id),
-
-                    salon_id:
-                        Number(formulario.salon_id),
-
-                    dia_semana:
-                        Number(formulario.dia_semana),
-
-                    hora_inicio:
-                        formulario.hora_inicio,
-
-                    hora_fin:
-                        formulario.hora_fin,
-
-                    activo: true
-                }
-            );
+            await api.post("/asignaciones/masivas", {
+                periodo_id: Number(formulario.periodo_id),
+                docente_id: Number(formulario.docente_id),
+                clases: clases.map((clase) => ({
+                    ...clase,
+                    materia_id: Number(clase.materia_id),
+                    grupo_id: Number(clase.grupo_id),
+                    salon_id: Number(clase.salon_id),
+                    dia_semana: Number(clase.dia_semana)
+                }))
+            });
 
 
             setMensaje(
@@ -267,17 +247,7 @@ function Horarios() {
             );
 
 
-            setFormulario({
-                ...formulario,
-
-                docente_id: "",
-                materia_id: "",
-                grupo_id: "",
-                salon_id: "",
-                dia_semana: "",
-                hora_inicio: "",
-                hora_fin: ""
-            });
+            setClases([crearFila()]);
 
 
             cargarHorarios();
@@ -295,9 +265,9 @@ function Horarios() {
                 error.response.status === 409
             ) {
 
-                setError(
-                    "No se puede registrar el horario porque existe un conflicto de salón u horario."
-                );
+                    setError(error.response.data.fila
+                        ? `La fila ${error.response.data.fila}: ${error.response.data.mensaje}`
+                        : error.response.data.mensaje);
 
             } else {
 
@@ -449,6 +419,9 @@ function Horarios() {
 
             </section>
 
+            {error && <div className="horarios-error" role="alert">{error}</div>}
+            {mensaje && <div className="horarios-success" role="status">{mensaje}</div>}
+
             <div className="horarios-grid">
 
                 <section className="horario-form-card">
@@ -470,241 +443,85 @@ function Horarios() {
                     </div>
 
 
-                    <form
-                        className="horario-form"
-                        onSubmit={registrarHorario}
-                    >
-
-                        <div className="form-group">
-
-                            <label htmlFor="periodo_id">Periodo</label>
-
-                            <select
-                                id="periodo_id"
-                                name="periodo_id"
-                                value={formulario.periodo_id}
-                                onChange={manejarCambio}
-                            >
-
-                                <option value="">Selecciona un periodo</option>
-
-                                {periodos.map((periodo) => (
-
-                                    <option
-                                        key={periodo.id}
-                                        value={periodo.id}
-                                    >
-
-                                        {periodo.nombre}
-
-                                    </option>
-
-                                ))}
-
-                            </select>
-
-                        </div>
-
-
-                        <div className="form-group">
-
-                            <label htmlFor="docente_id">Docente</label>
-
-                            <select
-                                id="docente_id"
-                                name="docente_id"
-                                value={formulario.docente_id}
-                                onChange={manejarCambio}
-                            >
-
-                                <option value="">Selecciona un docente</option>
-
-                                {docentes.map((docente) => (
-
-                                    <option
-                                        key={docente.id}
-                                        value={docente.id}
-                                    >
-
-                                        {obtenerNombreDocente(docente)}
-
-                                    </option>
-
-                                ))}
-
-                            </select>
-
-                        </div>
-
-
-                        <div className="form-group">
-
-                            <label htmlFor="materia_id">Materia</label>
-
-                            <select
-                                id="materia_id"
-                                name="materia_id"
-                                value={formulario.materia_id}
-                                onChange={manejarCambio}
-                            >
-
-                                <option value="">Selecciona una materia</option>
-
-                                {materias.map((materia) => (
-
-                                    <option
-                                        key={materia.id}
-                                        value={materia.id}
-                                    >
-
-                                        {materia.nombre}
-
-                                    </option>
-
-                                ))}
-
-                            </select>
-
-                        </div>
-
-
-                        <div className="form-group">
-
-                            <label htmlFor="grupo_id">Grupo</label>
-
-                            <select
-                                id="grupo_id"
-                                name="grupo_id"
-                                value={formulario.grupo_id}
-                                onChange={manejarCambio}
-                            >
-
-                                <option value="">Selecciona un grupo</option>
-
-                                {grupos.map((grupo) => (
-
-                                    <option
-                                        key={grupo.id}
-                                        value={grupo.id}
-                                    >
-
-                                        {grupo.clave}
-
-                                    </option>
-
-                                ))}
-
-                            </select>
-
-                        </div>
-
-
-                        <div className="form-group">
-
-                            <label htmlFor="salon_id">Salón</label>
-
-                            <select
-                                id="salon_id"
-                                name="salon_id"
-                                value={formulario.salon_id}
-                                onChange={manejarCambio}
-                            >
-
-                                <option value="">Selecciona un salón</option>
-
-                                {salones.map((salon) => (
-
-                                    <option
-                                        key={salon.id}
-                                        value={salon.id}
-                                    >
-
-                                        Salón {salon.numero}
-
-                                    </option>
-
-                                ))}
-
-                            </select>
-
-                        </div>
-
-
-                        <div className="form-group">
-
-                            <label htmlFor="dia_semana">Día</label>
-
-                            <select
-                                id="dia_semana"
-                                name="dia_semana"
-                                value={formulario.dia_semana}
-                                onChange={manejarCambio}
-                            >
-
-                                <option value="">Selecciona un día</option>
-
-                                {dias.map((dia) => (
-
-                                    <option
-                                        key={dia.id}
-                                        value={dia.id}
-                                    >
-
-                                        {dia.nombre}
-
-                                    </option>
-
-                                ))}
-
-                            </select>
-
-                        </div>
-
-
-                        <div className="time-grid">
-
+                    <form className="horario-form" onSubmit={registrarHorario}>
+                        <div className="common-fields">
                             <div className="form-group">
-
-                                <label htmlFor="hora_inicio">Hora inicio</label>
-
-                                <input
-                                    id="hora_inicio"
-                                    type="time"
-                                    name="hora_inicio"
-                                    value={formulario.hora_inicio}
-                                    onChange={manejarCambio}
-                                />
-
+                                <label htmlFor="periodo_id">Periodo</label>
+                                <select id="periodo_id" name="periodo_id" value={formulario.periodo_id} onChange={manejarCambio}>
+                                    <option value="">Selecciona un periodo</option>
+                                    {periodos.map((periodo) => <option key={periodo.id} value={periodo.id}>{periodo.nombre}</option>)}
+                                </select>
                             </div>
 
-
                             <div className="form-group">
-
-                                <label htmlFor="hora_fin">Hora fin</label>
-
-                                <input
-                                    id="hora_fin"
-                                    type="time"
-                                    name="hora_fin"
-                                    value={formulario.hora_fin}
-                                    onChange={manejarCambio}
-                                />
-
+                                <label htmlFor="docente_id">Docente</label>
+                                <select id="docente_id" name="docente_id" value={formulario.docente_id} onChange={manejarCambio}>
+                                    <option value="">Selecciona un docente</option>
+                                    {docentes.map((docente) => <option key={docente.id} value={docente.id}>{obtenerNombreDocente(docente)}</option>)}
+                                </select>
                             </div>
-
                         </div>
 
+                        <div className="class-rows-header">
+                            <strong>Clases por registrar</strong>
+                            <span>{clases.length} {clases.length === 1 ? "fila" : "filas"}</span>
+                        </div>
 
-                        <button
-                            type="submit"
-                            className="save-button"
-                            disabled={loading}
-                        >
+                        <div className="class-rows">
+                            {clases.map((clase, indice) => (
+                                <div className="class-row" key={indice}>
+                                    <span className="class-row-number">{indice + 1}</span>
+                                    <div className="form-group">
+                                        <label htmlFor={`materia_id_${indice}`}>Materia</label>
+                                        <select id={`materia_id_${indice}`} name="materia_id" value={clase.materia_id} onChange={(e) => manejarCambioFila(indice, e)}>
+                                            <option value="">Selecciona</option>
+                                            {materias.map((materia) => <option key={materia.id} value={materia.id}>{materia.nombre}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor={`grupo_id_${indice}`}>Grupo</label>
+                                        <select id={`grupo_id_${indice}`} name="grupo_id" value={clase.grupo_id} onChange={(e) => manejarCambioFila(indice, e)}>
+                                            <option value="">Selecciona</option>
+                                            {grupos.map((grupo) => <option key={grupo.id} value={grupo.id}>{grupo.clave}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor={`salon_id_${indice}`}>Salón</label>
+                                        <select id={`salon_id_${indice}`} name="salon_id" value={clase.salon_id} onChange={(e) => manejarCambioFila(indice, e)}>
+                                            <option value="">Selecciona</option>
+                                            {salones.map((salon) => <option key={salon.id} value={salon.id}>Salón {salon.numero}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor={`dia_semana_${indice}`}>Día</label>
+                                        <select id={`dia_semana_${indice}`} name="dia_semana" value={clase.dia_semana} onChange={(e) => manejarCambioFila(indice, e)}>
+                                            <option value="">Selecciona</option>
+                                            {dias.map((dia) => <option key={dia.id} value={dia.id}>{dia.nombre}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor={`hora_inicio_${indice}`}>Inicio</label>
+                                        <input id={`hora_inicio_${indice}`} type="time" name="hora_inicio" value={clase.hora_inicio} onChange={(e) => manejarCambioFila(indice, e)} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor={`hora_fin_${indice}`}>Fin</label>
+                                        <input id={`hora_fin_${indice}`} type="time" name="hora_fin" value={clase.hora_fin} onChange={(e) => manejarCambioFila(indice, e)} />
+                                    </div>
+                                    <button type="button" className="remove-row-button" onClick={() => eliminarFila(indice)} disabled={clases.length === 1} title="Eliminar fila" aria-label="Eliminar fila">
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
 
-                            {loading ? "Guardando..." : "Guardar horario"}
-
-                        </button>
-
+                        <div className="form-actions">
+                            <button type="button" className="add-row-button" onClick={agregarFila} disabled={loading}>
+                                <Plus size={16} /> Agregar otra clase
+                            </button>
+                            <button type="submit" className="save-button" disabled={loading}>
+                                {loading ? "Guardando..." : `Guardar ${clases.length} ${clases.length === 1 ? "clase" : "clases"}`}
+                            </button>
+                        </div>
                     </form>
 
                 </section>

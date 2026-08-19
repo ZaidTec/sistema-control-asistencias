@@ -62,7 +62,7 @@
 .horarios-grid {
     display: grid;
 
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 1fr;
 
     gap: var(--space-4);
 
@@ -613,4 +613,139 @@
             repeat(5, minmax(160px, 1fr));
     }
 
+}
+
+
+.common-fields {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: var(--space-2);
+}
+
+
+.class-rows-header,
+.form-actions {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: var(--space-2);
+}
+
+
+.class-rows-header {
+    color: var(--neutral-700);
+
+    font-size: var(--fs-xs);
+}
+
+
+.class-rows-header span {
+    color: var(--neutral-500);
+}
+
+
+.class-rows {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: var(--space-2);
+
+    overflow-x: auto;
+
+    padding-bottom: 3px;
+}
+
+
+.class-row {
+    display: grid;
+
+    grid-template-columns: 22px minmax(150px, 1.3fr) minmax(100px, .8fr) minmax(100px, .8fr) minmax(110px, .9fr) 92px 92px 28px;
+
+    align-items: end;
+
+    gap: var(--space-2);
+
+    min-width: 900px;
+
+    padding: 10px;
+
+    border: 1px solid var(--neutral-200);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--neutral-50);
+}
+
+
+.class-row-number {
+    align-self: center;
+
+    color: var(--neutral-500);
+
+    font-size: var(--fs-xs);
+
+    font-weight: 700;
+
+    text-align: center;
+}
+
+
+.add-row-button,
+.remove-row-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    border: 1px solid var(--neutral-200);
+
+    border-radius: var(--radius-sm);
+
+    background: white;
+
+    color: var(--primary-600);
+
+    font-size: var(--fs-xs);
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.add-row-button {
+    min-height: 36px;
+
+    padding: 0 10px;
+}
+
+
+.remove-row-button {
+    width: 28px;
+    height: 36px;
+    padding: 0;
+    color: var(--danger);
+}
+
+
+.add-row-button:hover:not(:disabled),
+.remove-row-button:hover:not(:disabled) {
+    background: var(--neutral-100);
+}
+
+
+.add-row-button:disabled,
+.remove-row-button:disabled {
+    opacity: .45;
+
+    cursor: not-allowed;
 }

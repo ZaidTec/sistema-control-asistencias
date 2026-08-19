@@ -226,15 +226,26 @@ const actualizarUsuario = async (req, res) => {
 };
 
 
-const desactivarUsuario = async (req, res) => {
+const eliminarUsuario = async (req, res) => {
 
     try {
 
         const { id } = req.params;
 
+        const asistencias = await pool.query(`
+            SELECT COUNT(*)::int AS total
+            FROM registro_asistencia
+            WHERE usuario_id = $1;
+        `, [id]);
+
+        if (asistencias.rows[0].total > 0) {
+            return res.status(409).json({
+                mensaje: 'No se puede eliminar este usuario porque tiene registros de asistencia asociados'
+            });
+        }
+
         const result = await pool.query(`
-            UPDATE usuario
-            SET activo = false
+            DELETE FROM usuario
             WHERE id = $1
             RETURNING id, username, rol, activo;
         `, [id]);
@@ -247,16 +258,16 @@ const desactivarUsuario = async (req, res) => {
         }
 
         res.json({
-            mensaje: 'Usuario desactivado correctamente',
+            mensaje: 'Usuario eliminado correctamente',
             usuario: result.rows[0]
         });
 
     } catch (error) {
 
-        console.error('Error al desactivar usuario:', error);
+        console.error('Error al eliminar usuario:', error);
 
         res.status(500).json({
-            mensaje: 'Error al desactivar el usuario'
+            mensaje: 'Error al eliminar el usuario'
         });
     }
 };
@@ -267,5 +278,5 @@ module.exports = {
     obtenerUsuarioPorId,
     crearUsuario,
     actualizarUsuario,
-    desactivarUsuario
+    eliminarUsuario
 };

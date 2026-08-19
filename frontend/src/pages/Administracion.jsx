@@ -47,6 +47,8 @@ function Administracion() {
     });
 
     const [usuarioEditando, setUsuarioEditando] = useState(null);
+    const [usuarioEliminando, setUsuarioEliminando] = useState(null);
+    const [eliminandoUsuario, setEliminandoUsuario] = useState(false);
     const [usuarioEditForm, setUsuarioEditForm] = useState({
         username: "",
         password: "",
@@ -318,6 +320,38 @@ function Administracion() {
                 err.response?.data?.mensaje ||
                 "No se pudo actualizar el usuario."
             );
+
+        }
+
+    };
+
+
+    const eliminarUsuario = async () => {
+
+        setEliminandoUsuario(true);
+
+        try {
+
+            await api.delete(
+                `/usuarios/${usuarioEliminando.id}`
+            );
+
+            setUsuarioEliminando(null);
+            mostrarMensaje("Usuario eliminado permanentemente.");
+            cargarInformacion();
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                err.response?.data?.mensaje ||
+                "No se pudo eliminar el usuario."
+            );
+
+        } finally {
+
+            setEliminandoUsuario(false);
 
         }
 
@@ -1148,6 +1182,18 @@ function Administracion() {
                                                                                 ? "Desactivar"
                                                                                 : "Activar"}
 
+                                                                        </button>
+
+                                                                        <button
+                                                                            className="icon-button delete-button"
+                                                                            type="button"
+                                                                            onClick={() =>
+                                                                                setUsuarioEliminando(usuario)
+                                                                            }
+                                                                            aria-label={`Eliminar usuario ${usuario.username}`}
+                                                                            title="Eliminar usuario"
+                                                                        >
+                                                                            <Trash2 size={16} />
                                                                         </button>
 
                                                                     </div>
@@ -2111,6 +2157,17 @@ function Administracion() {
                         onConfirm={eliminarPeriodo}
                         onCancel={() => setPeriodoEliminando(null)}
                         loading={eliminandoPeriodo}
+                    />
+
+                    <ConfirmDialog
+                        open={Boolean(usuarioEliminando)}
+                        title="¿Eliminar usuario?"
+                        message={
+                            `El usuario "${usuarioEliminando?.username || ""}" se eliminará permanentemente. Esta acción no se puede deshacer.`
+                        }
+                        onConfirm={eliminarUsuario}
+                        onCancel={() => setUsuarioEliminando(null)}
+                        loading={eliminandoUsuario}
                     />
 
                     <Modal
