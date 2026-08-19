@@ -281,6 +281,10 @@
 
 
 .secondary-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
     padding: 5px 8px;
 
     border: 1px solid var(--neutral-200);
@@ -299,6 +303,76 @@
 
 .secondary-button:hover {
     background: var(--neutral-50);
+}
+
+
+.danger-button {
+    color: var(--danger);
+}
+
+
+.danger-button:hover {
+    background: var(--danger-bg);
+}
+
+
+.icon-button {
+    width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    cursor: pointer;
+
+    transition: background var(--transition), color var(--transition);
+}
+
+
+.edit-button {
+    background: var(--primary-50);
+
+    color: var(--primary-600);
+}
+
+
+.edit-button:hover {
+    background: var(--primary-100);
+}
+
+
+.delete-button {
+    background: var(--danger-bg);
+
+    color: var(--danger);
+}
+
+
+.delete-button:hover {
+    background: var(--danger-border);
+}
+
+
+.admin-actions {
+    display: flex;
+
+    gap: 6px;
+}
+
+
+.admin-modal-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
 }
 
 
