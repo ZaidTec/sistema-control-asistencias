@@ -683,10 +683,127 @@
         flex-direction: column-reverse;
     }
 
-
-    .cancel-button,
+.cancel-button,
     .save-button {
         width: 100%;
+
+    }
+
+}
+
+
+/* =========================================
+   MÓVIL: TABLA → TARJETAS
+========================================= */
+
+@media (max-width: 768px) {
+
+    .materias-table-container {
+        overflow-x: visible;
+    }
+
+
+    .materias-table {
+        display: block;
+    }
+
+
+    .materias-table thead {
+        display: none;
+    }
+
+
+    .materias-table tbody {
+        display: block;
+    }
+
+
+    .materias-table tbody tr {
+        display: block;
+
+        margin-bottom: 12px;
+
+        padding: 12px;
+
+        border: 1px solid var(--neutral-200);
+
+        border-radius: var(--radius-md);
+
+        background: white;
+
+        box-shadow: var(--shadow-sm);
+    }
+
+
+    .materias-table tbody tr:hover {
+        background: white;
+    }
+
+
+    .materias-table td {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: baseline;
+
+        gap: var(--space-3);
+
+        padding: 7px 0;
+
+        border-top: none;
+
+        white-space: normal;
+
+        text-align: right;
+    }
+
+
+    .materias-table td[data-label]::before {
+        content: attr(data-label);
+
+        flex-shrink: 0;
+
+        font-size: var(--fs-2xs);
+
+        font-weight: 700;
+
+        letter-spacing: 0.04em;
+
+        text-transform: uppercase;
+
+        color: var(--neutral-500);
+    }
+
+
+    .materias-table td.materia-index-cell {
+        display: none;
+    }
+
+
+    .materias-table td.materia-name-cell {
+        display: flex;
+    }
+
+
+    .materias-table .materia-name {
+        align-items: center;
+
+        text-align: right;
+    }
+
+
+    /* Celda de acciones: pie de tarjeta */
+    .materias-table td.materia-actions-cell {
+        display: block;
+
+        margin-top: 8px;
+
+        padding-top: 10px;
+
+        border-top: 1px dashed var(--neutral-200);
+
+        text-align: left;
     }
 
 }

@@ -370,12 +370,12 @@ function MateriasTab() {
                                             key={materia.id}
                                         >
 
-                                            <td>
+                                            <td className="materia-index-cell">
                                                 {index + 1}
                                             </td>
 
 
-                                            <td>
+                                            <td data-label="Clave">
 
                                                 <span className="materia-clave">
                                                     {materia.clave}
@@ -384,7 +384,7 @@ function MateriasTab() {
                                             </td>
 
 
-                                            <td>
+                                            <td data-label="Materia">
 
                                                 <div className="materia-name">
 
@@ -401,7 +401,7 @@ function MateriasTab() {
                                             </td>
 
 
-                                            <td>
+                                            <td data-label="Estado">
 
                                                 <span
                                                     className={
@@ -420,7 +420,7 @@ function MateriasTab() {
                                             </td>
 
 
-                                            <td>
+                                            <td className="materia-actions-cell">
 
                                                 <div className="action-buttons">
 

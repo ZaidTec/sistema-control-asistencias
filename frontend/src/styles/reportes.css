@@ -489,6 +489,13 @@
 }
 
 
+/* Filas de agrupación por fecha:
+   ocultas en escritorio (el reporte se ve igual que antes) */
+.fecha-grupo-fila {
+    display: none;
+}
+
+
 .observaciones {
     max-width: 180px;
 
@@ -657,6 +664,147 @@
     .clear-button,
     .search-button {
         width: 100%;
+    }
+
+}
+
+
+/* =========================================
+   MÓVIL: TABLA → TARJETAS POR FECHA
+========================================= */
+
+@media (max-width: 768px) {
+
+    .reportes-table-container {
+        overflow-x: visible;
+    }
+
+
+    .reportes-table {
+        display: block;
+    }
+
+
+    .reportes-table thead {
+        display: none;
+    }
+
+
+    .reportes-table tbody {
+        display: block;
+    }
+
+
+    .reportes-table tbody tr {
+        display: block;
+
+        margin-bottom: 12px;
+
+        padding: 12px;
+
+        border: 1px solid var(--neutral-200);
+
+        border-radius: var(--radius-md);
+
+        background: white;
+
+        box-shadow: var(--shadow-sm);
+    }
+
+
+    .reportes-table tbody tr:hover {
+        background: white;
+    }
+
+
+    .reportes-table td {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: baseline;
+
+        gap: var(--space-3);
+
+        padding: 7px 0;
+
+        border-top: none;
+
+        white-space: normal;
+
+        text-align: right;
+    }
+
+
+    .reportes-table td[data-label]::before {
+        content: attr(data-label);
+
+        flex-shrink: 0;
+
+        font-size: var(--fs-2xs);
+
+        font-weight: 700;
+
+        letter-spacing: 0.04em;
+
+        text-transform: uppercase;
+
+        color: var(--neutral-500);
+    }
+
+
+    .reportes-table td.fecha-cell {
+        display: none;
+    }
+
+
+    .reportes-table td.observaciones {
+        max-width: none;
+
+        overflow: visible;
+
+        text-overflow: clip;
+    }
+
+
+    .reportes-table tbody tr.fecha-grupo-fila {
+        display: block;
+
+        margin: var(--space-4) 0 var(--space-2);
+
+        padding: 0;
+
+        border: none;
+
+        border-radius: 0;
+
+        background: transparent;
+
+        box-shadow: none;
+    }
+
+
+    .reportes-table tbody tr.fecha-grupo-fila td {
+        display: block;
+
+        padding: 9px 12px;
+
+        border-radius: var(--radius-sm);
+
+        background: var(--primary-50);
+
+        color: var(--primary-700);
+
+        font-size: var(--fs-sm);
+
+        font-weight: 700;
+
+        text-align: left;
+    }
+
+
+    .reportes-table td.fecha-grupo-titulo::before {
+        content: none;
     }
 
 }

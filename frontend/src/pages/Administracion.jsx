@@ -5,11 +5,15 @@ import {
     BookOpen,
     UsersRound,
     Building2,
-    Settings
+    Settings,
+    Trash2,
+    Pencil
 } from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
 import MateriasTab from "../components/admin/MateriasTab";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
+import Modal from "../components/ui/Modal";
 import EmptyState from "../components/ui/EmptyState";
 import "../styles/administracion.css";
 
@@ -41,6 +45,18 @@ function Administracion() {
         clave: "",
         semestre: ""
     });
+
+    const [salonForm, setSalonForm] = useState({
+        numero: ""
+    });
+
+    const [salonEdicion, setSalonEdicion] = useState(null);
+    const [numeroEdicion, setNumeroEdicion] = useState("");
+    const [guardandoEdicion, setGuardandoEdicion] = useState(false);
+    const [salonEliminar, setSalonEliminar] = useState(null);
+
+    const [eliminarId, setEliminarId] = useState(null);
+    const [eliminando, setEliminando] = useState(false);
 
 
     /* =========================================
@@ -206,6 +222,46 @@ function Administracion() {
             setError(
                 "No se pudo actualizar el usuario."
             );
+
+        }
+
+    };
+
+
+    const confirmarEliminar = async () => {
+
+        if (!eliminarId) {
+            return;
+        }
+
+        setEliminando(true);
+
+        try {
+
+            await api.delete(
+                `/usuarios/${eliminarId}`
+            );
+
+            setEliminarId(null);
+
+            mostrarMensaje(
+                "Usuario eliminado correctamente."
+            );
+
+            cargarInformacion();
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                err.response?.data?.mensaje ||
+                "No se pudo eliminar el usuario."
+            );
+
+        } finally {
+
+            setEliminando(false);
 
         }
 
@@ -405,6 +461,180 @@ function Administracion() {
             setError(
                 "No se pudo actualizar el salón."
             );
+
+        }
+
+    };
+
+
+    const cambiarSalon = (e) => {
+
+        setSalonForm({
+            ...salonForm,
+            [e.target.name]: e.target.value
+        });
+
+    };
+
+
+    const crearSalon = async (e) => {
+
+        e.preventDefault();
+
+        setError("");
+
+        if (!salonForm.numero.trim()) {
+
+            setError(
+                "Escribe el número del salón."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            await api.post(
+                "/salones",
+                {
+                    numero: salonForm.numero.trim()
+                }
+            );
+
+            setSalonForm({
+                numero: ""
+            });
+
+            mostrarMensaje(
+                "Salón creado correctamente."
+            );
+
+            cargarInformacion();
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                err.response?.data?.mensaje ||
+                "No se pudo crear el salón."
+            );
+
+        }
+
+    };
+
+
+    const abrirEdicionSalon = (
+        salon
+    ) => {
+
+        setError("");
+
+        setSalonEdicion(salon);
+
+        setNumeroEdicion(salon.numero);
+
+    };
+
+
+    const guardarEdicionSalon = async (e) => {
+
+        e.preventDefault();
+
+        if (!salonEdicion) {
+
+            return;
+
+        }
+
+        if (!numeroEdicion.trim()) {
+
+            setError(
+                "Escribe el número del salón."
+            );
+
+            return;
+
+        }
+
+        setGuardandoEdicion(true);
+
+        try {
+
+            await api.put(
+                `/salones/${salonEdicion.id}`,
+                {
+                    numero: numeroEdicion.trim()
+                }
+            );
+
+            mostrarMensaje(
+                "Salón actualizado correctamente."
+            );
+
+            setSalonEdicion(null);
+
+            cargarInformacion();
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                err.response?.data?.mensaje ||
+                "No se pudo actualizar el salón."
+            );
+
+        } finally {
+
+            setGuardandoEdicion(false);
+
+        }
+
+    };
+
+
+    const confirmarEliminarSalon = async () => {
+
+        if (!salonEliminar) {
+
+            return;
+
+        }
+
+        setEliminando(true);
+
+        try {
+
+            await api.delete(
+                `/salones/${salonEliminar.id}`
+            );
+
+            mostrarMensaje(
+                "Salón eliminado correctamente."
+            );
+
+            setSalonEliminar(null);
+
+            cargarInformacion();
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                err.response?.data?.mensaje ||
+                "No se pudo eliminar el salón."
+            );
+
+            setSalonEliminar(null);
+
+        } finally {
+
+            setEliminando(false);
 
         }
 
@@ -727,13 +957,13 @@ function Administracion() {
                                                                 }
                                                             >
 
-                                                                <td>
+                                                                <td data-label="Usuario">
                                                                     {
                                                                         usuario.username
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Rol">
 
                                                                     <span className="role-badge">
 
@@ -745,7 +975,7 @@ function Administracion() {
 
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Estado">
 
                                                                     <span
                                                                         className={
@@ -765,22 +995,40 @@ function Administracion() {
 
                                                                 </td>
 
-                                                                <td>
+                                                                <td className="admin-actions-cell">
 
-                                                                    <button
-                                                                        className="secondary-button"
-                                                                        onClick={() =>
-                                                                            cambiarEstadoUsuario(
-                                                                                usuario
-                                                                            )
-                                                                        }
-                                                                    >
+                                                                    <div className="admin-actions">
 
-                                                                        {usuario.activo
-                                                                            ? "Desactivar"
-                                                                            : "Activar"}
+                                                                        <button
+                                                                            className="secondary-button"
+                                                                            onClick={() =>
+                                                                                cambiarEstadoUsuario(
+                                                                                    usuario
+                                                                                )
+                                                                            }
+                                                                        >
 
-                                                                    </button>
+                                                                            {usuario.activo
+                                                                                ? "Desactivar"
+                                                                                : "Activar"}
+
+                                                                        </button>
+
+
+                                                                        <button
+                                                                            className="icon-button delete-button"
+                                                                            title="Eliminar usuario"
+                                                                            aria-label={`Eliminar usuario ${usuario.username}`}
+                                                                            onClick={() =>
+                                                                                setEliminarId(
+                                                                                    usuario.id
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <Trash2 size={14} />
+                                                                        </button>
+
+                                                                    </div>
 
                                                                 </td>
 
@@ -796,6 +1044,19 @@ function Administracion() {
                                         </table>
 
                                     </div>
+
+                                    <ConfirmDialog
+                                        open={eliminarId !== null}
+                                        title="Eliminar usuario"
+                                        message="¿Seguro que deseas eliminar este usuario? Esta acción es permanente y no se puede deshacer."
+                                        confirmLabel="Eliminar"
+                                        cancelLabel="Cancelar"
+                                        onCancel={() =>
+                                            setEliminarId(null)
+                                        }
+                                        onConfirm={confirmarEliminar}
+                                        loading={eliminando}
+                                    />
 
                                 </>
 
@@ -964,25 +1225,25 @@ function Administracion() {
                                                                 }
                                                             >
 
-                                                                <td>
+                                                                <td data-label="Periodo">
                                                                     {
                                                                         periodo.nombre
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Inicio">
                                                                     {
                                                                         periodo.fecha_inicio
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Fin">
                                                                     {
                                                                         periodo.fecha_fin
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Estado">
 
                                                                     <span
                                                                         className={
@@ -1171,19 +1432,19 @@ function Administracion() {
                                                                 }
                                                             >
 
-                                                                <td>
+                                                                <td data-label="Grupo">
                                                                     {
                                                                         grupo.clave
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Semestre">
                                                                     {
                                                                         grupo.semestre
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Estado">
 
                                                                     <span
                                                                         className={
@@ -1248,6 +1509,44 @@ function Administracion() {
                                     </div>
 
 
+                                    <form
+                                        className="admin-form"
+                                        onSubmit={crearSalon}
+                                    >
+
+                                        <div className="form-group">
+
+                                            <label htmlFor="salon-numero">
+                                                Número del salón
+                                            </label>
+
+                                            <input
+                                                id="salon-numero"
+                                                type="text"
+                                                name="numero"
+                                                maxLength="10"
+                                                value={
+                                                    salonForm.numero
+                                                }
+                                                onChange={
+                                                    cambiarSalon
+                                                }
+                                                placeholder="Ej. 12"
+                                            />
+
+                                        </div>
+
+
+                                        <button
+                                            className="primary-button"
+                                            type="submit"
+                                        >
+                                            + Crear salón
+                                        </button>
+
+                                    </form>
+
+
                                     <div className="rooms-grid">
 
                                         {salones.length === 0
@@ -1255,7 +1554,7 @@ function Administracion() {
                                                 <EmptyState
                                                     icon={Building2}
                                                     title="No hay salones registrados"
-                                                    text="Los salones se configuran desde la sección de Salones."
+                                                    text="Agrega salones para poder asignarlos en los horarios."
                                                 />
                                             )
                                             : salones.map(
@@ -1315,6 +1614,38 @@ function Administracion() {
 
                                                         )}
 
+
+                                                        <div className="room-actions">
+
+                                                            <button
+                                                                className="icon-button edit-button"
+                                                                onClick={() =>
+                                                                    abrirEdicionSalon(
+                                                                        salon
+                                                                    )
+                                                                }
+                                                                title="Editar salón"
+                                                                aria-label={`Editar salón ${salon.numero}`}
+                                                            >
+                                                                <Pencil size={16} />
+                                                            </button>
+
+
+                                                            <button
+                                                                className="icon-button delete-button"
+                                                                onClick={() =>
+                                                                    setSalonEliminar(
+                                                                        salon
+                                                                    )
+                                                                }
+                                                                title="Eliminar salón"
+                                                                aria-label={`Eliminar salón ${salon.numero}`}
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+
+                                                        </div>
+
                                                     </div>
 
                                                 )
@@ -1322,6 +1653,93 @@ function Administracion() {
                                         }
 
                                     </div>
+
+
+                                    <Modal
+                                        open={salonEdicion !== null}
+                                        onClose={() =>
+                                            setSalonEdicion(null)
+                                        }
+                                        title="Editar salón"
+                                        description="Actualiza el número del salón."
+                                    >
+
+                                        <form
+                                            onSubmit={
+                                                guardarEdicionSalon
+                                            }
+                                        >
+
+                                            <div className="form-group">
+
+                                                <label htmlFor="salon-edit-numero">
+                                                    Número del salón
+                                                </label>
+
+                                                <input
+                                                    id="salon-edit-numero"
+                                                    type="text"
+                                                    name="numero"
+                                                    maxLength="10"
+                                                    value={
+                                                        numeroEdicion
+                                                    }
+                                                    onChange={(e) =>
+                                                        setNumeroEdicion(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="modal-actions">
+
+                                                <button
+                                                    className="secondary-button"
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setSalonEdicion(
+                                                            null
+                                                        )
+                                                    }
+                                                >
+                                                    Cancelar
+                                                </button>
+
+
+                                                <button
+                                                    className="primary-button"
+                                                    type="submit"
+                                                    disabled={
+                                                        guardandoEdicion
+                                                    }
+                                                >
+                                                    {guardandoEdicion
+                                                        ? "Guardando..."
+                                                        : "Guardar"}
+                                                </button>
+
+                                            </div>
+
+                                        </form>
+
+                                    </Modal>
+
+
+                                    <ConfirmDialog
+                                        open={salonEliminar !== null}
+                                        title="Eliminar salón"
+                                        message="¿Seguro que deseas eliminar este salón? Esta acción es permanente y no se puede deshacer."
+                                        confirmLabel="Eliminar"
+                                        cancelLabel="Cancelar"
+                                        onCancel={() =>
+                                            setSalonEliminar(null)
+                                        }
+                                        onConfirm={confirmarEliminarSalon}
+                                        loading={eliminando}
+                                    />
 
                                 </>
 

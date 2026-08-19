@@ -4,6 +4,7 @@ const {
     obtenerAsignaciones,
     obtenerAsignacionPorId,
     crearAsignacion,
+    crearAsignacionesMasivas,
     actualizarAsignacion,
     desactivarAsignacion
 } = require('../controllers/asignacionController');
@@ -19,6 +20,8 @@ router.get('/:id', obtenerAsignacionPorId);
 router.use(requireRole('ADMINISTRADOR'));
 
 router.post('/', crearAsignacion);
+
+router.post('/masivo', crearAsignacionesMasivas);
 
 router.put('/:id', actualizarAsignacion);
 

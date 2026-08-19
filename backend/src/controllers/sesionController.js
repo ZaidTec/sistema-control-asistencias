@@ -294,6 +294,7 @@ const obtenerSesionesHoy = async (req, res) => {
                 ON ra.sesion_clase_id = sc.id
 
             WHERE sc.fecha = CURRENT_DATE
+              AND ac.activo = true
 
             ORDER BY sc.hora_inicio;
         `);

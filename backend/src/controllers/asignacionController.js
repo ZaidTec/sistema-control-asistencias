@@ -157,187 +157,215 @@ const obtenerAsignacionPorId = async (req, res) => {
     }
 };
 
+/*
+ * Inserta una asignación validando campos, horario
+ * y conflictos de salón/docente/grupo.
+ *
+ * `db` puede ser el pool o un client de transacción.
+ * Lanza errores con `{ status, mensaje }` para que
+ * los handlers respondan el código correcto.
+ */
+
+const insertarAsignacionInterna = async (db, datos) => {
+
+    const {
+        docente_id,
+        materia_id,
+        grupo_id,
+        salon_id,
+        periodo_id,
+        dia_semana,
+        hora_inicio,
+        hora_fin,
+        color
+    } = datos;
+
+
+    // Validar campos obligatorios
+    if (
+        !docente_id ||
+        !materia_id ||
+        !grupo_id ||
+        !salon_id ||
+        !periodo_id ||
+        !dia_semana ||
+        !hora_inicio ||
+        !hora_fin
+    ) {
+
+        throw {
+            status: 400,
+            mensaje: 'Todos los campos son obligatorios'
+        };
+    }
+
+
+    // Validar día de la semana
+    if (dia_semana < 1 || dia_semana > 7) {
+
+        throw {
+            status: 400,
+            mensaje: 'El día de la semana debe estar entre 1 y 7'
+        };
+    }
+
+
+    // Validar que la hora inicial sea menor
+    if (hora_inicio >= hora_fin) {
+
+        throw {
+            status: 400,
+            mensaje: 'La hora de inicio debe ser menor que la hora de fin'
+        };
+    }
+
+
+    /*
+     * VALIDAR QUE EL SALÓN NO ESTÉ OCUPADO
+     */
+
+    const conflictoSalon = await db.query(`
+        SELECT id
+        FROM asignacion_clase
+        WHERE salon_id = $1
+          AND periodo_id = $2
+          AND dia_semana = $3
+          AND activo = true
+          AND hora_inicio < $5
+          AND hora_fin > $4;
+    `, [
+        salon_id,
+        periodo_id,
+        dia_semana,
+        hora_inicio,
+        hora_fin
+    ]);
+
+
+    if (conflictoSalon.rows.length > 0) {
+
+        throw {
+            status: 409,
+            mensaje: 'El salón ya está ocupado en ese horario'
+        };
+    }
+
+
+    /*
+     * VALIDAR QUE EL DOCENTE NO TENGA OTRA CLASE
+     */
+
+    const conflictoDocente = await db.query(`
+        SELECT id
+        FROM asignacion_clase
+        WHERE docente_id = $1
+          AND periodo_id = $2
+          AND dia_semana = $3
+          AND activo = true
+          AND hora_inicio < $5
+          AND hora_fin > $4;
+    `, [
+        docente_id,
+        periodo_id,
+        dia_semana,
+        hora_inicio,
+        hora_fin
+    ]);
+
+
+    if (conflictoDocente.rows.length > 0) {
+
+        throw {
+            status: 409,
+            mensaje: 'El docente ya tiene una clase en ese horario'
+        };
+    }
+
+
+    /*
+     * VALIDAR QUE EL GRUPO NO TENGA OTRA CLASE
+     */
+
+    const conflictoGrupo = await db.query(`
+        SELECT id
+        FROM asignacion_clase
+        WHERE grupo_id = $1
+          AND periodo_id = $2
+          AND dia_semana = $3
+          AND activo = true
+          AND hora_inicio < $5
+          AND hora_fin > $4;
+    `, [
+        grupo_id,
+        periodo_id,
+        dia_semana,
+        hora_inicio,
+        hora_fin
+    ]);
+
+
+    if (conflictoGrupo.rows.length > 0) {
+
+        throw {
+            status: 409,
+            mensaje: 'El grupo ya tiene una clase en ese horario'
+        };
+    }
+
+
+    /*
+     * CREAR LA ASIGNACIÓN
+     */
+
+    const result = await db.query(`
+        INSERT INTO asignacion_clase (
+            docente_id,
+            materia_id,
+            grupo_id,
+            salon_id,
+            periodo_id,
+            dia_semana,
+            hora_inicio,
+            hora_fin,
+            color,
+            activo
+        )
+        VALUES (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
+            $6,
+            $7,
+            $8,
+            $9,
+            true
+        )
+        RETURNING *;
+    `, [
+        docente_id,
+        materia_id,
+        grupo_id,
+        salon_id,
+        periodo_id,
+        dia_semana,
+        hora_inicio,
+        hora_fin,
+        color || '#1558c7'
+    ]);
+
+
+    return result.rows[0];
+};
+
+
 const crearAsignacion = async (req, res) => {
 
     try {
 
-        const {
-            docente_id,
-            materia_id,
-            grupo_id,
-            salon_id,
-            periodo_id,
-            dia_semana,
-            hora_inicio,
-            hora_fin,
-            color
-        } = req.body;
-
-
-        // Validar campos obligatorios
-        if (
-            !docente_id ||
-            !materia_id ||
-            !grupo_id ||
-            !salon_id ||
-            !periodo_id ||
-            !dia_semana ||
-            !hora_inicio ||
-            !hora_fin
-        ) {
-            return res.status(400).json({
-                mensaje: 'Todos los campos son obligatorios'
-            });
-        }
-
-
-        // Validar día de la semana
-        if (dia_semana < 1 || dia_semana > 7) {
-            return res.status(400).json({
-                mensaje: 'El día de la semana debe estar entre 1 y 7'
-            });
-        }
-
-
-        // Validar que la hora inicial sea menor
-        if (hora_inicio >= hora_fin) {
-            return res.status(400).json({
-                mensaje: 'La hora de inicio debe ser menor que la hora de fin'
-            });
-        }
-
-
-        /*
-         * VALIDAR QUE EL SALÓN NO ESTÉ OCUPADO
-         */
-
-        const conflictoSalon = await pool.query(`
-            SELECT id
-            FROM asignacion_clase
-            WHERE salon_id = $1
-              AND periodo_id = $2
-              AND dia_semana = $3
-              AND activo = true
-              AND hora_inicio < $5
-              AND hora_fin > $4;
-        `, [
-            salon_id,
-            periodo_id,
-            dia_semana,
-            hora_inicio,
-            hora_fin
-        ]);
-
-
-        if (conflictoSalon.rows.length > 0) {
-
-            return res.status(409).json({
-                mensaje: 'El salón ya está ocupado en ese horario'
-            });
-        }
-
-
-        /*
-         * VALIDAR QUE EL DOCENTE NO TENGA OTRA CLASE
-         */
-
-        const conflictoDocente = await pool.query(`
-            SELECT id
-            FROM asignacion_clase
-            WHERE docente_id = $1
-              AND periodo_id = $2
-              AND dia_semana = $3
-              AND activo = true
-              AND hora_inicio < $5
-              AND hora_fin > $4;
-        `, [
-            docente_id,
-            periodo_id,
-            dia_semana,
-            hora_inicio,
-            hora_fin
-        ]);
-
-
-        if (conflictoDocente.rows.length > 0) {
-
-            return res.status(409).json({
-                mensaje: 'El docente ya tiene una clase en ese horario'
-            });
-        }
-
-
-        /*
-         * VALIDAR QUE EL GRUPO NO TENGA OTRA CLASE
-         */
-
-        const conflictoGrupo = await pool.query(`
-            SELECT id
-            FROM asignacion_clase
-            WHERE grupo_id = $1
-              AND periodo_id = $2
-              AND dia_semana = $3
-              AND activo = true
-              AND hora_inicio < $5
-              AND hora_fin > $4;
-        `, [
-            grupo_id,
-            periodo_id,
-            dia_semana,
-            hora_inicio,
-            hora_fin
-        ]);
-
-
-        if (conflictoGrupo.rows.length > 0) {
-
-            return res.status(409).json({
-                mensaje: 'El grupo ya tiene una clase en ese horario'
-            });
-        }
-
-
-        /*
-         * CREAR LA ASIGNACIÓN
-         */
-
-        const result = await pool.query(`
-            INSERT INTO asignacion_clase (
-                docente_id,
-                materia_id,
-                grupo_id,
-                salon_id,
-                periodo_id,
-                dia_semana,
-                hora_inicio,
-                hora_fin,
-                color,
-                activo
-            )
-            VALUES (
-                $1,
-                $2,
-                $3,
-                $4,
-                $5,
-                $6,
-                $7,
-                $8,
-                $9,
-                true
-            )
-            RETURNING *;
-        `, [
-            docente_id,
-            materia_id,
-            grupo_id,
-            salon_id,
-            periodo_id,
-            dia_semana,
-            hora_inicio,
-            hora_fin,
-            color || '#1558c7'
-        ]);
+        const fila =
+            await insertarAsignacionInterna(pool, req.body);
 
 
         /*
@@ -354,7 +382,7 @@ const crearAsignacion = async (req, res) => {
 
             const sesiones =
                 await generarSesionesDeAsignacion(
-                    result.rows[0].id
+                    fila.id
                 );
 
             if (sesiones !== null) {
@@ -371,11 +399,18 @@ const crearAsignacion = async (req, res) => {
 
 
         res.status(201).json({
-            ...result.rows[0],
+            ...fila,
             sesiones_generadas: sesionesGeneradas
         });
 
     } catch (error) {
+
+        if (error.status) {
+
+            return res.status(error.status).json({
+                mensaje: error.mensaje
+            });
+        }
 
         console.error('Error al crear asignación:', error);
 
@@ -383,6 +418,110 @@ const crearAsignacion = async (req, res) => {
             mensaje: 'Error al crear la asignación'
         });
     }
+};
+
+
+const crearAsignacionesMasivas = async (req, res) => {
+
+    const {
+        periodo_id,
+        docente_id,
+        color,
+        asignaciones
+    } = req.body;
+
+
+    if (!periodo_id || !docente_id) {
+
+        return res.status(400).json({
+            mensaje: 'periodo_id y docente_id son obligatorios'
+        });
+    }
+
+
+    if (
+        !Array.isArray(asignaciones) ||
+        asignaciones.length === 0
+    ) {
+
+        return res.status(400).json({
+            mensaje: 'Debes registrar al menos una clase'
+        });
+    }
+
+
+    /*
+     * Todo el lote se inserta en una sola transacción:
+     * si alguna fila falla, no se guarda ninguna.
+     */
+
+    const client = await pool.connect();
+
+    const creadas = [];
+
+    let sesionesGeneradas = 0;
+
+    try {
+
+        await client.query('BEGIN');
+
+        for (const fila of asignaciones) {
+
+            const insertada =
+                await insertarAsignacionInterna(client, {
+                    ...fila,
+                    periodo_id,
+                    docente_id,
+                    color: color || '#1558c7'
+                });
+
+            creadas.push(insertada);
+
+
+            const sesiones =
+                await generarSesionesDeAsignacion(
+                    insertada.id,
+                    client
+                );
+
+            if (sesiones !== null) {
+                sesionesGeneradas += sesiones.length;
+            }
+        }
+
+        await client.query('COMMIT');
+
+    } catch (error) {
+
+        await client.query('ROLLBACK');
+
+        if (error.status) {
+
+            return res.status(error.status).json({
+                mensaje: error.mensaje
+            });
+        }
+
+        console.error(
+            'Error al crear asignaciones masivas:',
+            error
+        );
+
+        return res.status(500).json({
+            mensaje: 'Error al crear las asignaciones'
+        });
+
+    } finally {
+
+        client.release();
+    }
+
+
+    res.status(201).json({
+        mensaje: `${creadas.length} clases registradas correctamente`,
+        creadas,
+        sesiones_generadas: sesionesGeneradas
+    });
 };
 
 const actualizarAsignacion = async (req, res) => {
@@ -687,6 +826,7 @@ module.exports = {
     obtenerAsignaciones,
     obtenerAsignacionPorId,
     crearAsignacion,
+    crearAsignacionesMasivas,
     actualizarAsignacion,
     desactivarAsignacion
 };

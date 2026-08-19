@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ClipboardList, Plus, UserRound } from "lucide-react";
+import { ClipboardList, Plus, Trash2, UserRound } from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
@@ -34,20 +34,34 @@ function Horarios() {
 
     const [modalAlta, setModalAlta] = useState(null);
     const [altaForm, setAltaForm] = useState({});
+    const [altaFilaIndex, setAltaFilaIndex] = useState(null);
     const [altaError, setAltaError] = useState("");
     const [guardandoAlta, setGuardandoAlta] = useState(false);
 
     const [formulario, setFormulario] = useState({
         periodo_id: "",
         docente_id: "",
+        color: "#1558c7"
+    });
+
+    const contadorFila = useRef(1);
+
+    const crearFila = () => ({
+
+        id: contadorFila.current++,
+
         materia_id: "",
         grupo_id: "",
         salon_id: "",
         dia_semana: "",
         hora_inicio: "",
-        hora_fin: "",
-        color: "#1558c7"
+        hora_fin: ""
+
     });
+
+    const [filas, setFilas] = useState([
+        crearFila()
+    ]);
 
 
     const dias = [
@@ -212,6 +226,50 @@ function Horarios() {
 
 
     /* =========================================
+       FILAS DE CLASES
+    ========================================== */
+
+    const manejarCambioFila = (index, e) => {
+
+        const { name, value } = e.target;
+
+        setFilas((prev) =>
+            prev.map((fila, i) =>
+                i === index
+                    ? { ...fila, [name]: value }
+                    : fila
+            )
+        );
+
+        setMensaje("");
+        setError("");
+
+    };
+
+
+    const agregarFila = () => {
+
+        setFilas((prev) => [...prev, crearFila()]);
+
+        setMensaje("");
+        setError("");
+
+    };
+
+
+    const eliminarFila = (index) => {
+
+        setFilas((prev) =>
+            prev.filter((_, i) => i !== index)
+        );
+
+        setMensaje("");
+        setError("");
+
+    };
+
+
+    /* =========================================
        REGISTRAR HORARIO
     ========================================== */
 
@@ -225,17 +283,11 @@ function Horarios() {
 
         if (
             !formulario.periodo_id ||
-            !formulario.docente_id ||
-            !formulario.materia_id ||
-            !formulario.grupo_id ||
-            !formulario.salon_id ||
-            !formulario.dia_semana ||
-            !formulario.hora_inicio ||
-            !formulario.hora_fin
+            !formulario.docente_id
         ) {
 
             setError(
-                "Completa todos los campos."
+                "Selecciona el periodo y el docente."
             );
 
             return;
@@ -243,13 +295,36 @@ function Horarios() {
         }
 
 
-        if (
-            formulario.hora_inicio >=
-            formulario.hora_fin
-        ) {
+        const filaIncompleta =
+            filas.some((fila) => (
+                !fila.materia_id ||
+                !fila.grupo_id ||
+                !fila.salon_id ||
+                !fila.dia_semana ||
+                !fila.hora_inicio ||
+                !fila.hora_fin
+            ));
+
+        if (filaIncompleta) {
 
             setError(
-                "La hora de inicio debe ser menor que la hora de fin."
+                "Completa todos los campos de cada clase."
+            );
+
+            return;
+
+        }
+
+
+        const horaInvalida =
+            filas.some((fila) =>
+                fila.hora_inicio >= fila.hora_fin
+            );
+
+        if (horaInvalida) {
+
+            setError(
+                "La hora de inicio debe ser menor que la hora de fin en cada clase."
             );
 
             return;
@@ -262,7 +337,7 @@ function Horarios() {
             setLoading(true);
 
             await api.post(
-                "/asignaciones",
+                "/asignaciones/masivo",
                 {
                     periodo_id:
                         Number(formulario.periodo_id),
@@ -270,48 +345,45 @@ function Horarios() {
                     docente_id:
                         Number(formulario.docente_id),
 
-                    materia_id:
-                        Number(formulario.materia_id),
+                    color: formulario.color,
 
-                    grupo_id:
-                        Number(formulario.grupo_id),
+                    asignaciones: filas.map((fila) => ({
 
-                    salon_id:
-                        Number(formulario.salon_id),
+                        materia_id:
+                            Number(fila.materia_id),
 
-                    dia_semana:
-                        Number(formulario.dia_semana),
+                        grupo_id:
+                            Number(fila.grupo_id),
 
-                    hora_inicio:
-                        formulario.hora_inicio,
+                        salon_id:
+                            Number(fila.salon_id),
 
-                    hora_fin:
-                        formulario.hora_fin,
+                        dia_semana:
+                            Number(fila.dia_semana),
 
-                    color:
-                        formulario.color,
+                        hora_inicio:
+                            fila.hora_inicio,
 
-                    activo: true
+                        hora_fin:
+                            fila.hora_fin
+
+                    }))
                 }
             );
 
 
             setMensaje(
-                "Horario registrado correctamente."
+                `${filas.length} ${
+                    filas.length === 1
+                        ? "clase registrada"
+                        : "clases registradas"
+                } correctamente.`
             );
 
 
-            setFormulario({
-                ...formulario,
-
-                docente_id: "",
-                materia_id: "",
-                grupo_id: "",
-                salon_id: "",
-                dia_semana: "",
-                hora_inicio: "",
-                hora_fin: ""
-            });
+            setFilas([
+                crearFila()
+            ]);
 
 
             cargarHorarios();
@@ -323,24 +395,10 @@ function Horarios() {
                 error
             );
 
-
-            if (
-                error.response &&
-                error.response.status === 409
-            ) {
-
-                setError(
-                    "No se puede registrar el horario porque existe un conflicto de salón u horario."
-                );
-
-            } else {
-
-                setError(
-                    error.response?.data?.mensaje ||
-                    "No se pudo registrar el horario."
-                );
-
-            }
+            setError(
+                error.response?.data?.mensaje ||
+                "No se pudo registrar el horario."
+            );
 
         } finally {
 
@@ -479,10 +537,11 @@ function Horarios() {
                         : "";
 
 
-    const abrirAlta = (tipo) => {
+    const abrirAlta = (tipo, filaIndex = null) => {
 
         setAltaError("");
         setAltaForm({});
+        setAltaFilaIndex(filaIndex);
         setModalAlta(tipo);
 
     };
@@ -583,12 +642,31 @@ function Horarios() {
 
             actualizarCatalogo(tipo, nuevo);
 
-            setFormulario((prev) => ({
-                ...prev,
-                [tipo + "_id"]: String(nuevo.id)
-            }));
+            if (altaFilaIndex !== null) {
+
+                setFilas((prev) =>
+                    prev.map((fila, i) =>
+                        i === altaFilaIndex
+                            ? {
+                                ...fila,
+                                [tipo + "_id"]:
+                                    String(nuevo.id)
+                            }
+                            : fila
+                    )
+                );
+
+            } else {
+
+                setFormulario((prev) => ({
+                    ...prev,
+                    [tipo + "_id"]: String(nuevo.id)
+                }));
+
+            }
 
             setModalAlta(null);
+            setAltaFilaIndex(null);
 
             toast(
                 "success",
@@ -753,201 +831,282 @@ function Horarios() {
                         </div>
 
 
-                        <div className="form-group">
+                        <div className="horario-filas">
 
-                            <label htmlFor="materia_id">Materia</label>
+                            {filas.map((fila, index) => (
 
-                            <div className="field-row">
-
-                                <select
-                                    id="materia_id"
-                                    name="materia_id"
-                                    value={formulario.materia_id}
-                                    onChange={manejarCambio}
+                                <div
+                                    className="horario-fila"
+                                    key={fila.id}
                                 >
 
-                                    <option value="">Selecciona una materia</option>
+                                    <div className="horario-fila-body">
 
-                                    {materias.map((materia) => (
+                                        <div className="form-group">
 
-                                        <option
-                                            key={materia.id}
-                                            value={materia.id}
-                                        >
+                                            <label htmlFor={`materia_id_${fila.id}`}>
+                                                Materia
+                                            </label>
 
-                                            {materia.nombre}
+                                            <div className="field-row">
 
-                                        </option>
+                                                <select
+                                                    id={`materia_id_${fila.id}`}
+                                                    name="materia_id"
+                                                    value={fila.materia_id}
+                                                    onChange={(e) =>
+                                                        manejarCambioFila(index, e)
+                                                    }
+                                                >
 
-                                    ))}
+                                                    <option value="">
+                                                        Selecciona una materia
+                                                    </option>
 
-                                </select>
+                                                    {materias.map((materia) => (
 
-                                <button
-                                    type="button"
-                                    className="add-button"
-                                    onClick={() => abrirAlta("materia")}
-                                    aria-label="Agregar materia"
-                                >
-                                    <Plus size={15} />
-                                </button>
+                                                        <option
+                                                            key={materia.id}
+                                                            value={materia.id}
+                                                        >
 
-                            </div>
+                                                            {materia.nombre}
 
-                        </div>
+                                                        </option>
 
+                                                    ))}
 
-                        <div className="form-group">
+                                                </select>
 
-                            <label htmlFor="grupo_id">Grupo</label>
+                                                <button
+                                                    type="button"
+                                                    className="add-button"
+                                                    onClick={() =>
+                                                        abrirAlta("materia", index)
+                                                    }
+                                                    aria-label="Agregar materia"
+                                                >
+                                                    <Plus size={15} />
+                                                </button>
 
-                            <div className="field-row">
+                                            </div>
 
-                                <select
-                                    id="grupo_id"
-                                    name="grupo_id"
-                                    value={formulario.grupo_id}
-                                    onChange={manejarCambio}
-                                >
-
-                                    <option value="">Selecciona un grupo</option>
-
-                                    {grupos.map((grupo) => (
-
-                                        <option
-                                            key={grupo.id}
-                                            value={grupo.id}
-                                        >
-
-                                            {grupo.clave}
-
-                                        </option>
-
-                                    ))}
-
-                                </select>
-
-                                <button
-                                    type="button"
-                                    className="add-button"
-                                    onClick={() => abrirAlta("grupo")}
-                                    aria-label="Agregar grupo"
-                                >
-                                    <Plus size={15} />
-                                </button>
-
-                            </div>
-
-                        </div>
+                                        </div>
 
 
-                        <div className="form-group">
+                                        <div className="form-group">
 
-                            <label htmlFor="salon_id">Salón</label>
+                                            <label htmlFor={`grupo_id_${fila.id}`}>
+                                                Grupo
+                                            </label>
 
-                            <div className="field-row">
+                                            <div className="field-row">
 
-                                <select
-                                    id="salon_id"
-                                    name="salon_id"
-                                    value={formulario.salon_id}
-                                    onChange={manejarCambio}
-                                >
+                                                <select
+                                                    id={`grupo_id_${fila.id}`}
+                                                    name="grupo_id"
+                                                    value={fila.grupo_id}
+                                                    onChange={(e) =>
+                                                        manejarCambioFila(index, e)
+                                                    }
+                                                >
 
-                                    <option value="">Selecciona un salón</option>
+                                                    <option value="">
+                                                        Selecciona un grupo
+                                                    </option>
 
-                                    {salones.map((salon) => (
+                                                    {grupos.map((grupo) => (
 
-                                        <option
-                                            key={salon.id}
-                                            value={salon.id}
-                                        >
+                                                        <option
+                                                            key={grupo.id}
+                                                            value={grupo.id}
+                                                        >
 
-                                            Salón {salon.numero}
+                                                            {grupo.clave}
 
-                                        </option>
+                                                        </option>
 
-                                    ))}
+                                                    ))}
 
-                                </select>
+                                                </select>
 
-                                <button
-                                    type="button"
-                                    className="add-button"
-                                    onClick={() => abrirAlta("salon")}
-                                    aria-label="Agregar salón"
-                                >
-                                    <Plus size={15} />
-                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="add-button"
+                                                    onClick={() =>
+                                                        abrirAlta("grupo", index)
+                                                    }
+                                                    aria-label="Agregar grupo"
+                                                >
+                                                    <Plus size={15} />
+                                                </button>
 
-                            </div>
+                                            </div>
 
-                        </div>
+                                        </div>
 
 
-                        <div className="form-group">
+                                        <div className="form-group">
 
-                            <label htmlFor="dia_semana">Día</label>
+                                            <label htmlFor={`salon_id_${fila.id}`}>
+                                                Salón
+                                            </label>
 
-                            <select
-                                id="dia_semana"
-                                name="dia_semana"
-                                value={formulario.dia_semana}
-                                onChange={manejarCambio}
-                            >
+                                            <div className="field-row">
 
-                                <option value="">Selecciona un día</option>
+                                                <select
+                                                    id={`salon_id_${fila.id}`}
+                                                    name="salon_id"
+                                                    value={fila.salon_id}
+                                                    onChange={(e) =>
+                                                        manejarCambioFila(index, e)
+                                                    }
+                                                >
 
-                                {dias.map((dia) => (
+                                                    <option value="">
+                                                        Selecciona un salón
+                                                    </option>
 
-                                    <option
-                                        key={dia.id}
-                                        value={dia.id}
+                                                    {salones.map((salon) => (
+
+                                                        <option
+                                                            key={salon.id}
+                                                            value={salon.id}
+                                                        >
+
+                                                            Salón {salon.numero}
+
+                                                        </option>
+
+                                                    ))}
+
+                                                </select>
+
+                                                <button
+                                                    type="button"
+                                                    className="add-button"
+                                                    onClick={() =>
+                                                        abrirAlta("salon", index)
+                                                    }
+                                                    aria-label="Agregar salón"
+                                                >
+                                                    <Plus size={15} />
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div className="form-group">
+
+                                            <label htmlFor={`dia_semana_${fila.id}`}>
+                                                Día
+                                            </label>
+
+                                            <select
+                                                id={`dia_semana_${fila.id}`}
+                                                name="dia_semana"
+                                                value={fila.dia_semana}
+                                                onChange={(e) =>
+                                                    manejarCambioFila(index, e)
+                                                }
+                                            >
+
+                                                <option value="">
+                                                    Selecciona un día
+                                                </option>
+
+                                                {dias.map((dia) => (
+
+                                                    <option
+                                                        key={dia.id}
+                                                        value={dia.id}
+                                                    >
+
+                                                        {dia.nombre}
+
+                                                    </option>
+
+                                                ))}
+
+                                            </select>
+
+                                        </div>
+
+
+                                        <div className="form-group">
+
+                                            <label htmlFor={`hora_inicio_${fila.id}`}>
+                                                Hora inicio
+                                            </label>
+
+                                            <input
+                                                id={`hora_inicio_${fila.id}`}
+                                                type="time"
+                                                name="hora_inicio"
+                                                value={fila.hora_inicio}
+                                                onChange={(e) =>
+                                                    manejarCambioFila(index, e)
+                                                }
+                                            />
+
+                                        </div>
+
+
+                                        <div className="form-group">
+
+                                            <label htmlFor={`hora_fin_${fila.id}`}>
+                                                Hora fin
+                                            </label>
+
+                                            <input
+                                                id={`hora_fin_${fila.id}`}
+                                                type="time"
+                                                name="hora_fin"
+                                                value={fila.hora_fin}
+                                                onChange={(e) =>
+                                                    manejarCambioFila(index, e)
+                                                }
+                                            />
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        className="horario-fila-remove"
+                                        onClick={() =>
+                                            eliminarFila(index)
+                                        }
+                                        disabled={filas.length === 1}
+                                        title={
+                                            filas.length === 1
+                                                ? "Debe existir al menos una clase"
+                                                : "Quitar esta clase"
+                                        }
+                                        aria-label={`Quitar clase ${index + 1}`}
                                     >
+                                        <Trash2 size={16} />
+                                    </button>
 
-                                        {dia.nombre}
+                                </div>
 
-                                    </option>
-
-                                ))}
-
-                            </select>
+                            ))}
 
                         </div>
 
 
-                        <div className="time-grid">
-
-                            <div className="form-group">
-
-                                <label htmlFor="hora_inicio">Hora inicio</label>
-
-                                <input
-                                    id="hora_inicio"
-                                    type="time"
-                                    name="hora_inicio"
-                                    value={formulario.hora_inicio}
-                                    onChange={manejarCambio}
-                                />
-
-                            </div>
-
-
-                            <div className="form-group">
-
-                                <label htmlFor="hora_fin">Hora fin</label>
-
-                                <input
-                                    id="hora_fin"
-                                    type="time"
-                                    name="hora_fin"
-                                    value={formulario.hora_fin}
-                                    onChange={manejarCambio}
-                                />
-
-                            </div>
-
-                        </div>
+                        <button
+                            type="button"
+                            className="add-fila-button"
+                            onClick={agregarFila}
+                        >
+                            <Plus size={15} />
+                            Agregar otra clase
+                        </button>
 
 
                         <div className="form-group">
@@ -1017,7 +1176,7 @@ function Horarios() {
                             disabled={loading}
                         >
 
-                            {loading ? "Guardando..." : "Guardar horario"}
+                            {loading ? "Guardando..." : `Guardar (${filas.length})`}
 
                         </button>
 
@@ -1268,28 +1427,28 @@ function Horarios() {
                                                                 }
                                                             >
 
-                                                                <td>
+                                                                <td data-label="Materia">
                                                                     {
                                                                         horario.materia ||
                                                                         "—"
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Grupo">
                                                                     {
                                                                         horario.grupo ||
                                                                         "—"
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Salón">
                                                                     {
                                                                         horario.salon ||
                                                                         "—"
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Día">
                                                                     {
                                                                         obtenerDia(
                                                                             horario.dia_semana
@@ -1297,7 +1456,7 @@ function Horarios() {
                                                                     }
                                                                 </td>
 
-                                                                <td>
+                                                                <td data-label="Horario">
                                                                     {
                                                                         horario.hora_inicio
                                                                     }
@@ -1336,6 +1495,11 @@ function Horarios() {
                 open={Boolean(modalAlta)}
                 onClose={() => setModalAlta(null)}
                 title={tituloAlta}
+                maxWidth={
+                    modalAlta === "docente"
+                        ? 720
+                        : 560
+                }
                 description="Los datos nuevos quedan disponibles de inmediato en el formulario."
             >
 
@@ -1348,73 +1512,101 @@ function Horarios() {
 
                         <>
 
-                            <div className="form-group">
+                            <div className="form-row">
 
-                                <label htmlFor="alta_nombre">Nombre</label>
+                                <div className="form-group">
 
-                                <input
-                                    id="alta_nombre"
-                                    name="nombre"
-                                    value={altaForm.nombre || ""}
-                                    onChange={manejarCambioAlta}
-                                />
+                                    <label htmlFor="alta_nombre">
+                                        Nombre *
+                                    </label>
+
+                                    <input
+                                        id="alta_nombre"
+                                        type="text"
+                                        name="nombre"
+                                        value={altaForm.nombre || ""}
+                                        onChange={manejarCambioAlta}
+                                        required
+                                    />
+
+                                </div>
+
+
+                                <div className="form-group">
+
+                                    <label htmlFor="alta_apellido_p">
+                                        Apellido paterno *
+                                    </label>
+
+                                    <input
+                                        id="alta_apellido_p"
+                                        type="text"
+                                        name="apellido_p"
+                                        value={altaForm.apellido_p || ""}
+                                        onChange={manejarCambioAlta}
+                                        required
+                                    />
+
+                                </div>
+
+
+                                <div className="form-group">
+
+                                    <label htmlFor="alta_apellido_m">
+                                        Apellido materno *
+                                    </label>
+
+                                    <input
+                                        id="alta_apellido_m"
+                                        type="text"
+                                        name="apellido_m"
+                                        value={altaForm.apellido_m || ""}
+                                        onChange={manejarCambioAlta}
+                                        required
+                                    />
+
+                                </div>
 
                             </div>
 
 
-                            <div className="form-group">
+                            <div className="form-row">
 
-                                <label htmlFor="alta_apellido_p">Apellido paterno</label>
+                                <div className="form-group">
 
-                                <input
-                                    id="alta_apellido_p"
-                                    name="apellido_p"
-                                    value={altaForm.apellido_p || ""}
-                                    onChange={manejarCambioAlta}
-                                />
+                                    <label htmlFor="alta_rfc">
+                                        RFC *
+                                    </label>
 
-                            </div>
+                                    <input
+                                        id="alta_rfc"
+                                        type="text"
+                                        name="rfc"
+                                        maxLength="13"
+                                        value={altaForm.rfc || ""}
+                                        onChange={manejarCambioAlta}
+                                        required
+                                    />
 
-
-                            <div className="form-group">
-
-                                <label htmlFor="alta_apellido_m">Apellido materno</label>
-
-                                <input
-                                    id="alta_apellido_m"
-                                    name="apellido_m"
-                                    value={altaForm.apellido_m || ""}
-                                    onChange={manejarCambioAlta}
-                                />
-
-                            </div>
+                                </div>
 
 
-                            <div className="form-group">
+                                <div className="form-group">
 
-                                <label htmlFor="alta_rfc">RFC</label>
+                                    <label htmlFor="alta_telefono">
+                                        Teléfono *
+                                    </label>
 
-                                <input
-                                    id="alta_rfc"
-                                    name="rfc"
-                                    maxLength="13"
-                                    value={altaForm.rfc || ""}
-                                    onChange={manejarCambioAlta}
-                                />
+                                    <input
+                                        id="alta_telefono"
+                                        type="tel"
+                                        name="telefono"
+                                        value={altaForm.telefono || ""}
+                                        onChange={manejarCambioAlta}
+                                        required
+                                    />
 
-                            </div>
-
-
-                            <div className="form-group">
-
-                                <label htmlFor="alta_telefono">Teléfono</label>
-
-                                <input
-                                    id="alta_telefono"
-                                    name="telefono"
-                                    value={altaForm.telefono || ""}
-                                    onChange={manejarCambioAlta}
-                                />
+                                </div>
 
                             </div>
 
@@ -1422,15 +1614,16 @@ function Horarios() {
                             <div className="form-group">
 
                                 <label htmlFor="alta_correo_personal">
-                                    Correo personal
+                                    Correo personal *
                                 </label>
 
                                 <input
                                     id="alta_correo_personal"
-                                    name="correo_personal"
                                     type="email"
+                                    name="correo_personal"
                                     value={altaForm.correo_personal || ""}
                                     onChange={manejarCambioAlta}
+                                    required
                                 />
 
                             </div>
@@ -1439,16 +1632,52 @@ function Horarios() {
                             <div className="form-group">
 
                                 <label htmlFor="alta_correo_institucional">
-                                    Correo institucional
+                                    Correo institucional *
                                 </label>
 
                                 <input
                                     id="alta_correo_institucional"
-                                    name="correo_institucional"
                                     type="email"
+                                    name="correo_institucional"
                                     value={altaForm.correo_institucional || ""}
                                     onChange={manejarCambioAlta}
+                                    required
                                 />
+
+                            </div>
+
+
+                            {altaError && (
+
+                                <div className="horarios-error" role="alert">
+                                    {altaError}
+                                </div>
+
+                            )}
+
+
+                            <div className="modal-buttons">
+
+                                <button
+                                    type="button"
+                                    className="cancel-button"
+                                    onClick={() =>
+                                        setModalAlta(null)
+                                    }
+                                >
+                                    Cancelar
+                                </button>
+
+
+                                <button
+                                    type="submit"
+                                    className="save-button"
+                                    disabled={guardandoAlta}
+                                >
+                                    {guardandoAlta
+                                        ? "Guardando..."
+                                        : "Registrar docente"}
+                                </button>
 
                             </div>
 
@@ -1551,22 +1780,30 @@ function Horarios() {
                     )}
 
 
-                    {altaError && (
+                    {modalAlta !== "docente" && (
 
-                        <div className="horarios-error" role="alert">
-                            {altaError}
-                        </div>
+                        <>
+
+                            {altaError && (
+
+                                <div className="horarios-error" role="alert">
+                                    {altaError}
+                                </div>
+
+                            )}
+
+
+                            <button
+                                type="submit"
+                                className="save-button"
+                                disabled={guardandoAlta}
+                            >
+                                {guardandoAlta ? "Guardando..." : "Guardar"}
+                            </button>
+
+                        </>
 
                     )}
-
-
-                    <button
-                        type="submit"
-                        className="save-button"
-                        disabled={guardandoAlta}
-                    >
-                        {guardandoAlta ? "Guardando..." : "Guardar"}
-                    </button>
 
                 </form>
 

@@ -302,6 +302,69 @@
 }
 
 
+.admin-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.icon-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 28px;
+
+    height: 28px;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    cursor: pointer;
+}
+
+
+.icon-button.delete-button {
+    background: var(--danger-bg);
+
+    color: var(--danger);
+}
+
+
+.icon-button.delete-button:hover {
+    background: var(--danger-border);
+}
+
+
+.icon-button.edit-button {
+    background: var(--primary-50);
+
+    color: var(--primary-600);
+}
+
+
+.icon-button.edit-button:hover {
+    background: var(--primary-100);
+}
+
+
+.modal-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    margin-top: var(--space-4);
+}
+
+
 /* =========================================
    TABLAS
 ========================================= */
@@ -484,6 +547,22 @@
     gap: 4px;
 
     min-width: 0;
+}
+
+
+.room-card .room-action {
+    margin-left: 0;
+}
+
+
+.room-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    margin-left: auto;
 }
 
 
@@ -671,6 +750,113 @@
 
     .rooms-grid {
         grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================
+   MÓVIL: TABLAS → TARJETAS
+========================================= */
+
+@media (max-width: 768px) {
+
+    .data-table-container {
+        overflow-x: visible;
+    }
+
+
+    .admin-table {
+        display: block;
+    }
+
+
+    .admin-table thead {
+        display: none;
+    }
+
+
+    .admin-table tbody {
+        display: block;
+    }
+
+
+    .admin-table tbody tr {
+        display: block;
+
+        margin-bottom: 12px;
+
+        padding: 12px;
+
+        border: 1px solid var(--neutral-200);
+
+        border-radius: var(--radius-md);
+
+        background: white;
+
+        box-shadow: var(--shadow-sm);
+    }
+
+
+    .admin-table tbody tr:hover {
+        background: white;
+    }
+
+
+    .admin-table td {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: baseline;
+
+        gap: var(--space-3);
+
+        padding: 7px 0;
+
+        border-top: none;
+
+        white-space: normal;
+
+        text-align: right;
+    }
+
+
+    .admin-table td[data-label]::before {
+        content: attr(data-label);
+
+        flex-shrink: 0;
+
+        font-size: var(--fs-2xs);
+
+        font-weight: 700;
+
+        letter-spacing: 0.04em;
+
+        text-transform: uppercase;
+
+        color: var(--neutral-500);
+    }
+
+
+    .admin-table td.empty-table {
+        display: block;
+
+        text-align: center;
+    }
+
+
+    /* Celda de acciones: pie de tarjeta */
+    .admin-table td.admin-actions-cell {
+        display: block;
+
+        margin-top: 8px;
+
+        padding-top: 10px;
+
+        border-top: 1px dashed var(--neutral-200);
+
+        text-align: left;
     }
 
 }

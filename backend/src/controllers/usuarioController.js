@@ -226,37 +226,61 @@ const actualizarUsuario = async (req, res) => {
 };
 
 
-const desactivarUsuario = async (req, res) => {
+const eliminarUsuario = async (req, res) => {
 
     try {
 
         const { id } = req.params;
 
-        const result = await pool.query(`
-            UPDATE usuario
-            SET activo = false
-            WHERE id = $1
-            RETURNING id, username, rol, activo;
+        const existe = await pool.query(`
+            SELECT id
+            FROM usuario
+            WHERE id = $1;
         `, [id]);
 
-        if (result.rows.length === 0) {
+        if (existe.rows.length === 0) {
 
             return res.status(404).json({
                 mensaje: 'Usuario no encontrado'
             });
         }
 
+
+        /*
+         * No eliminar si tiene registros de asistencia
+         * para no romper las claves foráneas.
+         */
+
+        const conAsistencias = await pool.query(`
+            SELECT 1
+            FROM registro_asistencia
+            WHERE usuario_id = $1
+            LIMIT 1;
+        `, [id]);
+
+        if (conAsistencias.rows.length > 0) {
+
+            return res.status(409).json({
+                mensaje: 'El usuario tiene registros de asistencia y no puede eliminarse'
+            });
+        }
+
+
+        await pool.query(`
+            DELETE FROM usuario
+            WHERE id = $1;
+        `, [id]);
+
         res.json({
-            mensaje: 'Usuario desactivado correctamente',
-            usuario: result.rows[0]
+            mensaje: 'Usuario eliminado correctamente'
         });
 
     } catch (error) {
 
-        console.error('Error al desactivar usuario:', error);
+        console.error('Error al eliminar usuario:', error);
 
         res.status(500).json({
-            mensaje: 'Error al desactivar el usuario'
+            mensaje: 'Error al eliminar el usuario'
         });
     }
 };
@@ -267,5 +291,5 @@ module.exports = {
     obtenerUsuarioPorId,
     crearUsuario,
     actualizarUsuario,
-    desactivarUsuario
+    eliminarUsuario
 };

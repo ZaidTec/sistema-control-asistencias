@@ -5,7 +5,7 @@ const {
     obtenerUsuarioPorId,
     crearUsuario,
     actualizarUsuario,
-    desactivarUsuario
+    eliminarUsuario
 } = require('../controllers/usuarioController');
 
 const requireRole = require('../middleware/rolMiddleware');
@@ -23,7 +23,7 @@ router.post('/', crearUsuario);
 
 router.put('/:id', actualizarUsuario);
 
-router.delete('/:id', desactivarUsuario);
+router.delete('/:id', eliminarUsuario);
 
 
 module.exports = router;

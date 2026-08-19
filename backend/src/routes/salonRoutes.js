@@ -4,7 +4,8 @@ const {
     obtenerSalones,
     obtenerSalonPorId,
     crearSalon,
-    actualizarSalon
+    actualizarSalon,
+    eliminarSalon
 } = require('../controllers/salonController');
 
 const requireRole = require('../middleware/rolMiddleware');
@@ -21,6 +22,8 @@ router.use(requireRole('ADMINISTRADOR'));
 router.post('/', crearSalon);
 
 router.put('/:id', actualizarSalon);
+
+router.delete('/:id', eliminarSalon);
 
 
 module.exports = router;

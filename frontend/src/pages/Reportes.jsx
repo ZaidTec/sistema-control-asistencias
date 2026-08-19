@@ -213,6 +213,24 @@ function Reportes() {
     ).length;
 
 
+    const gruposPorFecha = resultados.reduce(
+        (grupos, registro) => {
+
+            const fecha = registro.fecha || "Sin fecha";
+
+            if (!grupos[fecha]) {
+                grupos[fecha] = [];
+            }
+
+            grupos[fecha].push(registro);
+
+            return grupos;
+
+        },
+        {}
+    );
+
+
     /* =========================================
        NOMBRE DOCENTE
     ========================================= */
@@ -697,65 +715,92 @@ function Reportes() {
 
                                     <tbody>
 
-                                        {resultados.map(
-                                            (registro, index) => (
+                                        {Object.entries(
+                                            gruposPorFecha
+                                        ).flatMap(([fecha, lista]) => [
 
-                                                <tr key={
-                                                    registro.id || index
-                                                }>
+                                            <tr
+                                                className="fecha-grupo-fila"
+                                                key={`fecha-${fecha}`}
+                                            >
 
-                                                    <td>
-                                                        {registro.fecha}
-                                                    </td>
+                                                <td
+                                                    colSpan="8"
+                                                    className="fecha-grupo-titulo"
+                                                >
+                                                    {fecha}
+                                                </td>
 
-                                                    <td>
-                                                        {registro.docente}
-                                                    </td>
+                                            </tr>,
 
-                                                    <td>
-                                                        {registro.materia}
-                                                    </td>
+                                            ...lista.map(
+                                                (registro, index) => (
 
-                                                    <td>
-                                                        {registro.grupo}
-                                                    </td>
+                                                    <tr
+                                                        key={
+                                                            registro.id ||
+                                                            `${fecha}-${index}`
+                                                        }
+                                                    >
 
-                                                    <td>
-                                                        {registro.salon}
-                                                    </td>
+                                                        <td className="fecha-cell">
+                                                            {registro.fecha}
+                                                        </td>
 
-                                                    <td>
-                                                        {registro.hora_inicio}
-                                                        {" - "}
-                                                        {registro.hora_fin}
-                                                    </td>
+                                                        <td data-label="Docente">
+                                                            {registro.docente}
+                                                        </td>
 
-                                                    <td>
+                                                        <td data-label="Materia">
+                                                            {registro.materia}
+                                                        </td>
 
-                                                        <span
-                                                            className={
-                                                                `estado-badge ${
-                                                                    registro.estado
-                                                                        ?.toLowerCase()
-                                                                }`
-                                                            }
+                                                        <td data-label="Grupo">
+                                                            {registro.grupo}
+                                                        </td>
+
+                                                        <td data-label="Salón">
+                                                            {registro.salon}
+                                                        </td>
+
+                                                        <td data-label="Horario">
+                                                            {registro.hora_inicio}
+                                                            {" - "}
+                                                            {registro.hora_fin}
+                                                        </td>
+
+                                                        <td data-label="Estado">
+
+                                                            <span
+                                                                className={
+                                                                    `estado-badge ${
+                                                                        registro.estado
+                                                                            ?.toLowerCase()
+                                                                    }`
+                                                                }
+                                                            >
+                                                                {registro.estado}
+                                                            </span>
+
+                                                        </td>
+
+                                                        <td
+                                                            data-label="Observaciones"
+                                                            className="observaciones"
+                                                            title={registro.observaciones || ""}
                                                         >
-                                                            {registro.estado}
-                                                        </span>
 
-                                                    </td>
+                                                            {registro.observaciones
+                                                                || "—"}
 
-                                                    <td className="observaciones" title={registro.observaciones || ""}>
+                                                        </td>
 
-                                                        {registro.observaciones
-                                                            || "—"}
+                                                    </tr>
 
-                                                    </td>
-
-                                                </tr>
-
+                                                )
                                             )
-                                        )}
+
+                                        ])}
 
                                     </tbody>
 

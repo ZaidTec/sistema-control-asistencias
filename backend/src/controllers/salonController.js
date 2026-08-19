@@ -190,9 +190,58 @@ const actualizarSalon = async (req, res) => {
 };
 
 
+const eliminarSalon = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const tieneAsignaciones = await pool.query(`
+            SELECT 1
+            FROM asignacion_clase
+            WHERE salon_id = $1
+            LIMIT 1;
+        `, [id]);
+
+        if (tieneAsignaciones.rows.length > 0) {
+
+            return res.status(409).json({
+                mensaje: 'No se puede eliminar el salón porque tiene asignaciones'
+            });
+        }
+
+        const result = await pool.query(`
+            DELETE FROM salon
+            WHERE id = $1
+            RETURNING id;
+        `, [id]);
+
+        if (result.rows.length === 0) {
+
+            return res.status(404).json({
+                mensaje: 'Salón no encontrado'
+            });
+        }
+
+        res.status(200).json({
+            mensaje: 'Salón eliminado correctamente'
+        });
+
+    } catch (error) {
+
+        console.error('Error al eliminar salón:', error);
+
+        res.status(500).json({
+            mensaje: 'Error al eliminar el salón'
+        });
+    }
+};
+
+
 module.exports = {
     obtenerSalones,
     obtenerSalonPorId,
     crearSalon,
-    actualizarSalon
+    actualizarSalon,
+    eliminarSalon
 };

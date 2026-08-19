@@ -317,6 +317,88 @@ function Dashboard() {
 
 
     /*
+     * Estado de tiempo de una sesión (tiempo real)
+     */
+
+    const parsearMinutos = (hora) => {
+
+        if (!hora) return 0;
+
+        const [horas, minutos] =
+            hora.split(":").map(Number);
+
+        return horas * 60 + minutos;
+
+    };
+
+
+    const obtenerEstadoTiempo = (sesion) => {
+
+        const minutosActuales =
+            horaActual.getHours() * 60 +
+            horaActual.getMinutes();
+
+        const minutosInicio =
+            parsearMinutos(
+                formatearHora(sesion.hora_inicio)
+            );
+
+        const minutosFin =
+            parsearMinutos(
+                formatearHora(sesion.hora_fin)
+            );
+
+        if (minutosActuales < minutosInicio) {
+            return "POR_COMENZAR";
+        }
+
+        if (minutosActuales > minutosFin) {
+            return "TERMINADA";
+        }
+
+        return "EN_CURSO";
+
+    };
+
+
+    const infoEstadoTiempo = {
+        EN_CURSO: {
+            clase: "en-curso",
+            texto: "En curso"
+        },
+        POR_COMENZAR: {
+            clase: "por-comenzar",
+            texto: "Por comenzar"
+        },
+        TERMINADA: {
+            clase: "terminada",
+            texto: "Terminada"
+        }
+    };
+
+
+    const prioridadEstadoTiempo = {
+        EN_CURSO: 0,
+        POR_COMENZAR: 1,
+        TERMINADA: 2
+    };
+
+
+    const sesionesOrdenadas = [...sesiones].sort((a, b) => {
+
+        return (
+            prioridadEstadoTiempo[
+                obtenerEstadoTiempo(a)
+            ] -
+            prioridadEstadoTiempo[
+                obtenerEstadoTiempo(b)
+            ]
+        );
+
+    });
+
+
+    /*
      * Formatear fecha
      */
 
@@ -525,10 +607,18 @@ function Dashboard() {
 
                             <div className="mobile-session-cards">
 
-                                {sesiones.map(sesion => (
+                                {sesionesOrdenadas.map(sesion => (
 
                                     <article
-                                        className="mobile-session-card"
+                                        className={
+                                            `mobile-session-card ${
+                                                obtenerEstadoTiempo(
+                                                    sesion
+                                                ) === "EN_CURSO"
+                                                    ? "sesion-en-curso"
+                                                    : ""
+                                            }`
+                                        }
                                         key={sesion.id}
                                     >
 
@@ -545,22 +635,46 @@ function Dashboard() {
                                             </div>
 
 
-                                            <span
-                                                className={
-                                                    `estado-badge ${
-                                                        obtenerClaseEstado(
-                                                            sesion.asistencia_estado
-                                                        ).replace(
-                                                            "estado ",
-                                                            ""
-                                                        )
-                                                    }`
-                                                }
-                                            >
-                                                {obtenerTextoEstado(
-                                                    sesion.asistencia_estado
-                                                )}
-                                            </span>
+                                            <div className="mobile-session-badges">
+
+                                                <span
+                                                    className={
+                                                        `estado-badge ${
+                                                            obtenerClaseEstado(
+                                                                sesion.asistencia_estado
+                                                            ).replace(
+                                                                "estado ",
+                                                                ""
+                                                            )
+                                                        }`
+                                                    }
+                                                >
+                                                    {obtenerTextoEstado(
+                                                        sesion.asistencia_estado
+                                                    )}
+                                                </span>
+
+                                                <span
+                                                    className={
+                                                        `tiempo-badge ${
+                                                            infoEstadoTiempo[
+                                                                obtenerEstadoTiempo(
+                                                                    sesion
+                                                                )
+                                                            ].clase
+                                                        }`
+                                                    }
+                                                >
+                                                    {
+                                                        infoEstadoTiempo[
+                                                            obtenerEstadoTiempo(
+                                                                sesion
+                                                            )
+                                                        ].texto
+                                                    }
+                                                </span>
+
+                                            </div>
 
                                         </div>
 
@@ -735,9 +849,18 @@ function Dashboard() {
 
                                     <tbody>
 
-                                        {sesiones.map(sesion => (
+                                        {sesionesOrdenadas.map(sesion => (
 
-                                            <tr key={sesion.id}>
+                                            <tr
+                                                key={sesion.id}
+                                                className={
+                                                    obtenerEstadoTiempo(
+                                                        sesion
+                                                    ) === "EN_CURSO"
+                                                        ? "sesion-en-curso"
+                                                        : ""
+                                                }
+                                            >
 
                                                 <td>
                                                     <strong>
@@ -767,6 +890,26 @@ function Dashboard() {
                                                     {formatearHora(
                                                         sesion.hora_fin
                                                     )}
+
+                                                    <span
+                                                        className={
+                                                            `tiempo-badge ${
+                                                                infoEstadoTiempo[
+                                                                    obtenerEstadoTiempo(
+                                                                        sesion
+                                                                    )
+                                                                ].clase
+                                                            }`
+                                                        }
+                                                    >
+                                                        {
+                                                            infoEstadoTiempo[
+                                                                obtenerEstadoTiempo(
+                                                                    sesion
+                                                                )
+                                                            ].texto
+                                                        }
+                                                    </span>
 
                                                 </td>
 
