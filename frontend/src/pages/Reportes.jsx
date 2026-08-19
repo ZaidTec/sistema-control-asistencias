@@ -300,11 +300,12 @@ function Reportes() {
 
                             <div className="filter-group">
 
-                                <label>
+                                <label htmlFor="reporte-periodo">
                                     Periodo escolar
                                 </label>
 
                                 <select
+                                    id="reporte-periodo"
                                     name="periodo_id"
                                     value={filtros.periodo_id}
                                     onChange={manejarCambio}
@@ -334,11 +335,12 @@ function Reportes() {
 
                             <div className="filter-group">
 
-                                <label>
+                                <label htmlFor="reporte-docente">
                                     Docente
                                 </label>
 
                                 <select
+                                    id="reporte-docente"
                                     name="docente_id"
                                     value={filtros.docente_id}
                                     onChange={manejarCambio}
@@ -368,11 +370,12 @@ function Reportes() {
 
                             <div className="filter-group">
 
-                                <label>
+                                <label htmlFor="reporte-fecha-inicio">
                                     Fecha inicial
                                 </label>
 
                                 <input
+                                    id="reporte-fecha-inicio"
                                     type="date"
                                     name="fecha_inicio"
                                     value={filtros.fecha_inicio}
@@ -386,11 +389,12 @@ function Reportes() {
 
                             <div className="filter-group">
 
-                                <label>
+                                <label htmlFor="reporte-fecha-fin">
                                     Fecha final
                                 </label>
 
                                 <input
+                                    id="reporte-fecha-fin"
                                     type="date"
                                     name="fecha_fin"
                                     value={filtros.fecha_fin}
@@ -404,11 +408,12 @@ function Reportes() {
 
                             <div className="filter-group">
 
-                                <label>
+                                <label htmlFor="reporte-estado">
                                     Estado
                                 </label>
 
                                 <select
+                                    id="reporte-estado"
                                     name="estado"
                                     value={filtros.estado}
                                     onChange={manejarCambio}
@@ -473,7 +478,7 @@ function Reportes() {
 
                     {error && (
 
-                        <div className="reportes-error">
+                        <div className="reportes-error" role="alert">
                             {error}
                         </div>
 

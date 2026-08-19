@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ClipboardList, UserRound } from "lucide-react";
+import { ClipboardList, Plus, UserRound } from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import Modal from "../components/ui/Modal";
 import { useToast } from "../components/ui/Toast";
 import "../styles/horarios.css";
 
@@ -26,10 +27,15 @@ function Horarios() {
     const [error, setError] = useState("");
     const [mensaje, setMensaje] = useState("");
 
-    const [mostrarHorarios, setMostrarHorarios] = useState(false);
-
     const [eliminarId, setEliminarId] = useState(null);
     const [eliminando, setEliminando] = useState(false);
+
+    const [mostrarHorarios, setMostrarHorarios] = useState(false);
+
+    const [modalAlta, setModalAlta] = useState(null);
+    const [altaForm, setAltaForm] = useState({});
+    const [altaError, setAltaError] = useState("");
+    const [guardandoAlta, setGuardandoAlta] = useState(false);
 
     const [formulario, setFormulario] = useState({
         periodo_id: "",
@@ -39,7 +45,8 @@ function Horarios() {
         salon_id: "",
         dia_semana: "",
         hora_inicio: "",
-        hora_fin: ""
+        hora_fin: "",
+        color: "#1558c7"
     });
 
 
@@ -49,6 +56,16 @@ function Horarios() {
         { id: 3, nombre: "Miércoles" },
         { id: 4, nombre: "Jueves" },
         { id: 5, nombre: "Viernes" }
+    ];
+
+    const colores = [
+        "#1558c7",
+        "#0e6e4c",
+        "#b45309",
+        "#be123c",
+        "#6d28d9",
+        "#0369a1",
+        "#a16207"
     ];
 
 
@@ -103,6 +120,20 @@ function Horarios() {
             setMaterias(materiasResponse.data);
             setGrupos(gruposResponse.data);
             setSalones(salonesResponse.data);
+
+            const periodoActivo =
+                periodosResponse.data.find(
+                    (periodo) => periodo.activo
+                );
+
+            if (periodoActivo) {
+
+                setFormulario((prev) => ({
+                    ...prev,
+                    periodo_id: String(periodoActivo.id)
+                }));
+
+            }
 
         } catch (error) {
 
@@ -257,6 +288,9 @@ function Horarios() {
                     hora_fin:
                         formulario.hora_fin,
 
+                    color:
+                        formulario.color,
+
                     activo: true
                 }
             );
@@ -382,6 +416,16 @@ function Horarios() {
     };
 
 
+    const obtenerHorariosDia = (dia) => {
+
+        return horarios.filter(
+            horario =>
+                Number(horario.dia_semana) === dia
+        );
+
+    };
+
+
     const obtenerDia = (numero) => {
 
         const dia = dias.find(
@@ -391,16 +435,6 @@ function Horarios() {
         return dia
             ? dia.nombre
             : "";
-
-    };
-
-
-    const obtenerHorariosDia = (dia) => {
-
-        return horarios.filter(
-            horario =>
-                Number(horario.dia_semana) === dia
-        );
 
     };
 
@@ -429,6 +463,159 @@ function Horarios() {
     };
 
 
+    /* =========================================
+       ALTA RÁPIDA (DOCENTE / MATERIA / GRUPO / SALÓN)
+    ========================================== */
+
+    const tituloAlta =
+        modalAlta === "docente"
+            ? "Agregar docente"
+            : modalAlta === "materia"
+                ? "Agregar materia"
+                : modalAlta === "grupo"
+                    ? "Agregar grupo"
+                    : modalAlta === "salon"
+                        ? "Agregar salón"
+                        : "";
+
+
+    const abrirAlta = (tipo) => {
+
+        setAltaError("");
+        setAltaForm({});
+        setModalAlta(tipo);
+
+    };
+
+
+    const manejarCambioAlta = (e) => {
+
+        const { name, value } = e.target;
+
+        setAltaForm((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+
+    };
+
+
+    const actualizarCatalogo = (tipo, nuevo) => {
+
+        if (tipo === "docente") {
+            setDocentes((prev) => [...prev, nuevo]);
+        } else if (tipo === "materia") {
+            setMaterias((prev) => [...prev, nuevo]);
+        } else if (tipo === "grupo") {
+            setGrupos((prev) => [...prev, nuevo]);
+        } else if (tipo === "salon") {
+            setSalones((prev) => [...prev, nuevo]);
+        }
+
+    };
+
+
+    const guardarAlta = async (e) => {
+
+        e.preventDefault();
+
+        setAltaError("");
+
+        const tipo = modalAlta;
+
+        if (!tipo) {
+            return;
+        }
+
+        let endpoint = "";
+        let camposObligatorios = [];
+
+        if (tipo === "docente") {
+            endpoint = "/docentes";
+            camposObligatorios = [
+                "nombre",
+                "apellido_p",
+                "apellido_m",
+                "rfc",
+                "telefono",
+                "correo_personal",
+                "correo_institucional"
+            ];
+        } else if (tipo === "materia") {
+            endpoint = "/materias";
+            camposObligatorios = ["clave", "nombre"];
+        } else if (tipo === "grupo") {
+            endpoint = "/grupos";
+            camposObligatorios = ["clave", "semestre"];
+        } else if (tipo === "salon") {
+            endpoint = "/salones";
+            camposObligatorios = ["numero"];
+        }
+
+        const faltaCampo =
+            camposObligatorios.some(
+                (campo) =>
+                    !String(
+                        altaForm[campo] || ""
+                    ).trim()
+            );
+
+        if (faltaCampo) {
+
+            setAltaError(
+                "Todos los campos son obligatorios."
+            );
+
+            return;
+
+        }
+
+        setGuardandoAlta(true);
+
+        try {
+
+            const response = await api.post(
+                endpoint,
+                altaForm
+            );
+
+            const nuevo = response.data;
+
+            actualizarCatalogo(tipo, nuevo);
+
+            setFormulario((prev) => ({
+                ...prev,
+                [tipo + "_id"]: String(nuevo.id)
+            }));
+
+            setModalAlta(null);
+
+            toast(
+                "success",
+                `${tituloAlta.replace("Agregar ", "")} agregado correctamente.`
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error al guardar alta rápida:",
+                error
+            );
+
+            setAltaError(
+                error.response?.data?.mensaje ||
+                "No se pudo guardar. Inténtalo de nuevo."
+            );
+
+        } finally {
+
+            setGuardandoAlta(false);
+
+        }
+
+    };
+
+
     return (
 
         <Layout titulo="Calendario">
@@ -448,6 +635,22 @@ function Horarios() {
                 </div>
 
             </section>
+
+            {error && (
+
+                <div className="horarios-error" role="alert">
+                    {error}
+                </div>
+
+            )}
+
+            {mensaje && (
+
+                <div className="horarios-success" role="status">
+                    {mensaje}
+                </div>
+
+            )}
 
             <div className="horarios-grid">
 
@@ -510,29 +713,42 @@ function Horarios() {
 
                             <label htmlFor="docente_id">Docente</label>
 
-                            <select
-                                id="docente_id"
-                                name="docente_id"
-                                value={formulario.docente_id}
-                                onChange={manejarCambio}
-                            >
+                            <div className="field-row">
 
-                                <option value="">Selecciona un docente</option>
+                                <select
+                                    id="docente_id"
+                                    name="docente_id"
+                                    value={formulario.docente_id}
+                                    onChange={manejarCambio}
+                                >
 
-                                {docentes.map((docente) => (
+                                    <option value="">Selecciona un docente</option>
 
-                                    <option
-                                        key={docente.id}
-                                        value={docente.id}
-                                    >
+                                    {docentes.map((docente) => (
 
-                                        {obtenerNombreDocente(docente)}
+                                        <option
+                                            key={docente.id}
+                                            value={docente.id}
+                                        >
 
-                                    </option>
+                                            {obtenerNombreDocente(docente)}
 
-                                ))}
+                                        </option>
 
-                            </select>
+                                    ))}
+
+                                </select>
+
+                                <button
+                                    type="button"
+                                    className="add-button"
+                                    onClick={() => abrirAlta("docente")}
+                                    aria-label="Agregar docente"
+                                >
+                                    <Plus size={15} />
+                                </button>
+
+                            </div>
 
                         </div>
 
@@ -541,29 +757,42 @@ function Horarios() {
 
                             <label htmlFor="materia_id">Materia</label>
 
-                            <select
-                                id="materia_id"
-                                name="materia_id"
-                                value={formulario.materia_id}
-                                onChange={manejarCambio}
-                            >
+                            <div className="field-row">
 
-                                <option value="">Selecciona una materia</option>
+                                <select
+                                    id="materia_id"
+                                    name="materia_id"
+                                    value={formulario.materia_id}
+                                    onChange={manejarCambio}
+                                >
 
-                                {materias.map((materia) => (
+                                    <option value="">Selecciona una materia</option>
 
-                                    <option
-                                        key={materia.id}
-                                        value={materia.id}
-                                    >
+                                    {materias.map((materia) => (
 
-                                        {materia.nombre}
+                                        <option
+                                            key={materia.id}
+                                            value={materia.id}
+                                        >
 
-                                    </option>
+                                            {materia.nombre}
 
-                                ))}
+                                        </option>
 
-                            </select>
+                                    ))}
+
+                                </select>
+
+                                <button
+                                    type="button"
+                                    className="add-button"
+                                    onClick={() => abrirAlta("materia")}
+                                    aria-label="Agregar materia"
+                                >
+                                    <Plus size={15} />
+                                </button>
+
+                            </div>
 
                         </div>
 
@@ -572,29 +801,42 @@ function Horarios() {
 
                             <label htmlFor="grupo_id">Grupo</label>
 
-                            <select
-                                id="grupo_id"
-                                name="grupo_id"
-                                value={formulario.grupo_id}
-                                onChange={manejarCambio}
-                            >
+                            <div className="field-row">
 
-                                <option value="">Selecciona un grupo</option>
+                                <select
+                                    id="grupo_id"
+                                    name="grupo_id"
+                                    value={formulario.grupo_id}
+                                    onChange={manejarCambio}
+                                >
 
-                                {grupos.map((grupo) => (
+                                    <option value="">Selecciona un grupo</option>
 
-                                    <option
-                                        key={grupo.id}
-                                        value={grupo.id}
-                                    >
+                                    {grupos.map((grupo) => (
 
-                                        {grupo.clave}
+                                        <option
+                                            key={grupo.id}
+                                            value={grupo.id}
+                                        >
 
-                                    </option>
+                                            {grupo.clave}
 
-                                ))}
+                                        </option>
 
-                            </select>
+                                    ))}
+
+                                </select>
+
+                                <button
+                                    type="button"
+                                    className="add-button"
+                                    onClick={() => abrirAlta("grupo")}
+                                    aria-label="Agregar grupo"
+                                >
+                                    <Plus size={15} />
+                                </button>
+
+                            </div>
 
                         </div>
 
@@ -603,29 +845,42 @@ function Horarios() {
 
                             <label htmlFor="salon_id">Salón</label>
 
-                            <select
-                                id="salon_id"
-                                name="salon_id"
-                                value={formulario.salon_id}
-                                onChange={manejarCambio}
-                            >
+                            <div className="field-row">
 
-                                <option value="">Selecciona un salón</option>
+                                <select
+                                    id="salon_id"
+                                    name="salon_id"
+                                    value={formulario.salon_id}
+                                    onChange={manejarCambio}
+                                >
 
-                                {salones.map((salon) => (
+                                    <option value="">Selecciona un salón</option>
 
-                                    <option
-                                        key={salon.id}
-                                        value={salon.id}
-                                    >
+                                    {salones.map((salon) => (
 
-                                        Salón {salon.numero}
+                                        <option
+                                            key={salon.id}
+                                            value={salon.id}
+                                        >
 
-                                    </option>
+                                            Salón {salon.numero}
 
-                                ))}
+                                        </option>
 
-                            </select>
+                                    ))}
+
+                                </select>
+
+                                <button
+                                    type="button"
+                                    className="add-button"
+                                    onClick={() => abrirAlta("salon")}
+                                    aria-label="Agregar salón"
+                                >
+                                    <Plus size={15} />
+                                </button>
+
+                            </div>
 
                         </div>
 
@@ -695,6 +950,67 @@ function Horarios() {
                         </div>
 
 
+                        <div className="form-group">
+
+                            <span id="color_label" className="color-label">
+                                Color de la clase
+                            </span>
+
+                            <div
+                                className="color-selector"
+                                role="group"
+                                aria-labelledby="color_label"
+                            >
+
+                                {colores.map((color) => (
+
+                                    <button
+                                        type="button"
+                                        key={color}
+                                        className={
+                                            formulario.color === color
+                                                ? "color-swatch color-swatch-active"
+                                                : "color-swatch"
+                                        }
+                                        style={{ background: color }}
+                                        onClick={() =>
+                                            setFormulario({
+                                                ...formulario,
+                                                color
+                                            })
+                                        }
+                                        aria-label={`Usar color ${color}`}
+                                        aria-pressed={
+                                            formulario.color === color
+                                        }
+                                    />
+
+                                ))}
+
+                                <label
+                                    className="color-custom"
+                                    title="Color personalizado"
+                                >
+
+                                    <input
+                                        type="color"
+                                        value={formulario.color}
+                                        onChange={(e) =>
+                                            setFormulario({
+                                                ...formulario,
+                                                color: e.target.value
+                                            })
+                                        }
+                                        aria-label="Elegir color personalizado"
+                                    />
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+
                         <button
                             type="submit"
                             className="save-button"
@@ -725,6 +1041,17 @@ function Horarios() {
                             </p>
 
                         </div>
+
+
+                        <button
+                            className="view-horarios-button"
+                            onClick={() =>
+                                setMostrarHorarios(true)
+                            }
+                        >
+                            <ClipboardList size={15} />
+                            Ver horarios
+                        </button>
 
                     </div>
 
@@ -758,6 +1085,11 @@ function Horarios() {
                                             <div
                                                 className="class-block"
                                                 key={horario.id}
+                                                style={{
+                                                    "--clase-color":
+                                                        horario.color ||
+                                                        "#1558c7"
+                                                }}
                                             >
 
                                                 <div className="class-time">
@@ -810,6 +1142,436 @@ function Horarios() {
                 </section>
 
             </div>
+
+            {mostrarHorarios && (
+
+                <div
+                    className="modal-overlay"
+                    onClick={() =>
+                        setMostrarHorarios(false)
+                    }
+                >
+
+                    <div
+                        className="horarios-modal"
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
+                    >
+
+                        <div className="modal-header">
+
+                            <div>
+
+                                <h2>
+                                    Horarios registrados
+                                </h2>
+
+                                <p>
+                                    Clases asignadas agrupadas por docente.
+                                </p>
+
+                            </div>
+
+
+                            <button
+                                className="close-modal"
+                                onClick={() =>
+                                    setMostrarHorarios(false)
+                                }
+                                aria-label="Cerrar"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+
+                        <div className="horarios-modal-body">
+
+                            {Object.keys(
+                                agruparPorDocente()
+                            ).length === 0 ? (
+
+                                <div className="horarios-empty">
+                                    No hay horarios registrados.
+                                </div>
+
+                            ) : (
+
+                                Object.entries(
+                                    agruparPorDocente()
+                                ).map(
+                                    ([docente, lista]) => (
+
+                                        <div
+                                            className="docente-group"
+                                            key={docente}
+                                        >
+
+                                            <div className="docente-group-header">
+
+                                                <strong>
+                                                    <UserRound size={14} />
+                                                    {docente}
+                                                </strong>
+
+                                                <span>
+                                                    {lista.length}{" "}
+                                                    {lista.length === 1
+                                                        ? "clase"
+                                                        : "clases"}
+                                                </span>
+
+                                            </div>
+
+
+                                            <table className="docente-group-table">
+
+                                                <thead>
+
+                                                    <tr>
+
+                                                        <th scope="col">
+                                                            Materia
+                                                        </th>
+
+                                                        <th scope="col">
+                                                            Grupo
+                                                        </th>
+
+                                                        <th scope="col">
+                                                            Salón
+                                                        </th>
+
+                                                        <th scope="col">
+                                                            Día
+                                                        </th>
+
+                                                        <th scope="col">
+                                                            Horario
+                                                        </th>
+
+                                                    </tr>
+
+                                                </thead>
+
+
+                                                <tbody>
+
+                                                    {lista.map(
+                                                        horario => (
+
+                                                            <tr
+                                                                key={
+                                                                    horario.id
+                                                                }
+                                                            >
+
+                                                                <td>
+                                                                    {
+                                                                        horario.materia ||
+                                                                        "—"
+                                                                    }
+                                                                </td>
+
+                                                                <td>
+                                                                    {
+                                                                        horario.grupo ||
+                                                                        "—"
+                                                                    }
+                                                                </td>
+
+                                                                <td>
+                                                                    {
+                                                                        horario.salon ||
+                                                                        "—"
+                                                                    }
+                                                                </td>
+
+                                                                <td>
+                                                                    {
+                                                                        obtenerDia(
+                                                                            horario.dia_semana
+                                                                        )
+                                                                    }
+                                                                </td>
+
+                                                                <td>
+                                                                    {
+                                                                        horario.hora_inicio
+                                                                    }
+                                                                    {" - "}
+                                                                    {
+                                                                        horario.hora_fin
+                                                                    }
+                                                                </td>
+
+                                                            </tr>
+
+                                                        )
+                                                    )}
+
+                                                </tbody>
+
+                                            </table>
+
+                                        </div>
+
+                                    )
+                                )
+
+                            )}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            )}
+
+
+            <Modal
+                open={Boolean(modalAlta)}
+                onClose={() => setModalAlta(null)}
+                title={tituloAlta}
+                description="Los datos nuevos quedan disponibles de inmediato en el formulario."
+            >
+
+                <form
+                    className="quick-alta-form"
+                    onSubmit={guardarAlta}
+                >
+
+                    {modalAlta === "docente" && (
+
+                        <>
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_nombre">Nombre</label>
+
+                                <input
+                                    id="alta_nombre"
+                                    name="nombre"
+                                    value={altaForm.nombre || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_apellido_p">Apellido paterno</label>
+
+                                <input
+                                    id="alta_apellido_p"
+                                    name="apellido_p"
+                                    value={altaForm.apellido_p || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_apellido_m">Apellido materno</label>
+
+                                <input
+                                    id="alta_apellido_m"
+                                    name="apellido_m"
+                                    value={altaForm.apellido_m || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_rfc">RFC</label>
+
+                                <input
+                                    id="alta_rfc"
+                                    name="rfc"
+                                    maxLength="13"
+                                    value={altaForm.rfc || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_telefono">Teléfono</label>
+
+                                <input
+                                    id="alta_telefono"
+                                    name="telefono"
+                                    value={altaForm.telefono || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_correo_personal">
+                                    Correo personal
+                                </label>
+
+                                <input
+                                    id="alta_correo_personal"
+                                    name="correo_personal"
+                                    type="email"
+                                    value={altaForm.correo_personal || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_correo_institucional">
+                                    Correo institucional
+                                </label>
+
+                                <input
+                                    id="alta_correo_institucional"
+                                    name="correo_institucional"
+                                    type="email"
+                                    value={altaForm.correo_institucional || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+                        </>
+
+                    )}
+
+
+                    {modalAlta === "materia" && (
+
+                        <>
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_clave">Clave</label>
+
+                                <input
+                                    id="alta_clave"
+                                    name="clave"
+                                    maxLength="20"
+                                    value={altaForm.clave || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_nombre_materia">Nombre</label>
+
+                                <input
+                                    id="alta_nombre_materia"
+                                    name="nombre"
+                                    value={altaForm.nombre || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+                        </>
+
+                    )}
+
+
+                    {modalAlta === "grupo" && (
+
+                        <>
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_grupo_clave">Clave</label>
+
+                                <input
+                                    id="alta_grupo_clave"
+                                    name="clave"
+                                    maxLength="20"
+                                    value={altaForm.clave || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="alta_semestre">Semestre</label>
+
+                                <input
+                                    id="alta_semestre"
+                                    name="semestre"
+                                    maxLength="3"
+                                    value={altaForm.semestre || ""}
+                                    onChange={manejarCambioAlta}
+                                />
+
+                            </div>
+
+                        </>
+
+                    )}
+
+
+                    {modalAlta === "salon" && (
+
+                        <div className="form-group">
+
+                            <label htmlFor="alta_numero">Número del salón</label>
+
+                            <input
+                                id="alta_numero"
+                                name="numero"
+                                maxLength="10"
+                                value={altaForm.numero || ""}
+                                onChange={manejarCambioAlta}
+                            />
+
+                        </div>
+
+                    )}
+
+
+                    {altaError && (
+
+                        <div className="horarios-error" role="alert">
+                            {altaError}
+                        </div>
+
+                    )}
+
+
+                    <button
+                        type="submit"
+                        className="save-button"
+                        disabled={guardandoAlta}
+                    >
+                        {guardandoAlta ? "Guardando..." : "Guardar"}
+                    </button>
+
+                </form>
+
+            </Modal>
+
 
             <ConfirmDialog
                 open={Boolean(eliminarId)}

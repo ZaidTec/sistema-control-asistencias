@@ -293,6 +293,7 @@ function MateriasTab() {
                     <input
                         type="text"
                         placeholder="Buscar por clave o nombre..."
+                        aria-label="Buscar por clave o nombre"
                         value={busqueda}
                         onChange={(e) =>
                             setBusqueda(e.target.value)
@@ -304,7 +305,7 @@ function MateriasTab() {
 
                 {error && (
 
-                    <div className="materias-error">
+                    <div className="materias-error" role="alert">
                         {error}
                     </div>
 
@@ -425,7 +426,7 @@ function MateriasTab() {
 
                                                     <button
                                                         className="edit-button"
-                                                        title="Editar"
+                                                        aria-label={`Editar ${materia.clave}`}
                                                         onClick={() =>
                                                             editarMateria(
                                                                 materia
@@ -438,7 +439,7 @@ function MateriasTab() {
 
                                                     <button
                                                         className="delete-button"
-                                                        title="Eliminar"
+                                                        aria-label={`Eliminar ${materia.clave}`}
                                                         onClick={() =>
                                                             setEliminarId(
                                                                 materia.id
@@ -512,6 +513,7 @@ function MateriasTab() {
                                 onClick={() =>
                                     setMostrarModal(false)
                                 }
+                                aria-label="Cerrar"
                             >
                                 ×
                             </button>
@@ -527,11 +529,12 @@ function MateriasTab() {
 
                             <div className="form-group">
 
-                                <label>
+                                <label htmlFor="materia-clave">
                                     Clave de la materia *
                                 </label>
 
                                 <input
+                                    id="materia-clave"
                                     type="text"
                                     name="clave"
                                     value={formulario.clave}
@@ -549,11 +552,12 @@ function MateriasTab() {
 
                             <div className="form-group">
 
-                                <label>
+                                <label htmlFor="materia-nombre">
                                     Nombre de la materia *
                                 </label>
 
                                 <input
+                                    id="materia-nombre"
                                     type="text"
                                     name="nombre"
                                     value={formulario.nombre}
@@ -569,11 +573,12 @@ function MateriasTab() {
 
                                 <div className="form-group">
 
-                                    <label>
+                                    <label htmlFor="materia-estado">
                                         Estado
                                     </label>
 
                                     <select
+                                        id="materia-estado"
                                         name="activo"
                                         value={
                                             formulario.activo

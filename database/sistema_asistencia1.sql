@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict rWYxv8a8XJUNm4aWd9a9Xc6HXhGKf6wf3eHipaCYTlXDHe70kFPnRfsaH7LwpW3
+\restrict tK764c1diCdtrsxPGNKcA5XffxLGkciVWeFy9hiy4phG8E69N9tYwpqkbg9eaEU
 
 -- Dumped from database version 18.4
 -- Dumped by pg_dump version 18.4
@@ -38,6 +38,7 @@ CREATE TABLE public.asignacion_clase (
     hora_inicio time without time zone NOT NULL,
     hora_fin time without time zone NOT NULL,
     activo boolean DEFAULT true NOT NULL,
+    color character varying(7) DEFAULT '#1558c7'::character varying NOT NULL,
     CONSTRAINT asignacion_dia_valido CHECK (((dia_semana >= 1) AND (dia_semana <= 7))),
     CONSTRAINT asignacion_horario_valido CHECK ((hora_fin > hora_inicio))
 );
@@ -300,19 +301,28 @@ ALTER TABLE public.usuario ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 -- Data for Name: asignacion_clase; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.asignacion_clase (id, docente_id, materia_id, grupo_id, salon_id, periodo_id, dia_semana, hora_inicio, hora_fin, activo) FROM stdin;
-5	1	1	1	12	2	1	07:00:00	09:00:00	t
-6	1	2	2	15	2	3	10:00:00	12:00:00	t
-7	2	3	3	20	2	1	09:00:00	11:00:00	t
-8	3	1	4	25	2	2	08:00:00	10:00:00	t
-10	5	3	3	10	2	3	08:00:00	10:00:00	t
-11	5	5	1	35	2	5	21:00:00	23:00:00	f
-12	5	5	4	41	2	1	21:00:00	23:20:00	f
-13	6	1	3	13	2	1	23:00:00	23:59:00	t
-14	1	1	1	12	2	2	06:00:00	06:30:00	f
-15	6	5	1	7	2	2	00:00:00	02:00:00	t
-16	1	1	1	12	2	3	06:00:00	06:30:00	f
-17	5	2	4	8	2	2	00:55:00	02:00:00	t
+COPY public.asignacion_clase (id, docente_id, materia_id, grupo_id, salon_id, periodo_id, dia_semana, hora_inicio, hora_fin, activo, color) FROM stdin;
+11	5	5	1	35	2	5	21:00:00	23:00:00	f	#1558c7
+12	5	5	4	41	2	1	21:00:00	23:20:00	f	#1558c7
+14	1	1	1	12	2	2	06:00:00	06:30:00	f	#1558c7
+16	1	1	1	12	2	3	06:00:00	06:30:00	f	#1558c7
+18	1	1	1	1	2	5	22:00:00	23:00:00	f	#be123c
+5	1	1	1	12	2	1	07:00:00	09:00:00	f	#1558c7
+7	2	3	3	20	2	1	09:00:00	11:00:00	f	#1558c7
+13	6	1	3	13	2	1	23:00:00	23:59:00	f	#1558c7
+15	6	5	1	7	2	2	00:00:00	02:00:00	f	#1558c7
+8	3	1	4	25	2	2	08:00:00	10:00:00	f	#1558c7
+17	5	2	4	8	2	2	00:55:00	02:00:00	f	#1558c7
+10	5	3	3	10	2	3	08:00:00	10:00:00	f	#1558c7
+6	1	2	2	15	2	3	10:00:00	12:00:00	f	#1558c7
+19	10	7	6	8	2	5	07:00:00	09:02:00	f	#6d28d9
+20	5	1	6	8	2	5	09:02:00	11:00:00	f	#be123c
+21	1	8	1	26	2	3	08:00:00	10:00:00	t	#1558c7
+22	11	8	1	26	2	5	09:00:00	11:00:00	t	#1558c7
+23	16	9	1	26	2	1	07:00:00	09:00:00	t	#0e6e4c
+24	13	10	1	26	2	1	11:00:00	12:00:00	t	#b45309
+25	14	11	1	26	2	1	12:00:00	13:00:00	t	#be123c
+26	13	12	1	26	2	1	09:00:00	11:00:00	t	#b45309
 \.
 
 
@@ -321,11 +331,19 @@ COPY public.asignacion_clase (id, docente_id, materia_id, grupo_id, salon_id, pe
 --
 
 COPY public.docente (id, nombre, apellido_p, apellido_m, rfc, telefono, correo_personal, correo_institucional, activo) FROM stdin;
-2	Maria	Gonzalez	Hernandez	GOHM850505XYZ	5552345678	maria.gonzalez@gmail.com	maria.gonzalez@escuela.edu.mx	t
 1	Juan Carlos	Perez	Lopez	PELJ900101ABC	5551234567	juan.perez@gmail.com	juan.perez@escuela.edu.mx	t
 3	Carlos	Ramirez	Martinez	RAMC920808DEF	5553456789	carlos.ramirez@gmail.com	carlos.ramirez@escuela.edu.mx	f
-5	Orquidea 	Acevedo 	Calderón	asdfggjjg0909	55443322111	orquidea@gmail.com	orquidea@sistemas.tecnm.mx	t
-6	Test	A	B	ABC123	1	x@x.com	y@y.com	t
+9	Test	Alta	Rapida	TSTmszbniac	555	t@t.com	t@inst.com	f
+2	Maria	Gonzalez	Hernandez	GOHM850505XYZ	5552345678	maria.gonzalez@gmail.com	maria.gonzalez@escuela.edu.mx	f
+10	Nuevo 	Docente	Calendario	nuevodocenteh	1111111111	nuevoDoce@gmail.com	doceNuevo@iztapalapa.tecnm.mx	f
+5	Orquidea 	Acevedo 	Calderón	asdfggjjg0909	55443322111	orquidea@gmail.com	orquidea@sistemas.tecnm.mx	f
+6	Test	A	B	ABC123	1	x@x.com	y@y.com	f
+11	Leonardo David 	Herrera	Zuñiga	LeonardoDavvv	3333333333	herrera@gmail.com	herrera@sistemas.tecnm.mx	t
+12	Carlos Omar 	Flores 	Mandujano 	Mandujano0909	4444444444	Mandujano@gmail.com	Mandujano@iztapalapa.tecnm.mx	t
+13	Renata 	Aguilar 	Rodriguez	Aguilar010101	5555555555	Renata@gmail.com	Renata@iztapalapa.tecnm.mx	t
+14	Abiel Tomás	Parra 	Hernández 	Abiel00202020	6666666666	abiel@gmail.com	abiel@iztapalapa.tecnm.mx	t
+15	Esmeralda	 Llovet 	Velazquez 	Esmeralda0505	7777777777	Esmeralda@gmail.com	Esmeralda@iztapalapa.tecnm.mx	t
+16	Juan Carlos 	Veliz	Martinez	Veliz08080808	9999999999	Veliz@gmail.com	Veliz@iztapalapa.tecnm.mx	t
 \.
 
 
@@ -338,6 +356,8 @@ COPY public.grupo (id, clave, semestre, activo) FROM stdin;
 2	S8V	8	t
 3	S9A	9	t
 4	S9V	9	t
+5	GRPmszbniac	5	f
+6	S2A	2	t
 \.
 
 
@@ -351,6 +371,13 @@ COPY public.materia (id, clave, nombre, activo) FROM stdin;
 3	PRO101	Programación Web y Desarrollo	t
 4	SDC1011	Ingenieria de software	t
 5	ASDAS	Prueba usuario	t
+6	TSTmszbniac	Materia test	f
+7	N3W	Asignature	t
+8	ACA0910	Taller de Investigación II	t
+9	DWC-2404 	WEB MINING	t
+10	SCC1019	Programacion Logica y Funcional	t
+11	DWB-2403 	PROGRAMACIÓN DE DISPOSITIVOS MOVILES 	t
+12	SCC1012	Inteligencia Artificial	t
 \.
 
 
@@ -369,8 +396,8 @@ COPY public.periodo_escolar (id, nombre, fecha_inicio, fecha_fin, activo) FROM s
 
 COPY public.registro_asistencia (id, sesion_clase_id, usuario_id, estado, observaciones) FROM stdin;
 3	70	1	PRESENTE	\N
-4	224	1	AUSENTE	\N
-5	158	1	RETARDO	Trafico x2
+6	158	1	RETARDO	Tráfico y lluvia
+4	224	1	AUSENTE	Cita medica
 \.
 
 
@@ -419,11 +446,12 @@ COPY public.salon (id, numero, activo) FROM stdin;
 43	43	t
 44	44	t
 45	45	t
-1	1	t
-2	2	t
 3	3	t
 4	4	t
 5	5	t
+2	2	f
+1	1	f
+46	88823420	t
 \.
 
 
@@ -608,6 +636,200 @@ COPY public.sesion_clase (id, asignacion_id, fecha, hora_inicio, hora_fin) FROM 
 241	17	2026-12-15	00:55:00	02:00:00
 242	17	2026-12-22	00:55:00	02:00:00
 243	17	2026-12-29	00:55:00	02:00:00
+244	18	2026-08-07	22:00:00	23:00:00
+245	18	2026-08-14	22:00:00	23:00:00
+246	18	2026-08-21	22:00:00	23:00:00
+247	18	2026-08-28	22:00:00	23:00:00
+248	18	2026-09-04	22:00:00	23:00:00
+249	18	2026-09-11	22:00:00	23:00:00
+250	18	2026-09-18	22:00:00	23:00:00
+251	18	2026-09-25	22:00:00	23:00:00
+252	18	2026-10-02	22:00:00	23:00:00
+253	18	2026-10-09	22:00:00	23:00:00
+254	18	2026-10-16	22:00:00	23:00:00
+255	18	2026-10-23	22:00:00	23:00:00
+256	18	2026-10-30	22:00:00	23:00:00
+257	18	2026-11-06	22:00:00	23:00:00
+258	18	2026-11-13	22:00:00	23:00:00
+259	18	2026-11-20	22:00:00	23:00:00
+260	18	2026-11-27	22:00:00	23:00:00
+261	18	2026-12-04	22:00:00	23:00:00
+262	18	2026-12-11	22:00:00	23:00:00
+263	18	2026-12-18	22:00:00	23:00:00
+264	18	2026-12-25	22:00:00	23:00:00
+265	19	2026-08-07	07:00:00	09:02:00
+266	19	2026-08-14	07:00:00	09:02:00
+267	19	2026-08-21	07:00:00	09:02:00
+268	19	2026-08-28	07:00:00	09:02:00
+269	19	2026-09-04	07:00:00	09:02:00
+270	19	2026-09-11	07:00:00	09:02:00
+271	19	2026-09-18	07:00:00	09:02:00
+272	19	2026-09-25	07:00:00	09:02:00
+273	19	2026-10-02	07:00:00	09:02:00
+274	19	2026-10-09	07:00:00	09:02:00
+275	19	2026-10-16	07:00:00	09:02:00
+276	19	2026-10-23	07:00:00	09:02:00
+277	19	2026-10-30	07:00:00	09:02:00
+278	19	2026-11-06	07:00:00	09:02:00
+279	19	2026-11-13	07:00:00	09:02:00
+280	19	2026-11-20	07:00:00	09:02:00
+281	19	2026-11-27	07:00:00	09:02:00
+282	19	2026-12-04	07:00:00	09:02:00
+283	19	2026-12-11	07:00:00	09:02:00
+284	19	2026-12-18	07:00:00	09:02:00
+285	19	2026-12-25	07:00:00	09:02:00
+286	20	2026-08-07	09:02:00	11:00:00
+287	20	2026-08-14	09:02:00	11:00:00
+288	20	2026-08-21	09:02:00	11:00:00
+289	20	2026-08-28	09:02:00	11:00:00
+290	20	2026-09-04	09:02:00	11:00:00
+291	20	2026-09-11	09:02:00	11:00:00
+292	20	2026-09-18	09:02:00	11:00:00
+293	20	2026-09-25	09:02:00	11:00:00
+294	20	2026-10-02	09:02:00	11:00:00
+295	20	2026-10-09	09:02:00	11:00:00
+296	20	2026-10-16	09:02:00	11:00:00
+297	20	2026-10-23	09:02:00	11:00:00
+298	20	2026-10-30	09:02:00	11:00:00
+299	20	2026-11-06	09:02:00	11:00:00
+300	20	2026-11-13	09:02:00	11:00:00
+301	20	2026-11-20	09:02:00	11:00:00
+302	20	2026-11-27	09:02:00	11:00:00
+303	20	2026-12-04	09:02:00	11:00:00
+304	20	2026-12-11	09:02:00	11:00:00
+305	20	2026-12-18	09:02:00	11:00:00
+306	20	2026-12-25	09:02:00	11:00:00
+307	21	2026-08-05	08:00:00	10:00:00
+308	21	2026-08-12	08:00:00	10:00:00
+309	21	2026-08-19	08:00:00	10:00:00
+310	21	2026-08-26	08:00:00	10:00:00
+311	21	2026-09-02	08:00:00	10:00:00
+312	21	2026-09-09	08:00:00	10:00:00
+313	21	2026-09-16	08:00:00	10:00:00
+314	21	2026-09-23	08:00:00	10:00:00
+315	21	2026-09-30	08:00:00	10:00:00
+316	21	2026-10-07	08:00:00	10:00:00
+317	21	2026-10-14	08:00:00	10:00:00
+318	21	2026-10-21	08:00:00	10:00:00
+319	21	2026-10-28	08:00:00	10:00:00
+320	21	2026-11-04	08:00:00	10:00:00
+321	21	2026-11-11	08:00:00	10:00:00
+322	21	2026-11-18	08:00:00	10:00:00
+323	21	2026-11-25	08:00:00	10:00:00
+324	21	2026-12-02	08:00:00	10:00:00
+325	21	2026-12-09	08:00:00	10:00:00
+326	21	2026-12-16	08:00:00	10:00:00
+327	21	2026-12-23	08:00:00	10:00:00
+328	21	2026-12-30	08:00:00	10:00:00
+329	22	2026-08-07	09:00:00	11:00:00
+330	22	2026-08-14	09:00:00	11:00:00
+331	22	2026-08-21	09:00:00	11:00:00
+332	22	2026-08-28	09:00:00	11:00:00
+333	22	2026-09-04	09:00:00	11:00:00
+334	22	2026-09-11	09:00:00	11:00:00
+335	22	2026-09-18	09:00:00	11:00:00
+336	22	2026-09-25	09:00:00	11:00:00
+337	22	2026-10-02	09:00:00	11:00:00
+338	22	2026-10-09	09:00:00	11:00:00
+339	22	2026-10-16	09:00:00	11:00:00
+340	22	2026-10-23	09:00:00	11:00:00
+341	22	2026-10-30	09:00:00	11:00:00
+342	22	2026-11-06	09:00:00	11:00:00
+343	22	2026-11-13	09:00:00	11:00:00
+344	22	2026-11-20	09:00:00	11:00:00
+345	22	2026-11-27	09:00:00	11:00:00
+346	22	2026-12-04	09:00:00	11:00:00
+347	22	2026-12-11	09:00:00	11:00:00
+348	22	2026-12-18	09:00:00	11:00:00
+349	22	2026-12-25	09:00:00	11:00:00
+350	23	2026-08-03	07:00:00	09:00:00
+351	23	2026-08-10	07:00:00	09:00:00
+352	23	2026-08-17	07:00:00	09:00:00
+353	23	2026-08-24	07:00:00	09:00:00
+354	23	2026-08-31	07:00:00	09:00:00
+355	23	2026-09-07	07:00:00	09:00:00
+356	23	2026-09-14	07:00:00	09:00:00
+357	23	2026-09-21	07:00:00	09:00:00
+358	23	2026-09-28	07:00:00	09:00:00
+359	23	2026-10-05	07:00:00	09:00:00
+360	23	2026-10-12	07:00:00	09:00:00
+361	23	2026-10-19	07:00:00	09:00:00
+362	23	2026-10-26	07:00:00	09:00:00
+363	23	2026-11-02	07:00:00	09:00:00
+364	23	2026-11-09	07:00:00	09:00:00
+365	23	2026-11-16	07:00:00	09:00:00
+366	23	2026-11-23	07:00:00	09:00:00
+367	23	2026-11-30	07:00:00	09:00:00
+368	23	2026-12-07	07:00:00	09:00:00
+369	23	2026-12-14	07:00:00	09:00:00
+370	23	2026-12-21	07:00:00	09:00:00
+371	23	2026-12-28	07:00:00	09:00:00
+372	24	2026-08-03	11:00:00	12:00:00
+373	24	2026-08-10	11:00:00	12:00:00
+374	24	2026-08-17	11:00:00	12:00:00
+375	24	2026-08-24	11:00:00	12:00:00
+376	24	2026-08-31	11:00:00	12:00:00
+377	24	2026-09-07	11:00:00	12:00:00
+378	24	2026-09-14	11:00:00	12:00:00
+379	24	2026-09-21	11:00:00	12:00:00
+380	24	2026-09-28	11:00:00	12:00:00
+381	24	2026-10-05	11:00:00	12:00:00
+382	24	2026-10-12	11:00:00	12:00:00
+383	24	2026-10-19	11:00:00	12:00:00
+384	24	2026-10-26	11:00:00	12:00:00
+385	24	2026-11-02	11:00:00	12:00:00
+386	24	2026-11-09	11:00:00	12:00:00
+387	24	2026-11-16	11:00:00	12:00:00
+388	24	2026-11-23	11:00:00	12:00:00
+389	24	2026-11-30	11:00:00	12:00:00
+390	24	2026-12-07	11:00:00	12:00:00
+391	24	2026-12-14	11:00:00	12:00:00
+392	24	2026-12-21	11:00:00	12:00:00
+393	24	2026-12-28	11:00:00	12:00:00
+394	25	2026-08-03	12:00:00	13:00:00
+395	25	2026-08-10	12:00:00	13:00:00
+396	25	2026-08-17	12:00:00	13:00:00
+397	25	2026-08-24	12:00:00	13:00:00
+398	25	2026-08-31	12:00:00	13:00:00
+399	25	2026-09-07	12:00:00	13:00:00
+400	25	2026-09-14	12:00:00	13:00:00
+401	25	2026-09-21	12:00:00	13:00:00
+402	25	2026-09-28	12:00:00	13:00:00
+403	25	2026-10-05	12:00:00	13:00:00
+404	25	2026-10-12	12:00:00	13:00:00
+405	25	2026-10-19	12:00:00	13:00:00
+406	25	2026-10-26	12:00:00	13:00:00
+407	25	2026-11-02	12:00:00	13:00:00
+408	25	2026-11-09	12:00:00	13:00:00
+409	25	2026-11-16	12:00:00	13:00:00
+410	25	2026-11-23	12:00:00	13:00:00
+411	25	2026-11-30	12:00:00	13:00:00
+412	25	2026-12-07	12:00:00	13:00:00
+413	25	2026-12-14	12:00:00	13:00:00
+414	25	2026-12-21	12:00:00	13:00:00
+415	25	2026-12-28	12:00:00	13:00:00
+416	26	2026-08-03	09:00:00	11:00:00
+417	26	2026-08-10	09:00:00	11:00:00
+418	26	2026-08-17	09:00:00	11:00:00
+419	26	2026-08-24	09:00:00	11:00:00
+420	26	2026-08-31	09:00:00	11:00:00
+421	26	2026-09-07	09:00:00	11:00:00
+422	26	2026-09-14	09:00:00	11:00:00
+423	26	2026-09-21	09:00:00	11:00:00
+424	26	2026-09-28	09:00:00	11:00:00
+425	26	2026-10-05	09:00:00	11:00:00
+426	26	2026-10-12	09:00:00	11:00:00
+427	26	2026-10-19	09:00:00	11:00:00
+428	26	2026-10-26	09:00:00	11:00:00
+429	26	2026-11-02	09:00:00	11:00:00
+430	26	2026-11-09	09:00:00	11:00:00
+431	26	2026-11-16	09:00:00	11:00:00
+432	26	2026-11-23	09:00:00	11:00:00
+433	26	2026-11-30	09:00:00	11:00:00
+434	26	2026-12-07	09:00:00	11:00:00
+435	26	2026-12-14	09:00:00	11:00:00
+436	26	2026-12-21	09:00:00	11:00:00
+437	26	2026-12-28	09:00:00	11:00:00
 \.
 
 
@@ -616,9 +838,9 @@ COPY public.sesion_clase (id, asignacion_id, fecha, hora_inicio, hora_fin) FROM 
 --
 
 COPY public.usuario (id, username, password_hash, rol, activo) FROM stdin;
-4	test_user	$2b$10$klJ3t2IU09N9FDE86ttPn.YtupOAQaDRQ/iiP.pxcJlIv.qUfQe.u	USUARIO	f
 1	admin	$2b$10$0XMIwf2j90Nq8w9GWrRWROva4r3CRY6ZV7hokM5xTtehKe.kYj8e.	ADMINISTRADOR	t
 2	usuario1	$2b$10$sCZoDJuL.QOzO.B/0nlFhuE5Pg79sE2rkVhE2hTsNrVORKHvgsmdG	USUARIO	t
+4	test_user	$2b$10$klJ3t2IU09N9FDE86ttPn.YtupOAQaDRQ/iiP.pxcJlIv.qUfQe.u	USUARIO	t
 \.
 
 
@@ -626,28 +848,28 @@ COPY public.usuario (id, username, password_hash, rol, activo) FROM stdin;
 -- Name: asignacion_clase_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.asignacion_clase_id_seq', 17, true);
+SELECT pg_catalog.setval('public.asignacion_clase_id_seq', 26, true);
 
 
 --
 -- Name: docente_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.docente_id_seq', 8, true);
+SELECT pg_catalog.setval('public.docente_id_seq', 16, true);
 
 
 --
 -- Name: grupo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.grupo_id_seq', 4, true);
+SELECT pg_catalog.setval('public.grupo_id_seq', 6, true);
 
 
 --
 -- Name: materia_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.materia_id_seq', 5, true);
+SELECT pg_catalog.setval('public.materia_id_seq', 12, true);
 
 
 --
@@ -661,21 +883,21 @@ SELECT pg_catalog.setval('public.periodo_escolar_id_seq', 2, true);
 -- Name: registro_asistencia_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.registro_asistencia_id_seq', 5, true);
+SELECT pg_catalog.setval('public.registro_asistencia_id_seq', 6, true);
 
 
 --
 -- Name: salon_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.salon_id_seq', 45, true);
+SELECT pg_catalog.setval('public.salon_id_seq', 46, true);
 
 
 --
 -- Name: sesion_clase_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.sesion_clase_id_seq', 243, true);
+SELECT pg_catalog.setval('public.sesion_clase_id_seq', 437, true);
 
 
 --
@@ -897,5 +1119,5 @@ ALTER TABLE ONLY public.sesion_clase
 -- PostgreSQL database dump complete
 --
 
-\unrestrict rWYxv8a8XJUNm4aWd9a9Xc6HXhGKf6wf3eHipaCYTlXDHe70kFPnRfsaH7LwpW3
+\unrestrict tK764c1diCdtrsxPGNKcA5XffxLGkciVWeFy9hiy4phG8E69N9tYwpqkbg9eaEU
 

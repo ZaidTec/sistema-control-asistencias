@@ -43,7 +43,7 @@ function App() {
                     <Route
                         path="/reportes"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute adminOnly>
                                 <Reportes />
                             </ProtectedRoute>
                         }

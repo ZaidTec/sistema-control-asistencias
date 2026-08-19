@@ -276,6 +276,277 @@ tbody tr:hover {
 
 
 /* =========================================
+   BADGE DE ESTADO (tarjetas móviles)
+========================================= */
+
+.estado-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 5px 12px;
+
+    border-radius: var(--radius-full);
+
+    font-size: var(--fs-xs);
+
+    font-weight: 700;
+
+    letter-spacing: 0.04em;
+}
+
+
+.estado-badge.presente {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+
+.estado-badge.ausente,
+.estado-badge.retardo {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+
+.estado-badge.pendiente {
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+
+/* =========================================
+   TARJETAS MÓVILES (Dashboard USUARIO)
+========================================= */
+
+.mobile-session-cards {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: var(--space-3);
+}
+
+
+.mobile-session-card {
+    width: 100%;
+
+    padding: var(--space-4);
+
+    background: white;
+
+    border: 1px solid var(--neutral-200);
+
+    border-left: 4px solid var(--primary-600);
+
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow-card);
+}
+
+
+.mobile-session-card-head {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: var(--space-3);
+}
+
+
+.mobile-session-salon span {
+    display: block;
+
+    font-size: var(--fs-xs);
+
+    font-weight: 600;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+
+    color: var(--neutral-500);
+}
+
+
+.mobile-session-salon strong {
+    display: block;
+
+    font-family: var(--font-display);
+
+    font-size: var(--fs-3xl);
+
+    line-height: 1.1;
+
+    color: var(--primary-600);
+}
+
+
+.mobile-session-docente {
+    display: block;
+
+    margin-top: var(--space-2);
+
+    font-family: var(--font-display);
+
+    font-size: var(--fs-xl);
+
+    color: var(--neutral-900);
+}
+
+
+.mobile-session-materia {
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: var(--fs-lg);
+
+    color: var(--neutral-600);
+}
+
+
+.mobile-session-meta {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: var(--space-2);
+
+    margin-top: var(--space-3);
+
+    font-size: var(--fs-sm);
+
+    color: var(--neutral-500);
+}
+
+
+.mobile-session-meta span {
+    padding: 4px 10px;
+
+    background: var(--neutral-50);
+
+    border: 1px solid var(--neutral-100);
+
+    border-radius: var(--radius-full);
+}
+
+
+.mobile-session-actions {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: var(--space-2);
+
+    margin-top: var(--space-3);
+}
+
+
+.mobile-session-action-wrap {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: var(--space-2);
+}
+
+
+.mobile-action-button {
+    min-height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 14px;
+
+    border: 1px solid var(--neutral-200);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--neutral-50);
+
+    color: var(--primary-700);
+
+    font-family: inherit;
+
+    font-size: var(--fs-md);
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.mobile-action-button:hover {
+    background: var(--primary-50);
+
+    border-color: var(--primary-300);
+}
+
+
+.mobile-estado-chips {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: var(--space-2);
+}
+
+
+.mobile-estado-chip {
+    min-height: 44px;
+
+    padding: 0 10px;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    font-family: inherit;
+
+    font-size: var(--fs-sm);
+
+    font-weight: 700;
+
+    letter-spacing: 0.04em;
+
+    cursor: pointer;
+}
+
+
+.mobile-estado-chip.presente {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+
+.mobile-estado-chip.ausente,
+.mobile-estado-chip.retardo {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+
+.mobile-estado-chip.pendiente {
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+
+/* =========================================
    BOTÓN DE ACCIÓN
 ========================================= */
 
@@ -458,6 +729,21 @@ tbody tr:hover {
 }
 
 
+.incident-obs {
+    margin-top: 3px;
+
+    padding-left: 8px;
+
+    border-left: 2px solid var(--neutral-200);
+
+    font-style: italic;
+
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+
 /* =========================================
    BOTÓN DE REPORTES
 ========================================= */
@@ -568,10 +854,34 @@ tbody tr:hover {
    MÓVIL
 ========================================= */
 
-@media (max-width: 750px) {
+@media (max-width: 768px) {
 
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+
+    .stat-card {
+        min-height: 62px;
+
+        padding: var(--space-2) var(--space-3);
+    }
+
+
+    .stat-title {
+        font-size: var(--fs-2xs);
+    }
+
+
+    .stat-card strong {
+        font-size: var(--fs-xl);
+    }
+
+
+    .stat-icon {
+        width: 28px;
+
+        height: 28px;
     }
 
 }
@@ -644,7 +954,7 @@ tbody tr:hover {
     background: none;
     border: none;
     font-size: var(--fs-xl);
-    color: var(--neutral-400);
+    color: var(--neutral-600);
     cursor: pointer;
 }
 

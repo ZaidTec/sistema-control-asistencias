@@ -330,6 +330,7 @@ function Docentes() {
                             <input
                                 type="text"
                                 placeholder="Buscar por nombre, RFC o correo..."
+                                aria-label="Buscar por nombre, RFC o correo"
                                 value={busqueda}
                                 onChange={(e) =>
                                     setBusqueda(e.target.value)
@@ -343,7 +344,7 @@ function Docentes() {
 
                         {error && (
 
-                            <div className="docentes-error">
+                            <div className="docentes-error" role="alert">
                                 {error}
                             </div>
 
@@ -497,7 +498,7 @@ function Docentes() {
 
                                                             <button
                                                                 className="assign-button"
-                                                                title="Asignar horario"
+                                                                aria-label={`Asignar horario a ${docente.nombre}`}
                                                                 onClick={() =>
                                                                     navigate(
                                                                         `/horarios?docente_id=${docente.id}`
@@ -512,7 +513,7 @@ function Docentes() {
 
                                                                 <button
                                                                     className="more-button"
-                                                                    title="Más opciones"
+                                                                    aria-label="Más opciones"
                                                                     onClick={() =>
                                                                         setMenuAbierto(
                                                                             menuAbierto ===
@@ -642,6 +643,7 @@ function Docentes() {
                                 onClick={() =>
                                     setMostrarModal(false)
                                 }
+                                aria-label="Cerrar"
                             >
                                 ×
                             </button>
@@ -659,11 +661,12 @@ function Docentes() {
 
                                 <div className="form-group">
 
-                                    <label>
+                                    <label htmlFor="docente-nombre">
                                         Nombre *
                                     </label>
 
                                     <input
+                                        id="docente-nombre"
                                         type="text"
                                         name="nombre"
                                         value={formulario.nombre}
@@ -676,11 +679,12 @@ function Docentes() {
 
                                 <div className="form-group">
 
-                                    <label>
+                                    <label htmlFor="docente-apellido-p">
                                         Apellido paterno *
                                     </label>
 
                                     <input
+                                        id="docente-apellido-p"
                                         type="text"
                                         name="apellido_p"
                                         value={formulario.apellido_p}
@@ -693,11 +697,12 @@ function Docentes() {
 
                                 <div className="form-group">
 
-                                    <label>
+                                    <label htmlFor="docente-apellido-m">
                                         Apellido materno *
                                     </label>
 
                                     <input
+                                        id="docente-apellido-m"
                                         type="text"
                                         name="apellido_m"
                                         value={formulario.apellido_m}
@@ -714,11 +719,12 @@ function Docentes() {
 
                                 <div className="form-group">
 
-                                    <label>
+                                    <label htmlFor="docente-rfc">
                                         RFC *
                                     </label>
 
                                     <input
+                                        id="docente-rfc"
                                         type="text"
                                         name="rfc"
                                         value={formulario.rfc}
@@ -732,11 +738,12 @@ function Docentes() {
 
                                 <div className="form-group">
 
-                                    <label>
+                                    <label htmlFor="docente-telefono">
                                         Teléfono *
                                     </label>
 
                                     <input
+                                        id="docente-telefono"
                                         type="tel"
                                         name="telefono"
                                         value={formulario.telefono}
@@ -751,11 +758,12 @@ function Docentes() {
 
                             <div className="form-group">
 
-                                <label>
+                                <label htmlFor="docente-correo-personal">
                                     Correo personal *
                                 </label>
 
                                 <input
+                                    id="docente-correo-personal"
                                     type="email"
                                     name="correo_personal"
                                     value={formulario.correo_personal}
@@ -768,11 +776,12 @@ function Docentes() {
 
                             <div className="form-group">
 
-                                <label>
+                                <label htmlFor="docente-correo-institucional">
                                     Correo institucional *
                                 </label>
 
                                 <input
+                                    id="docente-correo-institucional"
                                     type="email"
                                     name="correo_institucional"
                                     value={formulario.correo_institucional}
@@ -787,11 +796,12 @@ function Docentes() {
 
                                 <div className="form-group">
 
-                                    <label>
+                                    <label htmlFor="docente-estado">
                                         Estado
                                     </label>
 
                                     <select
+                                        id="docente-estado"
                                         name="activo"
                                         value={
                                             formulario.activo

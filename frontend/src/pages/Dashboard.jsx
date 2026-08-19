@@ -9,22 +9,27 @@ import {
     MoreVertical,
     NotebookPen,
     AlertCircle,
+    RefreshCw,
     X
 } from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
 import EmptyState from "../components/ui/EmptyState";
 import { useAuth } from "../context/AuthContext";
+import useIsMobile from "../hooks/useIsMobile";
 import "../styles/dashboard.css";
 
 function Dashboard() {
 
     const { usuario } = useAuth();
 
+    const esMovil = useIsMobile();
+
     const [sesiones, setSesiones] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [menuAbiertoId, setMenuAbiertoId] = useState(null);
+    const [estadoAbiertoId, setEstadoAbiertoId] = useState(null);
 
     const [horaActual, setHoraActual] = useState(new Date());
 
@@ -70,7 +75,10 @@ function Dashboard() {
 
     useEffect(() => {
 
-        const cerrarMenu = () => setMenuAbiertoId(null);
+        const cerrarMenu = () => {
+            setMenuAbiertoId(null);
+            setEstadoAbiertoId(null);
+        };
 
         document.addEventListener("click", cerrarMenu);
 
@@ -493,7 +501,7 @@ function Dashboard() {
 
                         {error && (
 
-                            <div className="dashboard-error">
+                            <div className="dashboard-error" role="alert">
                                 {error}
                             </div>
 
@@ -512,6 +520,175 @@ function Dashboard() {
                                 icon={CalendarOff}
                                 title="No hay clases programadas para hoy"
                             />
+
+                        ) : esMovil ? (
+
+                            <div className="mobile-session-cards">
+
+                                {sesiones.map(sesion => (
+
+                                    <article
+                                        className="mobile-session-card"
+                                        key={sesion.id}
+                                    >
+
+                                        <div className="mobile-session-card-head">
+
+                                            <div className="mobile-session-salon">
+
+                                                <span>Salón</span>
+
+                                                <strong>
+                                                    {sesion.salon}
+                                                </strong>
+
+                                            </div>
+
+
+                                            <span
+                                                className={
+                                                    `estado-badge ${
+                                                        obtenerClaseEstado(
+                                                            sesion.asistencia_estado
+                                                        ).replace(
+                                                            "estado ",
+                                                            ""
+                                                        )
+                                                    }`
+                                                }
+                                            >
+                                                {obtenerTextoEstado(
+                                                    sesion.asistencia_estado
+                                                )}
+                                            </span>
+
+                                        </div>
+
+
+                                        <strong className="mobile-session-docente">
+                                            {sesion.docente}
+                                        </strong>
+
+
+                                        <span className="mobile-session-materia">
+                                            {sesion.materia}
+                                        </span>
+
+
+                                        <div className="mobile-session-meta">
+
+                                            <span>
+                                                {formatearHora(
+                                                    sesion.hora_inicio
+                                                )}
+                                                {" - "}
+                                                {formatearHora(
+                                                    sesion.hora_fin
+                                                )}
+                                            </span>
+
+                                            <span>
+                                                Grupo: {sesion.grupo}
+                                            </span>
+
+                                        </div>
+
+
+                                        <div className="mobile-session-actions">
+
+                                            <div className="mobile-session-action-wrap">
+
+                                                <button
+                                                    type="button"
+                                                    className="mobile-action-button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setEstadoAbiertoId(
+                                                            estadoAbiertoId ===
+                                                            sesion.id
+                                                                ? null
+                                                                : sesion.id
+                                                        );
+                                                    }}
+                                                    aria-expanded={
+                                                        estadoAbiertoId ===
+                                                        sesion.id
+                                                    }
+                                                    aria-label={`Cambiar estado de ${sesion.docente}`}
+                                                >
+                                                    <RefreshCw size={18} aria-hidden="true" />
+                                                    Estado
+                                                </button>
+
+
+                                                {estadoAbiertoId ===
+                                                sesion.id && (
+
+                                                    <div className="mobile-estado-chips">
+
+                                                        {[
+                                                            "PRESENTE",
+                                                            "AUSENTE",
+                                                            "RETARDO",
+                                                            "PENDIENTE"
+                                                        ].map((estado) => (
+
+                                                            <button
+                                                                type="button"
+                                                                key={estado}
+                                                                className={
+                                                                    `mobile-estado-chip ${
+                                                                        obtenerClaseEstado(
+                                                                            estado
+                                                                        ).replace(
+                                                                            "estado ",
+                                                                            ""
+                                                                        )
+                                                                    }`
+                                                                }
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setEstadoAbiertoId(
+                                                                        null
+                                                                    );
+                                                                    cambiarEstado(
+                                                                        sesion,
+                                                                        estado
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {estado}
+                                                            </button>
+
+                                                        ))}
+
+                                                    </div>
+
+                                                )}
+
+                                            </div>
+
+
+                                            <button
+                                                type="button"
+                                                className="mobile-action-button"
+                                                onClick={() =>
+                                                    abrirObservaciones(
+                                                        sesion
+                                                    )
+                                                }
+                                            >
+                                                <NotebookPen size={18} aria-hidden="true" />
+                                                Observaciones
+                                            </button>
+
+                                        </div>
+
+                                    </article>
+
+                                ))}
+
+                            </div>
 
                         ) : (
 
@@ -622,7 +799,7 @@ function Dashboard() {
                                                                 e.target.value
                                                             )
                                                         }
-                                                        title="Cambiar estado"
+                                                        aria-label={`Cambiar estado de ${sesion.docente}`}
                                                     >
 
                                                         <option value="PRESENTE">
@@ -652,7 +829,7 @@ function Dashboard() {
 
                                                         <button
                                                             className="action-button"
-                                                            title="Opciones"
+                                                            aria-label="Opciones"
                                                             onClick={(e) => {
 
                                                                 e.stopPropagation();
@@ -805,6 +982,12 @@ function Dashboard() {
                                                     {sesion.salon}
                                                 </small>
 
+                                                {sesion.asistencia_observaciones && (
+                                                    <small className="incident-obs">
+                                                        {sesion.asistencia_observaciones}
+                                                    </small>
+                                                )}
+
                                             </div>
 
                                         </div>
@@ -816,12 +999,16 @@ function Dashboard() {
                         </div>
 
 
-                        <button
-                            className="view-reports-button"
-                            onClick={() => navigate("/reportes")}
-                        >
-                            Ver historial de incidencias
-                        </button>
+                        {usuario?.rol === "ADMINISTRADOR" && (
+
+                            <button
+                                className="view-reports-button"
+                                onClick={() => navigate("/reportes")}
+                            >
+                                Ver historial de incidencias
+                            </button>
+
+                        )}
 
                     </section>
 
@@ -840,6 +1027,7 @@ function Dashboard() {
                             <button
                                 className="modal-close"
                                 onClick={cerrarObservaciones}
+                                aria-label="Cerrar"
                             >
                                 <X size={18} />
                             </button>
@@ -886,10 +1074,11 @@ function Dashboard() {
 
                             {!sesionObservaciones.asistencia_id && (
                                 <div className="obs-field">
-                                    <label>
+                                    <label htmlFor="obs-estado">
                                         Estado
                                     </label>
                                     <select
+                                        id="obs-estado"
                                         className="obs-select"
                                         value={nuevoEstadoModal}
                                         onChange={(e) =>
@@ -915,10 +1104,11 @@ function Dashboard() {
                             )}
 
                             <div className="obs-field">
-                                <label>
+                                <label htmlFor="obs-observaciones">
                                     Observaciones
                                 </label>
                                 <textarea
+                                    id="obs-observaciones"
                                     className="obs-textarea"
                                     value={textoObservaciones}
                                     onChange={(e) =>
@@ -932,7 +1122,7 @@ function Dashboard() {
                             </div>
 
                             {errorObs && (
-                                <div className="obs-error">
+                                <div className="obs-error" role="alert">
                                     {errorObs}
                                 </div>
                             )}

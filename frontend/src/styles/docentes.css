@@ -107,7 +107,7 @@
 
     justify-content: center;
 
-    color: var(--neutral-400);
+    color: var(--neutral-600);
 
     font-size: var(--fs-md);
 }
@@ -263,7 +263,7 @@
 .docente-status.inactivo {
     background: var(--neutral-100);
 
-    color: var(--neutral-500);
+    color: var(--neutral-700);
 }
 
 
