@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
+const pool = require('../config/database');
 
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
 
     const authHeader = req.headers.authorization;
 
@@ -21,10 +22,29 @@ const authMiddleware = (req, res, next) => {
 
         const decoded = jwt.verify(
             token,
-            process.env.JWT_SECRET
+            process.env.JWT_SECRET,
+            { algorithms: ['HS256'] }
         );
 
-        req.usuario = decoded;
+        const result = await pool.query(`
+            SELECT id, username, rol, activo
+            FROM usuario
+            WHERE id = $1;
+        `, [decoded.id]);
+
+        const usuario = result.rows[0];
+
+        if (!usuario || !usuario.activo) {
+            return res.status(401).json({
+                mensaje: 'La sesión ya no es válida'
+            });
+        }
+
+        req.usuario = {
+            id: usuario.id,
+            username: usuario.username,
+            rol: usuario.rol
+        };
 
         next();
 
@@ -36,6 +56,8 @@ const authMiddleware = (req, res, next) => {
                 mensaje: 'Token expirado'
             });
         }
+
+        console.error('Error al validar autenticación:', error);
 
         return res.status(401).json({
             mensaje: 'Token inválido'

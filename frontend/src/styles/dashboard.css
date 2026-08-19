@@ -251,6 +251,13 @@ tbody tr:hover {
 }
 
 
+.estado-select option,
+.estado-select option:checked {
+    background: #ffffff;
+    color: var(--neutral-800);
+}
+
+
 .estado-select.presente {
     background: var(--success-bg);
     color: var(--success);

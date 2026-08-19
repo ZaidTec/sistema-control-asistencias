@@ -1,6 +1,11 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 require('dotenv').config();
+
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+    throw new Error('JWT_SECRET debe existir y tener al menos 32 caracteres');
+}
 
 const app = express();
 
@@ -18,8 +23,23 @@ const asistenciaRoutes = require('./routes/asistenciaRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
 
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = (process.env.FRONTEND_ORIGIN || 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+app.disable('x-powered-by');
+app.use(helmet());
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error('Origen no permitido por CORS'));
+    }
+}));
+app.use(express.json({ limit: '100kb' }));
 
 app.use('/api/auth', authRoutes);
 

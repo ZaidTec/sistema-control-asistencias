@@ -19,6 +19,8 @@ import "../styles/dashboard.css";
 
 function Dashboard() {
 
+    const ZONA_HORARIA = "America/Mexico_City";
+
     const { usuario } = useAuth();
 
     const [sesiones, setSesiones] = useState([]);
@@ -317,6 +319,7 @@ function Dashboard() {
         return horaActual.toLocaleDateString(
             "es-MX",
             {
+                timeZone: ZONA_HORARIA,
                 weekday: "long",
                 day: "numeric",
                 month: "long",
@@ -482,6 +485,7 @@ function Dashboard() {
                                 {horaActual.toLocaleTimeString(
                                     "es-MX",
                                     {
+                                        timeZone: ZONA_HORARIA,
                                         hour: "2-digit",
                                         minute: "2-digit"
                                     }

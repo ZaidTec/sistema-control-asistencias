@@ -4,6 +4,8 @@ Sistema web para el control de asistencias de profesores.
 
 El sistema permite administrar docentes, materias, grupos, salones, periodos escolares, horarios y sesiones de clase, además de registrar y consultar asistencias.
 
+Para instalar las dependencias y ejecutar el proyecto, consulta [DEPENDENCIAS.md](DEPENDENCIAS.md).
+
 ---
 
 ## Tecnologías

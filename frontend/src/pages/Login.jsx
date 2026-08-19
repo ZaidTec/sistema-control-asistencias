@@ -227,42 +227,6 @@ function Login() {
                             </div>
 
 
-                            {/* RECORDAR / RECUPERAR */}
-
-                            <div className="login-options">
-
-                                <label className="remember-option">
-
-                                    <input
-                                        type="checkbox"
-                                        checked={remember}
-                                        onChange={(e) =>
-                                            setRemember(e.target.checked)
-                                        }
-                                    />
-
-                                    <span>
-                                        Recordarme
-                                    </span>
-
-                                </label>
-
-
-                                <button
-                                    type="button"
-                                    className="forgot-button"
-                                    onClick={() =>
-                                        toast(
-                                            "info",
-                                            "La recuperación de contraseña se agregará posteriormente."
-                                        )
-                                    }
-                                >
-                                    Recuperar contraseña
-                                </button>
-
-                            </div>
-
 
                             {/* ERROR */}
 
@@ -299,9 +263,7 @@ function Login() {
 
                             <HelpCircle size={14} />
 
-                            <p>
-                                ¿Necesita ayuda para acceder?
-                            </p>
+                           
 
                         </div>
 

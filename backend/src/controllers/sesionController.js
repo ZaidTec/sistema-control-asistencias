@@ -1,4 +1,5 @@
 const pool = require('../config/database');
+const ZONA_HORARIA = process.env.APP_TIMEZONE || 'America/Mexico_City';
 
 
 const obtenerSesiones = async (req, res) => {
@@ -159,8 +160,11 @@ const generarSesionesDeAsignacion = async (asignacion_id, client) => {
 
         if (fecha.getDay() === diaObjetivo) {
 
-            const fechaSQL =
-                fecha.toISOString().split('T')[0];
+            const fechaSQL = [
+                fecha.getFullYear(),
+                String(fecha.getMonth() + 1).padStart(2, '0'),
+                String(fecha.getDate()).padStart(2, '0')
+            ].join('-');
 
 
             const result = await db.query(`
@@ -293,10 +297,10 @@ const obtenerSesionesHoy = async (req, res) => {
             LEFT JOIN registro_asistencia ra
                 ON ra.sesion_clase_id = sc.id
 
-            WHERE sc.fecha = CURRENT_DATE
+            WHERE sc.fecha = (CURRENT_TIMESTAMP AT TIME ZONE $1)::date
 
             ORDER BY sc.hora_inicio;
-        `);
+        `, [ZONA_HORARIA]);
 
 
         res.json(result.rows);
