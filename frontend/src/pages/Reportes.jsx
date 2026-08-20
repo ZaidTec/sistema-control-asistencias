@@ -213,24 +213,6 @@ function Reportes() {
     ).length;
 
 
-    const gruposPorFecha = resultados.reduce(
-        (grupos, registro) => {
-
-            const fecha = registro.fecha || "Sin fecha";
-
-            if (!grupos[fecha]) {
-                grupos[fecha] = [];
-            }
-
-            grupos[fecha].push(registro);
-
-            return grupos;
-
-        },
-        {}
-    );
-
-
     /* =========================================
        NOMBRE DOCENTE
     ========================================= */
@@ -248,6 +230,60 @@ function Reportes() {
         ]
             .filter(Boolean)
             .join(" ");
+
+    };
+
+
+    /* =========================================
+       FORMATO DE FECHAS Y HORAS
+    ========================================= */
+
+    const formatearFecha = (fecha) => {
+
+        if (!fecha) {
+            return "";
+        }
+
+        const d = new Date(fecha);
+
+        if (Number.isNaN(d.getTime())) {
+            return String(fecha);
+        }
+
+        const dd = String(
+            d.getDate()
+        ).padStart(2, "0");
+
+        const mm = String(
+            d.getMonth() + 1
+        ).padStart(2, "0");
+
+        return `${dd}/${mm}/${d.getFullYear()}`;
+
+    };
+
+
+    const formatearHora = (hora) => {
+
+        if (!hora) {
+            return "";
+        }
+
+        const partes = String(hora).split(":");
+
+        const hh = parseInt(partes[0], 10);
+
+        if (Number.isNaN(hh)) {
+            return String(hora);
+        }
+
+        const mm = partes[1] || "00";
+
+        const periodo = hh >= 12 ? "PM" : "AM";
+
+        const h12 = hh % 12 || 12;
+
+        return `${String(h12).padStart(2, "0")}:${mm} ${periodo}`;
 
     };
 
@@ -715,36 +751,20 @@ function Reportes() {
 
                                     <tbody>
 
-                                        {Object.entries(
-                                            gruposPorFecha
-                                        ).flatMap(([fecha, lista]) => [
-
-                                            <tr
-                                                className="fecha-grupo-fila"
-                                                key={`fecha-${fecha}`}
-                                            >
-
-                                                <td
-                                                    colSpan="8"
-                                                    className="fecha-grupo-titulo"
-                                                >
-                                                    {fecha}
-                                                </td>
-
-                                            </tr>,
-
-                                            ...lista.map(
-                                                (registro, index) => (
+                                        {resultados.map(
+                                            (registro, index) => (
 
                                                     <tr
                                                         key={
                                                             registro.id ||
-                                                            `${fecha}-${index}`
+                                                            `${index}`
                                                         }
                                                     >
 
                                                         <td className="fecha-cell">
-                                                            {registro.fecha}
+                                                            {formatearFecha(
+                                                                registro.fecha
+                                                            )}
                                                         </td>
 
                                                         <td data-label="Docente">
@@ -764,9 +784,13 @@ function Reportes() {
                                                         </td>
 
                                                         <td data-label="Horario">
-                                                            {registro.hora_inicio}
+                                                            {formatearHora(
+                                                                registro.hora_inicio
+                                                            )}
                                                             {" - "}
-                                                            {registro.hora_fin}
+                                                            {formatearHora(
+                                                                registro.hora_fin
+                                                            )}
                                                         </td>
 
                                                         <td data-label="Estado">
@@ -798,9 +822,7 @@ function Reportes() {
                                                     </tr>
 
                                                 )
-                                            )
-
-                                        ])}
+                                        )}
 
                                     </tbody>
 

@@ -917,15 +917,6 @@
    RESPONSIVE
 ========================================= */
 
-@media (max-width: 1100px) {
-
-    .horario-fila-body {
-        grid-template-columns: 1fr 1fr;
-    }
-
-}
-
-
 @media (max-width: 900px) {
 
     .horarios-grid {
@@ -948,6 +939,12 @@
 ========================================= */
 
 @media (max-width: 768px) {
+
+    /* Fila de clase: campos apilados */
+    .horario-fila-body {
+        grid-template-columns: 1fr;
+    }
+
 
     /* Formulario alta rápida docente: columnas apiladas */
     .form-row,

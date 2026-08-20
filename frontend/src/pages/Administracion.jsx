@@ -55,8 +55,52 @@ function Administracion() {
     const [guardandoEdicion, setGuardandoEdicion] = useState(false);
     const [salonEliminar, setSalonEliminar] = useState(null);
 
+    const [usuarioEdicion, setUsuarioEdicion] = useState(null);
+    const [usuarioEditForm, setUsuarioEditForm] = useState({
+        username: "",
+        rol: "usuario",
+        password: ""
+    });
+    const [guardandoUsuarioEdicion, setGuardandoUsuarioEdicion] = useState(false);
+
+    const [periodoEdicion, setPeriodoEdicion] = useState(null);
+    const [periodoEditForm, setPeriodoEditForm] = useState({
+        nombre: "",
+        fecha_inicio: "",
+        fecha_fin: ""
+    });
+    const [guardandoPeriodoEdicion, setGuardandoPeriodoEdicion] = useState(false);
+
+    const [grupoEdicion, setGrupoEdicion] = useState(null);
+    const [grupoEditForm, setGrupoEditForm] = useState({
+        clave: "",
+        semestre: ""
+    });
+    const [guardandoGrupoEdicion, setGuardandoGrupoEdicion] = useState(false);
+
     const [eliminarId, setEliminarId] = useState(null);
     const [eliminando, setEliminando] = useState(false);
+
+
+    const aFechaLocal = (fecha) => {
+
+        if (!fecha) {
+            return "";
+        }
+
+        const d = new Date(fecha);
+
+        const mm = String(
+            d.getMonth() + 1
+        ).padStart(2, "0");
+
+        const dd = String(
+            d.getDate()
+        ).padStart(2, "0");
+
+        return `${d.getFullYear()}-${mm}-${dd}`;
+
+    };
 
 
     /* =========================================
@@ -262,6 +306,300 @@ function Administracion() {
         } finally {
 
             setEliminando(false);
+
+        }
+
+    };
+
+
+    /* =========================================
+       EDITAR USUARIO
+    ========================================== */
+
+    const abrirEdicionUsuario = (
+        usuario
+    ) => {
+
+        setError("");
+
+        setUsuarioEdicion(usuario);
+
+        setUsuarioEditForm({
+            username: usuario.username,
+            rol: usuario.rol === "ADMINISTRADOR"
+                ? "administrador"
+                : "usuario",
+            password: ""
+        });
+
+    };
+
+
+    const cambiarUsuarioEdicion = (e) => {
+
+        setUsuarioEditForm({
+            ...usuarioEditForm,
+            [e.target.name]: e.target.value
+        });
+
+    };
+
+
+    const guardarEdicionUsuario = async (e) => {
+
+        e.preventDefault();
+
+        if (!usuarioEdicion) {
+            return;
+        }
+
+        if (!usuarioEditForm.username.trim()) {
+
+            setError(
+                "Escribe el nombre de usuario."
+            );
+
+            return;
+
+        }
+
+        setGuardandoUsuarioEdicion(true);
+
+        try {
+
+            const body = {
+                username: usuarioEditForm.username.trim(),
+                rol: usuarioEditForm.rol
+            };
+
+            if (usuarioEditForm.password) {
+                body.password = usuarioEditForm.password;
+            }
+
+            await api.put(
+                `/usuarios/${usuarioEdicion.id}`,
+                body
+            );
+
+            mostrarMensaje(
+                "Usuario actualizado correctamente."
+            );
+
+            setUsuarioEdicion(null);
+
+            cargarInformacion();
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                err.response?.data?.mensaje ||
+                "No se pudo actualizar el usuario."
+            );
+
+        } finally {
+
+            setGuardandoUsuarioEdicion(false);
+
+        }
+
+    };
+
+
+    /* =========================================
+       EDITAR PERIODO
+    ========================================== */
+
+    const abrirEdicionPeriodo = (
+        periodo
+    ) => {
+
+        setError("");
+
+        setPeriodoEdicion(periodo);
+
+        setPeriodoEditForm({
+            nombre: periodo.nombre,
+            fecha_inicio: aFechaLocal(
+                periodo.fecha_inicio
+            ),
+            fecha_fin: aFechaLocal(
+                periodo.fecha_fin
+            )
+        });
+
+    };
+
+
+    const cambiarPeriodoEdicion = (e) => {
+
+        setPeriodoEditForm({
+            ...periodoEditForm,
+            [e.target.name]: e.target.value
+        });
+
+    };
+
+
+    const guardarEdicionPeriodo = async (e) => {
+
+        e.preventDefault();
+
+        if (!periodoEdicion) {
+            return;
+        }
+
+        if (
+            !periodoEditForm.nombre ||
+            !periodoEditForm.fecha_inicio ||
+            !periodoEditForm.fecha_fin
+        ) {
+
+            setError(
+                "Completa nombre y fechas del periodo."
+            );
+
+            return;
+
+        }
+
+        if (
+            periodoEditForm.fecha_inicio >=
+            periodoEditForm.fecha_fin
+        ) {
+
+            setError(
+                "La fecha inicial debe ser menor a la fecha final."
+            );
+
+            return;
+
+        }
+
+        setGuardandoPeriodoEdicion(true);
+
+        try {
+
+            await api.put(
+                `/periodos/${periodoEdicion.id}`,
+                {
+                    nombre: periodoEditForm.nombre,
+                    fecha_inicio: periodoEditForm.fecha_inicio,
+                    fecha_fin: periodoEditForm.fecha_fin
+                }
+            );
+
+            mostrarMensaje(
+                "Periodo actualizado correctamente."
+            );
+
+            setPeriodoEdicion(null);
+
+            cargarInformacion();
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                err.response?.data?.mensaje ||
+                "No se pudo actualizar el periodo."
+            );
+
+        } finally {
+
+            setGuardandoPeriodoEdicion(false);
+
+        }
+
+    };
+
+
+    /* =========================================
+       EDITAR GRUPO
+    ========================================== */
+
+    const abrirEdicionGrupo = (
+        grupo
+    ) => {
+
+        setError("");
+
+        setGrupoEdicion(grupo);
+
+        setGrupoEditForm({
+            clave: grupo.clave,
+            semestre: grupo.semestre
+        });
+
+    };
+
+
+    const cambiarGrupoEdicion = (e) => {
+
+        setGrupoEditForm({
+            ...grupoEditForm,
+            [e.target.name]: e.target.value
+        });
+
+    };
+
+
+    const guardarEdicionGrupo = async (e) => {
+
+        e.preventDefault();
+
+        if (!grupoEdicion) {
+            return;
+        }
+
+        if (
+            !grupoEditForm.clave ||
+            !grupoEditForm.semestre
+        ) {
+
+            setError(
+                "Completa la clave y semestre del grupo."
+            );
+
+            return;
+
+        }
+
+        setGuardandoGrupoEdicion(true);
+
+        try {
+
+            await api.put(
+                `/grupos/${grupoEdicion.id}`,
+                {
+                    clave: grupoEditForm.clave,
+                    semestre:
+                        Number(grupoEditForm.semestre)
+                }
+            );
+
+            mostrarMensaje(
+                "Grupo actualizado correctamente."
+            );
+
+            setGrupoEdicion(null);
+
+            cargarInformacion();
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                err.response?.data?.mensaje ||
+                "No se pudo actualizar el grupo."
+            );
+
+        } finally {
+
+            setGuardandoGrupoEdicion(false);
 
         }
 
@@ -1016,6 +1354,20 @@ function Administracion() {
 
 
                                                                         <button
+                                                                            className="icon-button edit-button"
+                                                                            title="Editar usuario"
+                                                                            aria-label={`Editar usuario ${usuario.username}`}
+                                                                            onClick={() =>
+                                                                                abrirEdicionUsuario(
+                                                                                    usuario
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <Pencil size={14} />
+                                                                        </button>
+
+
+                                                                        <button
                                                                             className="icon-button delete-button"
                                                                             title="Eliminar usuario"
                                                                             aria-label={`Eliminar usuario ${usuario.username}`}
@@ -1057,6 +1409,129 @@ function Administracion() {
                                         onConfirm={confirmarEliminar}
                                         loading={eliminando}
                                     />
+
+
+                                    <Modal
+                                        open={usuarioEdicion !== null}
+                                        onClose={() =>
+                                            setUsuarioEdicion(null)
+                                        }
+                                        title="Editar usuario"
+                                        description="Modifica los datos de la cuenta."
+                                    >
+
+                                        <form
+                                            onSubmit={
+                                                guardarEdicionUsuario
+                                            }
+                                        >
+
+                                            <div className="form-group">
+
+                                                <label htmlFor="usuario-edit-username">
+                                                    Nombre de usuario
+                                                </label>
+
+                                                <input
+                                                    id="usuario-edit-username"
+                                                    type="text"
+                                                    name="username"
+                                                    value={
+                                                        usuarioEditForm.username
+                                                    }
+                                                    onChange={
+                                                        cambiarUsuarioEdicion
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="form-group">
+
+                                                <label htmlFor="usuario-edit-rol">
+                                                    Rol
+                                                </label>
+
+                                                <select
+                                                    id="usuario-edit-rol"
+                                                    name="rol"
+                                                    value={
+                                                        usuarioEditForm.rol
+                                                    }
+                                                    onChange={
+                                                        cambiarUsuarioEdicion
+                                                    }
+                                                >
+
+                                                    <option value="usuario">
+                                                        Usuario
+                                                    </option>
+
+                                                    <option value="administrador">
+                                                        Administrador
+                                                    </option>
+
+                                                </select>
+
+                                            </div>
+
+
+                                            <div className="form-group">
+
+                                                <label htmlFor="usuario-edit-password">
+                                                    Nueva contraseña
+                                                </label>
+
+                                                <input
+                                                    id="usuario-edit-password"
+                                                    type="password"
+                                                    name="password"
+                                                    value={
+                                                        usuarioEditForm.password
+                                                    }
+                                                    onChange={
+                                                        cambiarUsuarioEdicion
+                                                    }
+                                                    placeholder="Déjalo vacío para no cambiar"
+                                                    autoComplete="new-password"
+                                                />
+
+                                            </div>
+
+
+                                            <div className="modal-actions">
+
+                                                <button
+                                                    className="secondary-button"
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setUsuarioEdicion(
+                                                            null
+                                                        )
+                                                    }
+                                                >
+                                                    Cancelar
+                                                </button>
+
+
+                                                <button
+                                                    className="primary-button"
+                                                    type="submit"
+                                                    disabled={
+                                                        guardandoUsuarioEdicion
+                                                    }
+                                                >
+                                                    {guardandoUsuarioEdicion
+                                                        ? "Guardando..."
+                                                        : "Guardar"}
+                                                </button>
+
+                                            </div>
+
+                                        </form>
+
+                                    </Modal>
 
                                 </>
 
@@ -1194,6 +1669,10 @@ function Administracion() {
                                                         Estado
                                                     </th>
 
+                                                    <th scope="col">
+                                                        Acción
+                                                    </th>
+
                                                 </tr>
 
                                             </thead>
@@ -1206,7 +1685,7 @@ function Administracion() {
                                                     <tr>
 
                                                         <td
-                                                            colSpan="4"
+                                                            colSpan="5"
                                                             className="empty-table"
                                                         >
                                                             No hay periodos.
@@ -1261,6 +1740,27 @@ function Administracion() {
 
                                                                 </td>
 
+                                                                <td className="admin-actions-cell">
+
+                                                                    <div className="admin-actions">
+
+                                                                        <button
+                                                                            className="icon-button edit-button"
+                                                                            title="Editar periodo"
+                                                                            aria-label={`Editar periodo ${periodo.nombre}`}
+                                                                            onClick={() =>
+                                                                                abrirEdicionPeriodo(
+                                                                                    periodo
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <Pencil size={14} />
+                                                                        </button>
+
+                                                                    </div>
+
+                                                                </td>
+
                                                             </tr>
 
                                                         )
@@ -1273,6 +1773,118 @@ function Administracion() {
                                         </table>
 
                                     </div>
+
+
+                                    <Modal
+                                        open={periodoEdicion !== null}
+                                        onClose={() =>
+                                            setPeriodoEdicion(null)
+                                        }
+                                        title="Editar periodo"
+                                        description="Modifica los datos del periodo escolar."
+                                    >
+
+                                        <form
+                                            onSubmit={
+                                                guardarEdicionPeriodo
+                                            }
+                                        >
+
+                                            <div className="form-group">
+
+                                                <label htmlFor="periodo-edit-nombre">
+                                                    Nombre del periodo
+                                                </label>
+
+                                                <input
+                                                    id="periodo-edit-nombre"
+                                                    type="text"
+                                                    name="nombre"
+                                                    value={
+                                                        periodoEditForm.nombre
+                                                    }
+                                                    onChange={
+                                                        cambiarPeriodoEdicion
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="form-group">
+
+                                                <label htmlFor="periodo-edit-fecha-inicio">
+                                                    Fecha de inicio
+                                                </label>
+
+                                                <input
+                                                    id="periodo-edit-fecha-inicio"
+                                                    type="date"
+                                                    name="fecha_inicio"
+                                                    value={
+                                                        periodoEditForm.fecha_inicio
+                                                    }
+                                                    onChange={
+                                                        cambiarPeriodoEdicion
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="form-group">
+
+                                                <label htmlFor="periodo-edit-fecha-fin">
+                                                    Fecha final
+                                                </label>
+
+                                                <input
+                                                    id="periodo-edit-fecha-fin"
+                                                    type="date"
+                                                    name="fecha_fin"
+                                                    value={
+                                                        periodoEditForm.fecha_fin
+                                                    }
+                                                    onChange={
+                                                        cambiarPeriodoEdicion
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="modal-actions">
+
+                                                <button
+                                                    className="secondary-button"
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setPeriodoEdicion(
+                                                            null
+                                                        )
+                                                    }
+                                                >
+                                                    Cancelar
+                                                </button>
+
+
+                                                <button
+                                                    className="primary-button"
+                                                    type="submit"
+                                                    disabled={
+                                                        guardandoPeriodoEdicion
+                                                    }
+                                                >
+                                                    {guardandoPeriodoEdicion
+                                                        ? "Guardando..."
+                                                        : "Guardar"}
+                                                </button>
+
+                                            </div>
+
+                                        </form>
+
+                                    </Modal>
 
                                 </>
 
@@ -1400,6 +2012,10 @@ function Administracion() {
                                                         Estado
                                                     </th>
 
+                                                    <th scope="col">
+                                                        Acción
+                                                    </th>
+
                                                 </tr>
 
                                             </thead>
@@ -1412,7 +2028,7 @@ function Administracion() {
                                                     <tr>
 
                                                         <td
-                                                            colSpan="3"
+                                                            colSpan="4"
                                                             className="empty-table"
                                                         >
                                                             No hay grupos
@@ -1464,6 +2080,27 @@ function Administracion() {
 
                                                                 </td>
 
+                                                                <td className="admin-actions-cell">
+
+                                                                    <div className="admin-actions">
+
+                                                                        <button
+                                                                            className="icon-button edit-button"
+                                                                            title="Editar grupo"
+                                                                            aria-label={`Editar grupo ${grupo.clave}`}
+                                                                            onClick={() =>
+                                                                                abrirEdicionGrupo(
+                                                                                    grupo
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <Pencil size={14} />
+                                                                        </button>
+
+                                                                    </div>
+
+                                                                </td>
+
                                                             </tr>
 
                                                         )
@@ -1476,6 +2113,99 @@ function Administracion() {
                                         </table>
 
                                     </div>
+
+
+                                    <Modal
+                                        open={grupoEdicion !== null}
+                                        onClose={() =>
+                                            setGrupoEdicion(null)
+                                        }
+                                        title="Editar grupo"
+                                        description="Modifica los datos del grupo."
+                                    >
+
+                                        <form
+                                            onSubmit={
+                                                guardarEdicionGrupo
+                                            }
+                                        >
+
+                                            <div className="form-group">
+
+                                                <label htmlFor="grupo-edit-clave">
+                                                    Clave del grupo
+                                                </label>
+
+                                                <input
+                                                    id="grupo-edit-clave"
+                                                    type="text"
+                                                    name="clave"
+                                                    value={
+                                                        grupoEditForm.clave
+                                                    }
+                                                    onChange={
+                                                        cambiarGrupoEdicion
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="form-group">
+
+                                                <label htmlFor="grupo-edit-semestre">
+                                                    Semestre
+                                                </label>
+
+                                                <input
+                                                    id="grupo-edit-semestre"
+                                                    type="number"
+                                                    name="semestre"
+                                                    min="1"
+                                                    max="12"
+                                                    value={
+                                                        grupoEditForm.semestre
+                                                    }
+                                                    onChange={
+                                                        cambiarGrupoEdicion
+                                                    }
+                                                />
+
+                                            </div>
+
+
+                                            <div className="modal-actions">
+
+                                                <button
+                                                    className="secondary-button"
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setGrupoEdicion(
+                                                            null
+                                                        )
+                                                    }
+                                                >
+                                                    Cancelar
+                                                </button>
+
+
+                                                <button
+                                                    className="primary-button"
+                                                    type="submit"
+                                                    disabled={
+                                                        guardandoGrupoEdicion
+                                                    }
+                                                >
+                                                    {guardandoGrupoEdicion
+                                                        ? "Guardando..."
+                                                        : "Guardar"}
+                                                </button>
+
+                                            </div>
+
+                                        </form>
+
+                                    </Modal>
 
                                 </>
 

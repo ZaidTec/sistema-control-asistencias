@@ -489,13 +489,6 @@
 }
 
 
-/* Filas de agrupación por fecha:
-   ocultas en escritorio (el reporte se ve igual que antes) */
-.fecha-grupo-fila {
-    display: none;
-}
-
-
 .observaciones {
     max-width: 180px;
 
@@ -767,47 +760,7 @@
     }
 
 
-    .reportes-table tbody tr.fecha-grupo-fila {
-        display: block;
-
-        margin: var(--space-4) 0 var(--space-2);
-
-        padding: 0;
-
-        border: none;
-
-        border-radius: 0;
-
-        background: transparent;
-
-        box-shadow: none;
     }
-
-
-    .reportes-table tbody tr.fecha-grupo-fila td {
-        display: block;
-
-        padding: 9px 12px;
-
-        border-radius: var(--radius-sm);
-
-        background: var(--primary-50);
-
-        color: var(--primary-700);
-
-        font-size: var(--fs-sm);
-
-        font-weight: 700;
-
-        text-align: left;
-    }
-
-
-    .reportes-table td.fecha-grupo-titulo::before {
-        content: none;
-    }
-
-}
 
 
 /* =========================================
@@ -816,9 +769,16 @@
 
 @media print {
 
+    @page {
+        margin: 1cm;
+        size: auto;
+    }
+
     .filters-card,
     .print-button,
-    .filter-actions {
+    .filter-actions,
+    .reportes-error,
+    .results-count {
         display: none !important;
     }
 
@@ -829,7 +789,68 @@
 
 
     .page-title {
-        margin-bottom: 15px;
+        margin-bottom: 12px;
+    }
+
+
+    .page-title p {
+        display: none;
+    }
+
+
+    /* =========================================
+       KPIs COMPACTOS
+    ========================================= */
+
+    .summary-grid {
+        display: flex;
+
+        gap: 6px;
+
+        margin-bottom: 14px;
+    }
+
+
+    .summary-card {
+        flex: 1;
+
+        gap: 6px;
+
+        padding: 6px 8px;
+
+        border: none;
+
+        border-radius: 0;
+
+        background: white;
+
+        box-shadow: none;
+
+        border-bottom: 2px solid var(--neutral-100);
+    }
+
+
+    .summary-icon {
+        width: 20px;
+
+        height: 20px;
+
+        font-size: var(--fs-2xs);
+    }
+
+
+    .summary-card div {
+        gap: 0;
+    }
+
+
+    .summary-card span:not(.summary-icon) {
+        font-size: var(--fs-2xs);
+    }
+
+
+    .summary-card strong {
+        font-size: var(--fs-md);
     }
 
 
@@ -847,14 +868,166 @@
     }
 
 
+    /* =========================================
+       TABLA A ANCHO DE PÁGINA
+    ========================================= */
+
+    .reportes-table-container {
+        overflow: visible !important;
+    }
+
+
     .reportes-table {
+        width: 100%;
+
+        table-layout: fixed;
+
         font-size: var(--fs-2xs);
     }
 
 
-    .reportes-table th,
+    .reportes-table,
+    .reportes-table thead,
+    .reportes-table tbody {
+        display: table;
+    }
+
+
+    .reportes-table thead {
+        display: table-header-group;
+    }
+
+
+    .reportes-table tbody {
+        display: table-row-group;
+    }
+
+
+    .reportes-table tbody tr {
+        display: table-row;
+
+        margin: 0;
+
+        padding: 0;
+
+        border: none;
+
+        border-radius: 0;
+
+        background: transparent;
+
+        box-shadow: none;
+    }
+
+
+    .reportes-table tbody tr:hover {
+        background: var(--neutral-50);
+    }
+
+
+    .reportes-table th {
+        padding: 4px 5px;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        font-size: var(--fs-2xs);
+    }
+
+
     .reportes-table td {
-        padding: 6px;
+        display: table-cell;
+
+        padding: 4px 5px;
+
+        border-top: 1px solid var(--neutral-100);
+
+        text-align: left;
+
+        white-space: normal;
+    }
+
+
+    /* Anchos de columna para caber en A4/Carta */
+    .reportes-table th:nth-child(1),
+    .reportes-table tbody td:nth-child(1) {
+        width: 9%;
+    }
+
+
+    .reportes-table th:nth-child(2),
+    .reportes-table tbody td:nth-child(2) {
+        width: 18%;
+    }
+
+
+    .reportes-table th:nth-child(3),
+    .reportes-table tbody td:nth-child(3) {
+        width: 16%;
+    }
+
+
+    .reportes-table th:nth-child(4),
+    .reportes-table tbody td:nth-child(4) {
+        width: 7%;
+    }
+
+
+    .reportes-table th:nth-child(5),
+    .reportes-table tbody td:nth-child(5) {
+        width: 7%;
+    }
+
+
+    .reportes-table th:nth-child(6),
+    .reportes-table tbody td:nth-child(6) {
+        width: 15%;
+    }
+
+
+    .reportes-table th:nth-child(7),
+    .reportes-table tbody td:nth-child(7) {
+        width: 12%;
+    }
+
+
+    .reportes-table th:nth-child(8),
+    .reportes-table tbody td:nth-child(8) {
+        width: 16%;
+    }
+
+
+    /* Fecha, Horario y Estado no se parten */
+    .reportes-table tbody td:nth-child(1),
+    .reportes-table tbody td:nth-child(6),
+    .reportes-table tbody td:nth-child(7) {
+        white-space: nowrap;
+    }
+
+
+    .reportes-table td[data-label]::before {
+        content: none;
+    }
+
+
+    .reportes-table td.fecha-cell {
+        display: table-cell;
+    }
+
+
+    .reportes-table td.observaciones {
+        max-width: none;
+
+        overflow: visible;
+
+        text-overflow: clip;
+
+        overflow-wrap: break-word;
+
+        word-break: normal;
     }
 
 

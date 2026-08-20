@@ -41,6 +41,9 @@ function Horarios() {
     const [formulario, setFormulario] = useState({
         periodo_id: "",
         docente_id: "",
+        materia_id: "",
+        grupo_id: "",
+        salon_id: "",
         color: "#1558c7"
     });
 
@@ -50,9 +53,6 @@ function Horarios() {
 
         id: contadorFila.current++,
 
-        materia_id: "",
-        grupo_id: "",
-        salon_id: "",
         dia_semana: "",
         hora_inicio: "",
         hora_fin: ""
@@ -295,11 +295,23 @@ function Horarios() {
         }
 
 
+        if (
+            !formulario.materia_id ||
+            !formulario.grupo_id ||
+            !formulario.salon_id
+        ) {
+
+            setError(
+                "Selecciona la materia, el grupo y el salón."
+            );
+
+            return;
+
+        }
+
+
         const filaIncompleta =
             filas.some((fila) => (
-                !fila.materia_id ||
-                !fila.grupo_id ||
-                !fila.salon_id ||
                 !fila.dia_semana ||
                 !fila.hora_inicio ||
                 !fila.hora_fin
@@ -350,13 +362,13 @@ function Horarios() {
                     asignaciones: filas.map((fila) => ({
 
                         materia_id:
-                            Number(fila.materia_id),
+                            Number(formulario.materia_id),
 
                         grupo_id:
-                            Number(fila.grupo_id),
+                            Number(formulario.grupo_id),
 
                         salon_id:
-                            Number(fila.salon_id),
+                            Number(formulario.salon_id),
 
                         dia_semana:
                             Number(fila.dia_semana),
@@ -831,6 +843,160 @@ function Horarios() {
                         </div>
 
 
+                        <div className="form-row">
+
+                            <div className="form-group">
+
+                                <label htmlFor="materia_id">
+                                    Materia
+                                </label>
+
+                                <div className="field-row">
+
+                                    <select
+                                        id="materia_id"
+                                        name="materia_id"
+                                        value={formulario.materia_id}
+                                        onChange={manejarCambio}
+                                    >
+
+                                        <option value="">
+                                            Selecciona una materia
+                                        </option>
+
+                                        {materias.map((materia) => (
+
+                                            <option
+                                                key={materia.id}
+                                                value={materia.id}
+                                            >
+
+                                                {materia.nombre}
+
+                                            </option>
+
+                                        ))}
+
+                                    </select>
+
+                                    <button
+                                        type="button"
+                                        className="add-button"
+                                        onClick={() =>
+                                            abrirAlta("materia")
+                                        }
+                                        aria-label="Agregar materia"
+                                    >
+                                        <Plus size={15} />
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="grupo_id">
+                                    Grupo
+                                </label>
+
+                                <div className="field-row">
+
+                                    <select
+                                        id="grupo_id"
+                                        name="grupo_id"
+                                        value={formulario.grupo_id}
+                                        onChange={manejarCambio}
+                                    >
+
+                                        <option value="">
+                                            Selecciona un grupo
+                                        </option>
+
+                                        {grupos.map((grupo) => (
+
+                                            <option
+                                                key={grupo.id}
+                                                value={grupo.id}
+                                            >
+
+                                                {grupo.clave}
+
+                                            </option>
+
+                                        ))}
+
+                                    </select>
+
+                                    <button
+                                        type="button"
+                                        className="add-button"
+                                        onClick={() =>
+                                            abrirAlta("grupo")
+                                        }
+                                        aria-label="Agregar grupo"
+                                    >
+                                        <Plus size={15} />
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label htmlFor="salon_id">
+                                    Salón
+                                </label>
+
+                                <div className="field-row">
+
+                                    <select
+                                        id="salon_id"
+                                        name="salon_id"
+                                        value={formulario.salon_id}
+                                        onChange={manejarCambio}
+                                    >
+
+                                        <option value="">
+                                            Selecciona un salón
+                                        </option>
+
+                                        {salones.map((salon) => (
+
+                                            <option
+                                                key={salon.id}
+                                                value={salon.id}
+                                            >
+
+                                                Salón {salon.numero}
+
+                                            </option>
+
+                                        ))}
+
+                                    </select>
+
+                                    <button
+                                        type="button"
+                                        className="add-button"
+                                        onClick={() =>
+                                            abrirAlta("salon")
+                                        }
+                                        aria-label="Agregar salón"
+                                    >
+                                        <Plus size={15} />
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
                         <div className="horario-filas">
 
                             {filas.map((fila, index) => (
@@ -841,162 +1007,6 @@ function Horarios() {
                                 >
 
                                     <div className="horario-fila-body">
-
-                                        <div className="form-group">
-
-                                            <label htmlFor={`materia_id_${fila.id}`}>
-                                                Materia
-                                            </label>
-
-                                            <div className="field-row">
-
-                                                <select
-                                                    id={`materia_id_${fila.id}`}
-                                                    name="materia_id"
-                                                    value={fila.materia_id}
-                                                    onChange={(e) =>
-                                                        manejarCambioFila(index, e)
-                                                    }
-                                                >
-
-                                                    <option value="">
-                                                        Selecciona una materia
-                                                    </option>
-
-                                                    {materias.map((materia) => (
-
-                                                        <option
-                                                            key={materia.id}
-                                                            value={materia.id}
-                                                        >
-
-                                                            {materia.nombre}
-
-                                                        </option>
-
-                                                    ))}
-
-                                                </select>
-
-                                                <button
-                                                    type="button"
-                                                    className="add-button"
-                                                    onClick={() =>
-                                                        abrirAlta("materia", index)
-                                                    }
-                                                    aria-label="Agregar materia"
-                                                >
-                                                    <Plus size={15} />
-                                                </button>
-
-                                            </div>
-
-                                        </div>
-
-
-                                        <div className="form-group">
-
-                                            <label htmlFor={`grupo_id_${fila.id}`}>
-                                                Grupo
-                                            </label>
-
-                                            <div className="field-row">
-
-                                                <select
-                                                    id={`grupo_id_${fila.id}`}
-                                                    name="grupo_id"
-                                                    value={fila.grupo_id}
-                                                    onChange={(e) =>
-                                                        manejarCambioFila(index, e)
-                                                    }
-                                                >
-
-                                                    <option value="">
-                                                        Selecciona un grupo
-                                                    </option>
-
-                                                    {grupos.map((grupo) => (
-
-                                                        <option
-                                                            key={grupo.id}
-                                                            value={grupo.id}
-                                                        >
-
-                                                            {grupo.clave}
-
-                                                        </option>
-
-                                                    ))}
-
-                                                </select>
-
-                                                <button
-                                                    type="button"
-                                                    className="add-button"
-                                                    onClick={() =>
-                                                        abrirAlta("grupo", index)
-                                                    }
-                                                    aria-label="Agregar grupo"
-                                                >
-                                                    <Plus size={15} />
-                                                </button>
-
-                                            </div>
-
-                                        </div>
-
-
-                                        <div className="form-group">
-
-                                            <label htmlFor={`salon_id_${fila.id}`}>
-                                                Salón
-                                            </label>
-
-                                            <div className="field-row">
-
-                                                <select
-                                                    id={`salon_id_${fila.id}`}
-                                                    name="salon_id"
-                                                    value={fila.salon_id}
-                                                    onChange={(e) =>
-                                                        manejarCambioFila(index, e)
-                                                    }
-                                                >
-
-                                                    <option value="">
-                                                        Selecciona un salón
-                                                    </option>
-
-                                                    {salones.map((salon) => (
-
-                                                        <option
-                                                            key={salon.id}
-                                                            value={salon.id}
-                                                        >
-
-                                                            Salón {salon.numero}
-
-                                                        </option>
-
-                                                    ))}
-
-                                                </select>
-
-                                                <button
-                                                    type="button"
-                                                    className="add-button"
-                                                    onClick={() =>
-                                                        abrirAlta("salon", index)
-                                                    }
-                                                    aria-label="Agregar salón"
-                                                >
-                                                    <Plus size={15} />
-                                                </button>
-
-                                            </div>
-
-                                        </div>
-
 
                                         <div className="form-group">
 
