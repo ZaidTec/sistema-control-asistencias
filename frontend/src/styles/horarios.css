@@ -254,6 +254,12 @@
 ========================================= */
 
 .color-label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
     font-size: var(--fs-xs);
 
     font-weight: 600;
@@ -912,4 +918,15 @@
     opacity: .45;
 
     cursor: not-allowed;
+}
+
+
+.selected-color {
+    width: 14px;
+
+    height: 14px;
+
+    border: 1px solid var(--neutral-300);
+
+    border-radius: 50%;
 }

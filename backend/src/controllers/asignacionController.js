@@ -387,7 +387,7 @@ const crearAsignacion = async (req, res) => {
 
 const crearAsignacionesMasivas = async (req, res) => {
 
-    const { periodo_id, docente_id, clases } = req.body;
+    const { periodo_id, docente_id, color, clases } = req.body;
 
     if (!periodo_id || !docente_id || !Array.isArray(clases) || clases.length === 0) {
         return res.status(400).json({
@@ -409,7 +409,15 @@ const crearAsignacionesMasivas = async (req, res) => {
 
         for (let indice = 0; indice < clases.length; indice += 1) {
             const clase = clases[indice];
-            const { materia_id, grupo_id, salon_id, dia_semana, hora_inicio, hora_fin } = clase;
+            const {
+                materia_id,
+                grupo_id,
+                salon_id,
+                dia_semana,
+                hora_inicio,
+                hora_fin,
+                color: colorFila
+            } = clase;
 
             if (!materia_id || !grupo_id || !salon_id || !dia_semana || !hora_inicio || !hora_fin) {
                 throw Object.assign(new Error('Completa todos los campos de la fila'), { status: 400, indice });
@@ -468,11 +476,11 @@ const crearAsignacionesMasivas = async (req, res) => {
             const result = await client.query(`
                 INSERT INTO asignacion_clase (
                     docente_id, materia_id, grupo_id, salon_id, periodo_id,
-                    dia_semana, hora_inicio, hora_fin, activo
+                    dia_semana, hora_inicio, hora_fin, color, activo
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
                 RETURNING *;
-            `, [docente_id, materia_id, grupo_id, salon_id, periodo_id, dia_semana, hora_inicio, hora_fin]);
+            `, [docente_id, materia_id, grupo_id, salon_id, periodo_id, dia_semana, hora_inicio, hora_fin, colorFila || color || '#1558c7']);
 
             creadas.push(result.rows[0]);
         }

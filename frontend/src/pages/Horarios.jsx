@@ -31,7 +31,8 @@ function Horarios() {
 
     const [formulario, setFormulario] = useState({
         periodo_id: "",
-        docente_id: ""
+        docente_id: "",
+        color: "#1558c7"
     });
 
     const crearFila = () => ({
@@ -52,6 +53,16 @@ function Horarios() {
         { id: 3, nombre: "Miércoles" },
         { id: 4, nombre: "Jueves" },
         { id: 5, nombre: "Viernes" }
+    ];
+
+    const colores = [
+        "#1558c7",
+        "#0e6e4c",
+        "#b45309",
+        "#be123c",
+        "#6d28d9",
+        "#0369a1",
+        "#a16207"
     ];
 
 
@@ -232,8 +243,10 @@ function Horarios() {
             await api.post("/asignaciones/masivas", {
                 periodo_id: Number(formulario.periodo_id),
                 docente_id: Number(formulario.docente_id),
+                color: formulario.color,
                 clases: clases.map((clase) => ({
                     ...clase,
+                    color: formulario.color,
                     materia_id: Number(clase.materia_id),
                     grupo_id: Number(clase.grupo_id),
                     salon_id: Number(clase.salon_id),
@@ -460,6 +473,34 @@ function Horarios() {
                                     {docentes.map((docente) => <option key={docente.id} value={docente.id}>{obtenerNombreDocente(docente)}</option>)}
                                 </select>
                             </div>
+
+                            <div className="form-group color-field">
+                                <span id="color_docente_label" className="color-label">
+                                    Color del docente
+                                    <span className="selected-color" style={{ backgroundColor: formulario.color }} aria-hidden="true" />
+                                </span>
+                                <div className="color-selector" role="group" aria-labelledby="color_docente_label">
+                                    {colores.map((color) => (
+                                        <button
+                                            type="button"
+                                            key={color}
+                                            className={formulario.color === color ? "color-swatch color-swatch-active" : "color-swatch"}
+                                            style={{ background: color }}
+                                            onClick={() => setFormulario((prev) => ({ ...prev, color }))}
+                                            aria-label={`Usar color ${color}`}
+                                            aria-pressed={formulario.color === color}
+                                        />
+                                    ))}
+                                    <label className="color-custom" title="Color personalizado">
+                                        <input
+                                            type="color"
+                                            value={formulario.color}
+                                            onChange={(e) => setFormulario((prev) => ({ ...prev, color: e.target.value }))}
+                                            aria-label="Elegir color personalizado"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="class-rows-header">
@@ -575,6 +616,11 @@ function Horarios() {
                                             <div
                                                 className="class-block"
                                                 key={horario.id}
+                                                style={{
+                                                    "--clase-color": horario.color || "#1558c7",
+                                                    borderLeftColor: horario.color || "#1558c7",
+                                                    backgroundColor: `${horario.color || "#1558c7"}20`
+                                                }}
                                             >
 
                                                 <div className="class-time">

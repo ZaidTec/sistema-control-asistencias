@@ -28,11 +28,42 @@ const allowedOrigins = (process.env.FRONTEND_ORIGIN || 'http://localhost:5173')
     .map((origin) => origin.trim())
     .filter(Boolean);
 
+const esOrigenLocal = (origin) => {
+
+    try {
+
+        const { protocol, hostname } = new URL(origin);
+
+        if (protocol !== 'http:') {
+            return false;
+        }
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return true;
+        }
+
+        const octetos = hostname.split('.').map(Number);
+
+        if (octetos.length !== 4 || octetos.some(Number.isNaN)) {
+            return false;
+        }
+
+        const [primero, segundo] = octetos;
+
+        return primero === 10
+            || (primero === 172 && segundo >= 16 && segundo <= 31)
+            || (primero === 192 && segundo === 168);
+
+    } catch (error) {
+        return false;
+    }
+};
+
 app.disable('x-powered-by');
 app.use(helmet());
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(origin) || esOrigenLocal(origin)) {
             return callback(null, true);
         }
 
@@ -62,6 +93,6 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor ejecutándose en http://0.0.0.0:${PORT}`);
 });

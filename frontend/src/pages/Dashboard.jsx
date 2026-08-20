@@ -227,6 +227,20 @@ function Dashboard() {
 
             if (sesionObservaciones.asistencia_id) {
 
+                const estadoActual =
+                    sesionObservaciones.asistencia_estado;
+
+                if (
+                    estadoActual === "PRESENTE" &&
+                    textoObservaciones.trim()
+                ) {
+                    setErrorObs(
+                        "Una asistencia presente no puede tener observaciones."
+                    );
+                    setGuardando(false);
+                    return;
+                }
+
                 await api.put(
                     `/asistencias/${sesionObservaciones.asistencia_id}`,
                     {
