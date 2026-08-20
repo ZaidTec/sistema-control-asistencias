@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import Sidebar from "./Sidebar";
+import BottomNavBar from "./BottomNavBar";
 import "../styles/layout.css";
 import "../styles/sidebar.css";
+import "../styles/bottomnav.css";
 
 function Layout({ titulo, children }) {
 
@@ -58,6 +60,8 @@ function Layout({ titulo, children }) {
                 </div>
 
             </main>
+
+            <BottomNavBar />
 
         </div>
 

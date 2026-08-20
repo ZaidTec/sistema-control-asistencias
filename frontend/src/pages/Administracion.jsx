@@ -818,7 +818,7 @@ function Administracion() {
 
                     {error && (
 
-                        <div className="admin-error">
+                        <div className="admin-error" role="alert">
                             {error}
                         </div>
 
@@ -827,7 +827,7 @@ function Administracion() {
 
                     {mensaje && (
 
-                        <div className="admin-success">
+                        <div className="admin-success" role="status">
                             {mensaje}
                         </div>
 
@@ -976,11 +976,12 @@ function Administracion() {
 
                                         <div className="form-group">
 
-                                            <label>
+                                            <label htmlFor="usuario-username">
                                                 Nombre de usuario
                                             </label>
 
                                             <input
+                                                id="usuario-username"
                                                 type="text"
                                                 name="username"
                                                 value={
@@ -997,11 +998,12 @@ function Administracion() {
 
                                         <div className="form-group">
 
-                                            <label>
+                                            <label htmlFor="usuario-password">
                                                 Contraseña
                                             </label>
 
                                             <input
+                                                id="usuario-password"
                                                 type="password"
                                                 name="password"
                                                 value={
@@ -1018,11 +1020,12 @@ function Administracion() {
 
                                         <div className="form-group">
 
-                                            <label>
+                                            <label htmlFor="usuario-rol">
                                                 Rol
                                             </label>
 
                                             <select
+                                                id="usuario-rol"
                                                 name="rol"
                                                 value={
                                                     usuarioForm.rol
@@ -1253,11 +1256,12 @@ function Administracion() {
 
                                         <div className="form-group">
 
-                                            <label>
+                                            <label htmlFor="periodo-nombre">
                                                 Nombre del periodo
                                             </label>
 
                                             <input
+                                                id="periodo-nombre"
                                                 type="text"
                                                 name="nombre"
                                                 value={
@@ -1274,11 +1278,12 @@ function Administracion() {
 
                                         <div className="form-group">
 
-                                            <label>
+                                            <label htmlFor="periodo-fecha-inicio">
                                                 Fecha de inicio
                                             </label>
 
                                             <input
+                                                id="periodo-fecha-inicio"
                                                 type="date"
                                                 name="fecha_inicio"
                                                 value={
@@ -1294,11 +1299,12 @@ function Administracion() {
 
                                         <div className="form-group">
 
-                                            <label>
+                                            <label htmlFor="periodo-fecha-fin">
                                                 Fecha final
                                             </label>
 
                                             <input
+                                                id="periodo-fecha-fin"
                                                 type="date"
                                                 name="fecha_fin"
                                                 value={
@@ -1518,11 +1524,12 @@ function Administracion() {
 
                                         <div className="form-group">
 
-                                            <label>
+                                            <label htmlFor="grupo-clave">
                                                 Clave del grupo
                                             </label>
 
                                             <input
+                                                id="grupo-clave"
                                                 type="text"
                                                 name="clave"
                                                 value={
@@ -1539,11 +1546,12 @@ function Administracion() {
 
                                         <div className="form-group">
 
-                                            <label>
+                                            <label htmlFor="grupo-semestre">
                                                 Semestre
                                             </label>
 
                                             <input
+                                                id="grupo-semestre"
                                                 type="number"
                                                 name="semestre"
                                                 min="1"

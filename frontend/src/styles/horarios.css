@@ -192,6 +192,165 @@
 
 
 /* =========================================
+   CAMPO CON BOTÓN "+" (ALTA RÁPIDA)
+========================================= */
+
+.field-row {
+    display: flex;
+
+    gap: var(--space-2);
+}
+
+
+.field-row select {
+    flex: 1;
+
+    min-width: 0;
+
+    width: auto;
+}
+
+
+.add-button {
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 36px;
+
+    height: 36px;
+
+    border: 1px solid var(--neutral-200);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--neutral-50);
+
+    color: var(--primary-600);
+
+    cursor: pointer;
+
+    transition: background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+
+.add-button:hover {
+    background: var(--primary-50);
+
+    border-color: var(--primary-300);
+
+    color: var(--primary-700);
+}
+
+
+/* =========================================
+   SELECTOR DE COLOR
+========================================= */
+
+.color-label {
+    font-size: var(--fs-xs);
+
+    font-weight: 600;
+
+    color: var(--neutral-600);
+}
+
+
+.color-selector {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: var(--space-2);
+}
+
+
+.color-swatch {
+    width: 32px;
+
+    height: 32px;
+
+    border: 2px solid white;
+
+    border-radius: var(--radius-sm);
+
+    box-shadow: 0 0 0 1px var(--neutral-200);
+
+    cursor: pointer;
+
+    padding: 0;
+}
+
+
+.color-swatch-active {
+    box-shadow: 0 0 0 2px var(--primary-600);
+}
+
+
+.color-custom {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 32px;
+
+    height: 32px;
+
+    border: 1px dashed var(--neutral-300);
+
+    border-radius: var(--radius-sm);
+
+    background: conic-gradient(
+        red,
+        yellow,
+        lime,
+        cyan,
+        blue,
+        magenta,
+        red
+    );
+
+    cursor: pointer;
+
+    position: relative;
+}
+
+
+.color-custom input {
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   MODAL ALTA RÁPIDA
+========================================= */
+
+.quick-alta-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: var(--space-3);
+}
+
+
+/* =========================================
    BOTON GUARDAR
 ========================================= */
 
@@ -293,7 +452,7 @@
 
     text-align: center;
 
-    color: var(--neutral-400);
+    color: var(--neutral-600);
 
     font-size: var(--fs-xs);
 }
@@ -314,9 +473,14 @@
 
     border-radius: var(--radius-sm);
 
-    background: var(--primary-50);
+    background: color-mix(
+        in srgb,
+        var(--clase-color, var(--primary-600)) 12%,
+        white
+    );
 
-    border-left: 3px solid var(--primary-600);
+    border-left: 3px solid
+        var(--clase-color, var(--primary-600));
 }
 
 

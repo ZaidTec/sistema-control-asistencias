@@ -37,6 +37,8 @@ const obtenerAsignaciones = async (req, res) => {
                 ac.hora_inicio,
                 ac.hora_fin,
 
+                ac.color,
+
                 ac.activo
 
             FROM asignacion_clase ac
@@ -110,6 +112,8 @@ const obtenerAsignacionPorId = async (req, res) => {
                 ac.hora_inicio,
                 ac.hora_fin,
 
+                ac.color,
+
                 ac.activo
 
             FROM asignacion_clase ac
@@ -165,7 +169,8 @@ const crearAsignacion = async (req, res) => {
             periodo_id,
             dia_semana,
             hora_inicio,
-            hora_fin
+            hora_fin,
+            color
         } = req.body;
 
 
@@ -306,6 +311,7 @@ const crearAsignacion = async (req, res) => {
                 dia_semana,
                 hora_inicio,
                 hora_fin,
+                color,
                 activo
             )
             VALUES (
@@ -317,6 +323,7 @@ const crearAsignacion = async (req, res) => {
                 $6,
                 $7,
                 $8,
+                $9,
                 true
             )
             RETURNING *;
@@ -328,7 +335,8 @@ const crearAsignacion = async (req, res) => {
             periodo_id,
             dia_semana,
             hora_inicio,
-            hora_fin
+            hora_fin,
+            color || '#1558c7'
         ]);
 
 
@@ -508,7 +516,8 @@ const actualizarAsignacion = async (req, res) => {
             periodo_id,
             dia_semana,
             hora_inicio,
-            hora_fin
+            hora_fin,
+            color
         } = req.body;
 
 
@@ -672,7 +681,8 @@ const actualizarAsignacion = async (req, res) => {
                 periodo_id = $5,
                 dia_semana = $6,
                 hora_inicio = $7,
-                hora_fin = $8
+                hora_fin = $8,
+                color = $10
             WHERE id = $9
             RETURNING *;
         `, [
@@ -684,7 +694,8 @@ const actualizarAsignacion = async (req, res) => {
             dia_semana,
             hora_inicio,
             hora_fin,
-            id
+            id,
+            color || '#1558c7'
         ]);
 
 

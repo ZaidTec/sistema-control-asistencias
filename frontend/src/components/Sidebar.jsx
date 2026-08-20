@@ -21,15 +21,15 @@ function Sidebar({ colapsado, onToggle }) {
 
     const menuItems = [
         { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/reportes", icon: ClipboardList, label: "Reportes" },
         ...(esAdmin
             ? [
+                { path: "/reportes", icon: ClipboardList, label: "Reportes" },
                 { path: "/docentes", icon: Users, label: "Docentes" },
-                { path: "/horarios", icon: CalendarDays, label: "Calendario" },
+                { path: "/horarios", icon: CalendarDays, label: "Horarios" },
                 { path: "/administracion", icon: Settings, label: "Administración" }
             ]
             : [
-                { path: "/monitor", icon: CalendarDays, label: "Calendario" }
+                { path: "/monitor", icon: CalendarDays, label: "Horarios" }
             ])
     ];
 
@@ -53,6 +53,7 @@ function Sidebar({ colapsado, onToggle }) {
                 <button
                     className="sidebar-toggle"
                     title={colapsado ? "Expandir menú" : "Colapsar menú"}
+                    aria-label={colapsado ? "Expandir menú" : "Colapsar menú"}
                     onClick={onToggle}
                 >
                     {colapsado ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}

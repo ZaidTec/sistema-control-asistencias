@@ -1,0 +1,148 @@
+/* =========================================
+   BOTTOM NAVIGATION (móvil <768px)
+   Barra inferior fija con blur.
+   Solo visible en pantallas pequeñas.
+========================================= */
+
+.bottom-nav {
+    position: fixed;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 0;
+
+    z-index: 40;
+
+    display: none;
+
+    align-items: stretch;
+
+    justify-content: space-around;
+
+    padding-bottom: env(safe-area-inset-bottom);
+
+    background: rgba(255, 255, 255, 0.88);
+
+    -webkit-backdrop-filter: blur(14px);
+
+    backdrop-filter: blur(14px);
+
+    border-top: 1px solid var(--neutral-200);
+
+    box-shadow: 0 -6px 24px rgba(15, 25, 40, 0.08);
+}
+
+
+.bottom-nav-item {
+    position: relative;
+
+    flex: 1;
+
+    min-width: 0;
+
+    min-height: 60px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 4px;
+
+    padding: 8px 4px;
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--neutral-500);
+
+    font-family: inherit;
+
+    font-size: var(--fs-2xs);
+
+    font-weight: 600;
+
+    letter-spacing: 0.01em;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+.bottom-nav-item svg {
+    transition: transform 0.15s ease;
+}
+
+
+.bottom-nav-item:active svg {
+    transform: scale(0.88);
+}
+
+
+.bottom-nav-item-active {
+    color: var(--primary-600);
+}
+
+
+.bottom-nav-item-active::before {
+    content: "";
+
+    position: absolute;
+
+    top: 5px;
+
+    width: 30px;
+
+    height: 3px;
+
+    border-radius: 999px;
+
+    background: var(--primary-600);
+}
+
+
+.bottom-nav-logout {
+    color: var(--danger);
+}
+
+
+@media (max-width: 768px) {
+
+    .bottom-nav {
+        display: flex;
+
+        animation: bottom-nav-in 0.28s ease-out;
+    }
+
+}
+
+
+@keyframes bottom-nav-in {
+
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .bottom-nav {
+        animation: none;
+    }
+
+}
