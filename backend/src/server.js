@@ -18,7 +18,12 @@ const asistenciaRoutes = require('./routes/asistenciaRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
 
-app.use(cors());
+const corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:3000')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+app.use(cors({ origin: corsOrigins }));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
