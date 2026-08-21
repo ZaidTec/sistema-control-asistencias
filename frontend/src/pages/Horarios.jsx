@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ClipboardList, Plus, Trash2, UserRound } from "lucide-react";
+import { ClipboardList, Pencil, Plus, Trash2, UserRound } from "lucide-react";
 import api from "../services/api";
 import Layout from "../components/Layout";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
@@ -29,6 +29,9 @@ function Horarios() {
 
     const [eliminarId, setEliminarId] = useState(null);
     const [eliminando, setEliminando] = useState(false);
+
+    const [editarAsignacion, setEditarAsignacion] = useState(null);
+    const [editando, setEditando] = useState(false);
 
     const [mostrarHorarios, setMostrarHorarios] = useState(false);
 
@@ -461,6 +464,120 @@ function Horarios() {
             setEliminando(false);
 
         }
+
+    };
+
+
+    /* =========================================
+       EDITAR HORARIO
+    ========================================== */
+
+    const confirmarEdicion = async () => {
+
+        if (!editarAsignacion) {
+            return;
+        }
+
+        if (
+            !editarAsignacion.docente_id ||
+            !editarAsignacion.materia_id ||
+            !editarAsignacion.grupo_id ||
+            !editarAsignacion.salon_id ||
+            !editarAsignacion.periodo_id ||
+            !editarAsignacion.dia_semana ||
+            !editarAsignacion.hora_inicio ||
+            !editarAsignacion.hora_fin
+        ) {
+
+            toast(
+                "error",
+                "Todos los campos son obligatorios."
+            );
+
+            return;
+
+        }
+
+        if (
+            editarAsignacion.hora_inicio >=
+            editarAsignacion.hora_fin
+        ) {
+
+            toast(
+                "error",
+                "La hora de inicio debe ser menor que la hora de fin."
+            );
+
+            return;
+
+        }
+
+        setEditando(true);
+
+        try {
+
+            await api.put(
+                `/asignaciones/${editarAsignacion.id}`,
+                {
+                    docente_id:
+                        Number(editarAsignacion.docente_id),
+                    materia_id:
+                        Number(editarAsignacion.materia_id),
+                    grupo_id:
+                        Number(editarAsignacion.grupo_id),
+                    salon_id:
+                        Number(editarAsignacion.salon_id),
+                    periodo_id:
+                        Number(editarAsignacion.periodo_id),
+                    dia_semana:
+                        Number(editarAsignacion.dia_semana),
+                    hora_inicio:
+                        editarAsignacion.hora_inicio,
+                    hora_fin:
+                        editarAsignacion.hora_fin,
+                    color:
+                        editarAsignacion.color ||
+                        "#1558c7"
+                }
+            );
+
+            setEditarAsignacion(null);
+
+            toast(
+                "success",
+                "Horario actualizado correctamente."
+            );
+
+            cargarHorarios();
+
+        } catch (error) {
+
+            console.error(
+                "Error al editar horario:",
+                error
+            );
+
+            const msg =
+                error.response?.data?.mensaje ||
+                "No se pudo editar el horario.";
+
+            toast("error", msg);
+
+        } finally {
+
+            setEditando(false);
+
+        }
+
+    };
+
+
+    const manejarCambioEdicion = (campo, valor) => {
+
+        setEditarAsignacion((prev) => ({
+            ...prev,
+            [campo]: valor
+        }));
 
     };
 
@@ -1286,13 +1403,26 @@ function Horarios() {
                                                 </span>
 
 
-                                                <button
-                                                    type="button"
-                                                    className="delete-class"
-                                                    onClick={() => setEliminarId(horario.id)}
-                                                >
-                                                    Eliminar
-                                                </button>
+                                                <div className="class-block-actions">
+
+                                                    <button
+                                                        type="button"
+                                                        className="edit-class"
+                                                        onClick={() => setEditarAsignacion(horario)}
+                                                    >
+                                                        <Pencil size={12} />
+                                                        Editar
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="delete-class"
+                                                        onClick={() => setEliminarId(horario.id)}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+
+                                                </div>
 
                                             </div>
 
@@ -1830,6 +1960,283 @@ function Horarios() {
                 onCancel={() => setEliminarId(null)}
                 loading={eliminando}
             />
+
+
+            <Modal
+                open={Boolean(editarAsignacion)}
+                onClose={() => setEditarAsignacion(null)}
+                title="Editar horario"
+                description="Modifica los datos de esta clase"
+                maxWidth={640}
+                footer={
+                    <>
+                        <button
+                            type="button"
+                            className="cancel-button"
+                            onClick={() => setEditarAsignacion(null)}
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="button"
+                            className="save-button"
+                            onClick={confirmarEdicion}
+                            disabled={editando}
+                        >
+                            {editando
+                                ? "Guardando..."
+                                : "Guardar cambios"}
+                        </button>
+                    </>
+                }
+            >
+
+                {editarAsignacion && (
+
+                    <div className="edit-form">
+
+                        <div className="form-row">
+
+                            <div className="form-group">
+
+                                <label>Docente</label>
+
+                                <select
+                                    value={editarAsignacion.docente_id}
+                                    onChange={(e) =>
+                                        manejarCambioEdicion(
+                                            "docente_id",
+                                            e.target.value
+                                        )
+                                    }
+                                >
+
+                                    <option value="">
+                                        Selecciona un docente
+                                    </option>
+
+                                    {docentes.map((docente) => (
+
+                                        <option
+                                            key={docente.id}
+                                            value={docente.id}
+                                        >
+                                            {obtenerNombreDocente(docente)}
+                                        </option>
+
+                                    ))}
+
+                                </select>
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label>Salón</label>
+
+                                <select
+                                    value={editarAsignacion.salon_id}
+                                    onChange={(e) =>
+                                        manejarCambioEdicion(
+                                            "salon_id",
+                                            e.target.value
+                                        )
+                                    }
+                                >
+
+                                    <option value="">
+                                        Selecciona un salón
+                                    </option>
+
+                                    {salones.map((salon) => (
+
+                                        <option
+                                            key={salon.id}
+                                            value={salon.id}
+                                        >
+                                            {salon.numero}
+                                        </option>
+
+                                    ))}
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="form-row">
+
+                            <div className="form-group">
+
+                                <label>Materia</label>
+
+                                <select
+                                    value={editarAsignacion.materia_id}
+                                    onChange={(e) =>
+                                        manejarCambioEdicion(
+                                            "materia_id",
+                                            e.target.value
+                                        )
+                                    }
+                                >
+
+                                    <option value="">
+                                        Selecciona una materia
+                                    </option>
+
+                                    {materias.map((materia) => (
+
+                                        <option
+                                            key={materia.id}
+                                            value={materia.id}
+                                        >
+                                            {materia.nombre}
+                                        </option>
+
+                                    ))}
+
+                                </select>
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label>Grupo</label>
+
+                                <select
+                                    value={editarAsignacion.grupo_id}
+                                    onChange={(e) =>
+                                        manejarCambioEdicion(
+                                            "grupo_id",
+                                            e.target.value
+                                        )
+                                    }
+                                >
+
+                                    <option value="">
+                                        Selecciona un grupo
+                                    </option>
+
+                                    {grupos.map((grupo) => (
+
+                                        <option
+                                            key={grupo.id}
+                                            value={grupo.id}
+                                        >
+                                            {grupo.clave}
+                                        </option>
+
+                                    ))}
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="form-row">
+
+                            <div className="form-group">
+
+                                <label>Día de semana</label>
+
+                                <select
+                                    value={editarAsignacion.dia_semana}
+                                    onChange={(e) =>
+                                        manejarCambioEdicion(
+                                            "dia_semana",
+                                            e.target.value
+                                        )
+                                    }
+                                >
+
+                                    <option value="">
+                                        Selecciona un día
+                                    </option>
+
+                                    {dias.map((dia) => (
+
+                                        <option
+                                            key={dia.id}
+                                            value={dia.id}
+                                        >
+                                            {dia.nombre}
+                                        </option>
+
+                                    ))}
+
+                                </select>
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label>Hora inicio</label>
+
+                                <input
+                                    type="time"
+                                    value={editarAsignacion.hora_inicio}
+                                    onChange={(e) =>
+                                        manejarCambioEdicion(
+                                            "hora_inicio",
+                                            e.target.value
+                                        )
+                                    }
+                                />
+
+                            </div>
+
+
+                            <div className="form-group">
+
+                                <label>Hora fin</label>
+
+                                <input
+                                    type="time"
+                                    value={editarAsignacion.hora_fin}
+                                    onChange={(e) =>
+                                        manejarCambioEdicion(
+                                            "hora_fin",
+                                            e.target.value
+                                        )
+                                    }
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="form-group">
+
+                            <label>Color</label>
+
+                            <input
+                                type="color"
+                                value={
+                                    editarAsignacion.color || "#1558c7"
+                                }
+                                onChange={(e) =>
+                                    manejarCambioEdicion(
+                                        "color",
+                                        e.target.value
+                                    )
+                                }
+                            />
+
+                        </div>
+
+                    </div>
+
+                )}
+
+            </Modal>
 
         </Layout>
 

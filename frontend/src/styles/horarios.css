@@ -670,6 +670,47 @@
 }
 
 
+.class-block-actions {
+    display: flex;
+
+    gap: 4px;
+
+    margin-top: 4px;
+}
+
+
+.edit-class {
+    flex: 1;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 4px;
+
+    padding: 5px 8px;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--primary-50);
+
+    color: var(--primary-700);
+
+    font-size: var(--fs-2xs);
+
+    cursor: pointer;
+}
+
+
+.edit-class:hover {
+    background: var(--primary-100);
+}
+
+
 .delete-class {
     margin-top: 4px;
 
